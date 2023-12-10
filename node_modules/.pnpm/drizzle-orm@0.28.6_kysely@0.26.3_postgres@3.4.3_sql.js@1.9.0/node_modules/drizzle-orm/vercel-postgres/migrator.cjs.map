@@ -1,0 +1,1 @@
+{"version":3,"file":"migrator.cjs","sources":["../../src/vercel-postgres/migrator.ts"],"sourcesContent":[null],"names":["readMigrationFiles"],"mappings":";;;;;;;AAIO,eAAe,OAAO,CAC5B,EAA6B,EAC7B,MAAgC,EAAA;AAEhC,IAAA,MAAM,UAAU,GAAGA,2BAAkB,CAAC,MAAM,CAAC,CAAC;AAC9C,IAAA,MAAM,EAAE,CAAC,OAAO,CAAC,OAAO,CAAC,UAAU,EAAE,EAAE,CAAC,OAAO,CAAC,CAAC;AAClD;;;;"}

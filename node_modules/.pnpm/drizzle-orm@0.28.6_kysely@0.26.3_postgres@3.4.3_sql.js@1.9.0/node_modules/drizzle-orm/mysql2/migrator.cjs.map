@@ -1,0 +1,1 @@
+{"version":3,"file":"migrator.cjs","sources":["../../src/mysql2/migrator.ts"],"sourcesContent":[null],"names":["readMigrationFiles"],"mappings":";;;;;;;AAIO,eAAe,OAAO,CAC5B,EAA2B,EAC3B,MAAuB,EAAA;AAEvB,IAAA,MAAM,UAAU,GAAGA,2BAAkB,CAAC,MAAM,CAAC,CAAC;AAC9C,IAAA,MAAM,EAAE,CAAC,OAAO,CAAC,OAAO,CAAC,UAAU,EAAE,EAAE,CAAC,OAAO,EAAE,MAAM,CAAC,CAAC;AAC1D;;;;"}

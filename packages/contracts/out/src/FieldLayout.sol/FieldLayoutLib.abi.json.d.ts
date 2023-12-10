@@ -1,0 +1,23 @@
+declare const abi: [
+  {
+    "type": "error",
+    "name": "FieldLayoutLib_InvalidLength",
+    "inputs": [
+      {
+        "name": "length",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "FieldLayoutLib_StaticLengthDoesNotFitInAWord",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FieldLayoutLib_StaticLengthIsZero",
+    "inputs": []
+  }
+]; export default abi;

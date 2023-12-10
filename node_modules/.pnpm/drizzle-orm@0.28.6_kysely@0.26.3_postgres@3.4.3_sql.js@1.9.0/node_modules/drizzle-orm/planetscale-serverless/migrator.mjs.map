@@ -1,0 +1,1 @@
+{"version":3,"file":"migrator.mjs","sources":["../../src/planetscale-serverless/migrator.ts"],"sourcesContent":[null],"names":[],"mappings":";;;;;AAIO,eAAe,OAAO,CAC5B,EAAgC,EAChC,MAAuB,EAAA;AAEvB,IAAA,MAAM,UAAU,GAAG,kBAAkB,CAAC,MAAM,CAAC,CAAC;AAC9C,IAAA,MAAM,EAAE,CAAC,OAAO,CAAC,OAAO,CAAC,UAAU,EAAE,EAAE,CAAC,OAAO,EAAE,MAAM,CAAC,CAAC;AAC1D;;;;"}
