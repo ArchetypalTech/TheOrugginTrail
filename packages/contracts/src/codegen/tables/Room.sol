@@ -20,14 +20,18 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { RoomType } from "./../common.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Room"))));
 ResourceId constant RoomTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000200000000000000000000000000000000000000000000000000000000
+  0x0001010201000000000000000000000000000000000000000000000000000000
 );
 
 struct RoomData {
+  RoomType roomType;
   uint32[8] textDefId;
   uint32[8] actions;
 }
@@ -57,9 +61,10 @@ library Room {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](2);
-    _valueSchema[0] = SchemaType.UINT32_ARRAY;
+    SchemaType[] memory _valueSchema = new SchemaType[](3);
+    _valueSchema[0] = SchemaType.UINT8;
     _valueSchema[1] = SchemaType.UINT32_ARRAY;
+    _valueSchema[2] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -78,9 +83,10 @@ library Room {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](2);
-    fieldNames[0] = "textDefId";
-    fieldNames[1] = "actions";
+    fieldNames = new string[](3);
+    fieldNames[0] = "roomType";
+    fieldNames[1] = "textDefId";
+    fieldNames[2] = "actions";
   }
 
   /**
@@ -95,6 +101,48 @@ library Room {
    */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
+  /**
+   * @notice Get roomType.
+   */
+  function getRoomType(uint32 roomId) internal view returns (RoomType roomType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return RoomType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Get roomType.
+   */
+  function _getRoomType(uint32 roomId) internal view returns (RoomType roomType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return RoomType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Set roomType.
+   */
+  function setRoomType(uint32 roomId, RoomType roomType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(roomType)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set roomType.
+   */
+  function _setRoomType(uint32 roomId, RoomType roomType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(roomType)), _fieldLayout);
   }
 
   /**
@@ -454,8 +502,9 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 roomId, uint32[8] memory textDefId, uint32[8] memory actions) internal {
-    bytes memory _staticData;
+  function set(uint32 roomId, RoomType roomType, uint32[8] memory textDefId, uint32[8] memory actions) internal {
+    bytes memory _staticData = encodeStatic(roomType);
+
     PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
     bytes memory _dynamicData = encodeDynamic(textDefId, actions);
 
@@ -468,8 +517,9 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 roomId, uint32[8] memory textDefId, uint32[8] memory actions) internal {
-    bytes memory _staticData;
+  function _set(uint32 roomId, RoomType roomType, uint32[8] memory textDefId, uint32[8] memory actions) internal {
+    bytes memory _staticData = encodeStatic(roomType);
+
     PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
     bytes memory _dynamicData = encodeDynamic(textDefId, actions);
 
@@ -483,7 +533,8 @@ library Room {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 roomId, RoomData memory _table) internal {
-    bytes memory _staticData;
+    bytes memory _staticData = encodeStatic(_table.roomType);
+
     PackedCounter _encodedLengths = encodeLengths(_table.textDefId, _table.actions);
     bytes memory _dynamicData = encodeDynamic(_table.textDefId, _table.actions);
 
@@ -497,7 +548,8 @@ library Room {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 roomId, RoomData memory _table) internal {
-    bytes memory _staticData;
+    bytes memory _staticData = encodeStatic(_table.roomType);
+
     PackedCounter _encodedLengths = encodeLengths(_table.textDefId, _table.actions);
     bytes memory _dynamicData = encodeDynamic(_table.textDefId, _table.actions);
 
@@ -505,6 +557,13 @@ library Room {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Decode the tightly packed blob of static data using this table's field layout.
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (RoomType roomType) {
+    roomType = RoomType(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /**
@@ -530,15 +589,17 @@ library Room {
 
   /**
    * @notice Decode the tightly packed blobs using this table's field layout.
-   *
+   * @param _staticData Tightly packed static fields.
    * @param _encodedLengths Encoded lengths of dynamic fields.
    * @param _dynamicData Tightly packed dynamic fields.
    */
   function decode(
-    bytes memory,
+    bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (RoomData memory _table) {
+    (_table.roomType) = decodeStatic(_staticData);
+
     (_table.textDefId, _table.actions) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
@@ -560,6 +621,14 @@ library Room {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
+   */
+  function encodeStatic(RoomType roomType) internal pure returns (bytes memory) {
+    return abi.encodePacked(roomType);
   }
 
   /**
@@ -595,10 +664,12 @@ library Room {
    * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
+    RoomType roomType,
     uint32[8] memory textDefId,
     uint32[8] memory actions
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData;
+    bytes memory _staticData = encodeStatic(roomType);
+
     PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
     bytes memory _dynamicData = encodeDynamic(textDefId, actions);
 

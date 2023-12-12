@@ -19,6 +19,7 @@ export default mudConfig({
             // Rooms have for now 8 arbitrary descriptions attached because ?
             // also an arbitrary 8 Actions
             valueSchema: {
+                roomType: "RoomType",
                 textDefId: "uint32[8]",
                 actions: "uint32[8]",
                 //roomType: "RoomType",
