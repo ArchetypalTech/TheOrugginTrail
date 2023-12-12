@@ -15,11 +15,8 @@ contract IncrementSystem is System {
 }
  
 contract DescribeRoom is System {
-  function desribe() public returns (string) {
-    uint32 counter = Counter.get();
-    uint32 newValue = counter - 1;
-    Counter.set(newValue);
-    return newValue;
+  function desribe() public returns (string memory) {
+    return "FOO-RETURN";
   }
 }
 

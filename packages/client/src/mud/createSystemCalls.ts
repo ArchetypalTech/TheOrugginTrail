@@ -45,7 +45,14 @@ export function createSystemCalls(
     return getComponentValue(Counter, singletonEntity);
   };
 
+  const describe = async () => {
+      const tx = await worldContract.write.describe();
+      await waitForTransaction(tx);
+      return "FooString";
+  };
+
   return {
     increment,
+    describe,
   };
 }

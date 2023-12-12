@@ -16,8 +16,8 @@ components.Counter.update$.subscribe((update) => {
 
 components.Room.update$.subscribe((update) => {
   const Room = components.Room
-  console.log("Counter updated", update, { nextValue, prevValue });
-  document.getElementById("room_description")!.innerHTML = String(nextValue?.value ?? "no_description");
+  console.log("Room updated");
+  document.getElementById("room_description")!.innerHTML = "We need to get the update text here";
 });
 
 // Just for demonstration purposes: we create a global function that can be

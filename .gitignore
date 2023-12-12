@@ -14,3 +14,11 @@ node_modules/
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 */node_modules/
+
+# tags
+tags*
+
+packages/contracts/broadcast/PostDeploy.s.sol/*
+packages/contracts/cache/*
+packages/contracts/deploys/*
+packages/contracts/out/*
