@@ -32,10 +32,10 @@ export default mudConfig({
                 //actionType: "ActionType",
             //},
         //},
-        //TextDef: {
-            //keySchema: {},
-            //valueSchema: "uint32",
-        //},
+        TextDef: {
+            keySchema: {},
+            valueSchema: "uint32",
+        },
         Counter: {
             keySchema: {},
             valueSchema: "uint32",
