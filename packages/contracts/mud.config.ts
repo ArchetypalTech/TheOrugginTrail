@@ -1,10 +1,10 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-    //enums: {
-        //RoomType: ["Transport", "Actionable",],
-        //ActionType: ["Move", "Loot", "Describe",],
-    //},
+    enums: {
+        RoomType: ["Transport", "Actionable",],
+        ActionType: ["Move", "Loot", "Describe",],
+    },
     tables: {
         // all rooms take a description and a set of actions that themselves
         // have descriptions. Strings such as Decriptions get passed back as 
