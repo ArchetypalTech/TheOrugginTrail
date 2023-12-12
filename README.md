@@ -14,6 +14,8 @@ An experiment in fully onchain text adventures
 
 What lies ahead, is anyone's guess...
 
-Pre death you'll want to run pnpm install at the root 
+Pre death you'll want to run `pnpm install` at the root 
 of this repo because we aren't checking in the node_modules folder.
 cruft....
+
+**Really**. Run `pnpm install` at the project root. Or be dead. Pfft.
