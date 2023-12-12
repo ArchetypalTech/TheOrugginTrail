@@ -24,14 +24,14 @@ export default mudConfig({
                 ////roomType: "RoomType",
             //},
        //},
-        //Action: {
-            //keySchema: {
-                //actionId: "uint32",
-            //},
-            //valueSchema: {
-                //actionType: "ActionType",
-            //},
-        //},
+        Action: {
+            keySchema: {
+                actionId: "uint32",
+            },
+            valueSchema: {
+                actionType: "ActionType",
+            },
+        },
         TextDef: {
             keySchema: {},
             valueSchema: "uint32",
