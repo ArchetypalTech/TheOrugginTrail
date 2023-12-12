@@ -14,10 +14,20 @@ components.Counter.update$.subscribe((update) => {
   document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
+components.Room.update$.subscribe((update) => {
+  const Room = components.Room
+  console.log("Counter updated", update, { nextValue, prevValue });
+  document.getElementById("room_description")!.innerHTML = String(nextValue?.value ?? "no_description");
+});
+
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
 (window as any).increment = async () => {
   console.log("new counter value:", await increment());
+};
+
+(window as any).showDescription = async () => {
+  console.log("looking for description:", await describe())
 };
 
 // https://vitejs.dev/guide/env-and-mode.html
