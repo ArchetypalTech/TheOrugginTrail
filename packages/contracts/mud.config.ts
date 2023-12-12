@@ -22,7 +22,6 @@ export default mudConfig({
                 roomType: "RoomType",
                 textDefId: "uint32[8]",
                 actions: "uint32[8]",
-                //roomType: "RoomType",
             },
        },
         Action: {
