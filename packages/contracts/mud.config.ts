@@ -12,18 +12,18 @@ export default mudConfig({
         // compressed strings. Ergo the key is the hash of that description.
         // This actual encoding has to be done by the adventure loader which 
         // actually should set up the game "map" and as such the contracts.
-        //Room: {
-            //keySchema: {
-                //roomId: "uint32",
-            //},
-            //// Rooms have for now 8 arbitrary descriptions attached because ?
-            //// also an arbitrary 8 Actions
-            //valueSchema: {
-                //textDefId: "uint32[8]",
-                ////actions: "uint32[8]",
-                ////roomType: "RoomType",
-            //},
-       //},
+        Room: {
+            keySchema: {
+                roomId: "uint32",
+            },
+            // Rooms have for now 8 arbitrary descriptions attached because ?
+            // also an arbitrary 8 Actions
+            valueSchema: {
+                textDefId: "uint32[8]",
+                //actions: "uint32[8]",
+                //roomType: "RoomType",
+            },
+       },
         Action: {
             keySchema: {
                 actionId: "uint32",
