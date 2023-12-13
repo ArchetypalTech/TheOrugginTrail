@@ -5,7 +5,23 @@ const {
   components,
   systemCalls: { increment },
   network,
-} = await setup();
+} = await setup().then(async (result) => {
+
+$('body').terminal({
+    title: function(...args) {
+        const options = $.terminal.parse_options(args);
+        return fetch(options.url || 'https://terminal.jcubic.pl')
+            .then(r => r.text())
+            .then(html => html.match(/<title>([^>]+)<\/title>/)[1]);
+    }
+}, {
+    checkArity: false,
+    greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n'
+});
+
+github('jcubic/jquery.terminal');
+
+});
 
 // Components expose a stream that triggers when the component is updated.
 components.Counter.update$.subscribe((update) => {
