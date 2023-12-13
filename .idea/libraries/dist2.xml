@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="dist2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/node_modules/sql.js/dist/sqljs-worker-wasm.zip!/" />
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/node_modules/sql.js/dist/sqljs-all.zip!/" />
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/node_modules/sql.js/dist/sqljs-wasm.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

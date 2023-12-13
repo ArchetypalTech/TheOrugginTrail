@@ -10,6 +10,13 @@ contract GameEngineSystem is System {
         Room.setTextDefId(0,0);
         Room.pushActions(0,1);
 
+
+//        Room.setTextDefId(0, [0,1,2,3,4,5,6,7]);
+
+     //   uint32[8] memory x = [0,1,2,3,4,5,6,7];
+
+       // Room.setActions(0,x);
+
         Output.set('data initialised');
 
         return 0;

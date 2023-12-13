@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="dist3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/drizzle-orm@0.28.6_kysely@0.26.3_postgres@3.4.3_sql.js@1.9.0/node_modules/sql.js/dist/sqljs-wasm.zip!/" />
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/drizzle-orm@0.28.6_kysely@0.26.3_postgres@3.4.3_sql.js@1.9.0/node_modules/sql.js/dist/sqljs-all.zip!/" />
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/drizzle-orm@0.28.6_kysely@0.26.3_postgres@3.4.3_sql.js@1.9.0/node_modules/sql.js/dist/sqljs-worker-wasm.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
