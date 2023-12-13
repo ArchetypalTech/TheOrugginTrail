@@ -27,13 +27,13 @@ ResourceId constant _tableId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE
 ResourceId constant RoomTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0001010201000000000000000000000000000000000000000000000000000000
+  0x0005020101040000000000000000000000000000000000000000000000000000
 );
 
 struct RoomData {
   RoomType roomType;
-  uint32[8] textDefId;
-  uint32[8] actions;
+  uint32 textDefId;
+  uint32[] actions;
 }
 
 library Room {
@@ -63,7 +63,7 @@ library Room {
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](3);
     _valueSchema[0] = SchemaType.UINT8;
-    _valueSchema[1] = SchemaType.UINT32_ARRAY;
+    _valueSchema[1] = SchemaType.UINT32;
     _valueSchema[2] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
@@ -148,205 +148,85 @@ library Room {
   /**
    * @notice Get textDefId.
    */
-  function getTextDefId(uint32 roomId) internal view returns (uint32[8] memory textDefId) {
+  function getTextDefId(uint32 roomId) internal view returns (uint32 textDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint32_8(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Get textDefId.
    */
-  function _getTextDefId(uint32 roomId) internal view returns (uint32[8] memory textDefId) {
+  function _getTextDefId(uint32 roomId) internal view returns (uint32 textDefId) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Set textDefId.
+   */
+  function setTextDefId(uint32 roomId, uint32 textDefId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((textDefId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set textDefId.
+   */
+  function _setTextDefId(uint32 roomId, uint32 textDefId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((textDefId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Get actions.
+   */
+  function getActions(uint32 roomId) internal view returns (uint32[] memory actions) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /**
+   * @notice Get actions.
+   */
+  function _getActions(uint32 roomId) internal view returns (uint32[] memory actions) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint32_8(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Set textDefId.
-   */
-  function setTextDefId(uint32 roomId, uint32[8] memory textDefId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_8(textDefId)));
-  }
-
-  /**
-   * @notice Set textDefId.
-   */
-  function _setTextDefId(uint32 roomId, uint32[8] memory textDefId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_8(textDefId)));
-  }
-
-  /**
-   * @notice Get the length of textDefId.
-   */
-  function lengthTextDefId(uint32 roomId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
-  }
-
-  /**
-   * @notice Get the length of textDefId.
-   */
-  function _lengthTextDefId(uint32 roomId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
-  }
-
-  /**
-   * @notice Get an item of textDefId.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemTextDefId(uint32 roomId, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Get an item of textDefId.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function _getItemTextDefId(uint32 roomId, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Push an element to textDefId.
-   */
-  function pushTextDefId(uint32 roomId, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to textDefId.
-   */
-  function _pushTextDefId(uint32 roomId, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from textDefId.
-   */
-  function popTextDefId(uint32 roomId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
-  }
-
-  /**
-   * @notice Pop an element from textDefId.
-   */
-  function _popTextDefId(uint32 roomId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
-  }
-
-  /**
-   * @notice Update an element of textDefId at `_index`.
-   */
-  function updateTextDefId(uint32 roomId, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of textDefId at `_index`.
-   */
-  function _updateTextDefId(uint32 roomId, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Get actions.
-   */
-  function getActions(uint32 roomId) internal view returns (uint32[8] memory actions) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
-    return toStaticArray_uint32_8(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Get actions.
-   */
-  function _getActions(uint32 roomId) internal view returns (uint32[8] memory actions) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(roomId));
-
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
-    return toStaticArray_uint32_8(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /**
    * @notice Set actions.
    */
-  function setActions(uint32 roomId, uint32[8] memory actions) internal {
+  function setActions(uint32 roomId, uint32[] memory actions) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_8(actions)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((actions)));
   }
 
   /**
    * @notice Set actions.
    */
-  function _setActions(uint32 roomId, uint32[8] memory actions) internal {
+  function _setActions(uint32 roomId, uint32[] memory actions) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_8(actions)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((actions)));
   }
 
   /**
@@ -356,7 +236,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -369,7 +249,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -384,7 +264,7 @@ library Room {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -398,7 +278,7 @@ library Room {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -410,7 +290,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /**
@@ -420,7 +300,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /**
@@ -430,7 +310,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -440,7 +320,7 @@ library Room {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -452,7 +332,7 @@ library Room {
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -465,7 +345,7 @@ library Room {
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -502,11 +382,11 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 roomId, RoomType roomType, uint32[8] memory textDefId, uint32[8] memory actions) internal {
-    bytes memory _staticData = encodeStatic(roomType);
+  function set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory actions) internal {
+    bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
-    bytes memory _dynamicData = encodeDynamic(textDefId, actions);
+    PackedCounter _encodedLengths = encodeLengths(actions);
+    bytes memory _dynamicData = encodeDynamic(actions);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -517,11 +397,11 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 roomId, RoomType roomType, uint32[8] memory textDefId, uint32[8] memory actions) internal {
-    bytes memory _staticData = encodeStatic(roomType);
+  function _set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory actions) internal {
+    bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
-    bytes memory _dynamicData = encodeDynamic(textDefId, actions);
+    PackedCounter _encodedLengths = encodeLengths(actions);
+    bytes memory _dynamicData = encodeDynamic(actions);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -533,10 +413,10 @@ library Room {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 roomId, RoomData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.roomType);
+    bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.textDefId, _table.actions);
-    bytes memory _dynamicData = encodeDynamic(_table.textDefId, _table.actions);
+    PackedCounter _encodedLengths = encodeLengths(_table.actions);
+    bytes memory _dynamicData = encodeDynamic(_table.actions);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -548,10 +428,10 @@ library Room {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 roomId, RoomData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.roomType);
+    bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.textDefId, _table.actions);
-    bytes memory _dynamicData = encodeDynamic(_table.textDefId, _table.actions);
+    PackedCounter _encodedLengths = encodeLengths(_table.actions);
+    bytes memory _dynamicData = encodeDynamic(_table.actions);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -562,8 +442,10 @@ library Room {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (RoomType roomType) {
+  function decodeStatic(bytes memory _blob) internal pure returns (RoomType roomType, uint32 textDefId) {
     roomType = RoomType(uint8(Bytes.slice1(_blob, 0)));
+
+    textDefId = (uint32(Bytes.slice4(_blob, 1)));
   }
 
   /**
@@ -572,19 +454,13 @@ library Room {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[8] memory textDefId, uint32[8] memory actions) {
+  ) internal pure returns (uint32[] memory actions) {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
-    textDefId = toStaticArray_uint32_8(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
-
-    _start = _end;
-    unchecked {
-      _end += _encodedLengths.atIndex(1);
-    }
-    actions = toStaticArray_uint32_8(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+    actions = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
   }
 
   /**
@@ -598,9 +474,9 @@ library Room {
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (RoomData memory _table) {
-    (_table.roomType) = decodeStatic(_staticData);
+    (_table.roomType, _table.textDefId) = decodeStatic(_staticData);
 
-    (_table.textDefId, _table.actions) = decodeDynamic(_encodedLengths, _dynamicData);
+    (_table.actions) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -627,21 +503,18 @@ library Room {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(RoomType roomType) internal pure returns (bytes memory) {
-    return abi.encodePacked(roomType);
+  function encodeStatic(RoomType roomType, uint32 textDefId) internal pure returns (bytes memory) {
+    return abi.encodePacked(roomType, textDefId);
   }
 
   /**
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(
-    uint32[8] memory textDefId,
-    uint32[8] memory actions
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(uint32[] memory actions) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(textDefId.length * 4, actions.length * 4);
+      _encodedLengths = PackedCounterLib.pack(actions.length * 4);
     }
   }
 
@@ -649,12 +522,8 @@ library Room {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(uint32[8] memory textDefId, uint32[8] memory actions) internal pure returns (bytes memory) {
-    return
-      abi.encodePacked(
-        EncodeArray.encode(fromStaticArray_uint32_8(textDefId)),
-        EncodeArray.encode(fromStaticArray_uint32_8(actions))
-      );
+  function encodeDynamic(uint32[] memory actions) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((actions)));
   }
 
   /**
@@ -665,13 +534,13 @@ library Room {
    */
   function encode(
     RoomType roomType,
-    uint32[8] memory textDefId,
-    uint32[8] memory actions
+    uint32 textDefId,
+    uint32[] memory actions
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(roomType);
+    bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(textDefId, actions);
-    bytes memory _dynamicData = encodeDynamic(textDefId, actions);
+    PackedCounter _encodedLengths = encodeLengths(actions);
+    bytes memory _dynamicData = encodeDynamic(actions);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
@@ -685,43 +554,4 @@ library Room {
 
     return _keyTuple;
   }
-}
-
-/**
- * @notice Cast a dynamic array to a static array.
- * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
- * so this function moves the pointer to the first element of the dynamic array.
- * If the length of the dynamic array is smaller than the static length,
- * the function returns an uninitialized array to avoid memory corruption.
- * @param _value The dynamic array to cast.
- * @return _result The static array.
- */
-function toStaticArray_uint32_8(uint32[] memory _value) pure returns (uint32[8] memory _result) {
-  if (_value.length < 8) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
-  }
-}
-
-/**
- * @notice Copy a static array to a dynamic array.
- * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
- * @param _value The static array to copy.
- * @return _result The dynamic array.
- */
-function fromStaticArray_uint32_8(uint32[8] memory _value) pure returns (uint32[] memory _result) {
-  _result = new uint32[](8);
-  uint256 fromPointer;
-  uint256 toPointer;
-  assembly {
-    fromPointer := _value
-    toPointer := add(_result, 0x20)
-  }
-  Memory.copy(fromPointer, toPointer, 256);
 }

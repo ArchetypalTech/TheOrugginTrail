@@ -20,8 +20,8 @@ export default mudConfig({
             // also an arbitrary 8 Actions
             valueSchema: {
                 roomType: "RoomType",
-                textDefId: "uint32[8]",
-                actions: "uint32[8]",
+                textDefId: "uint32",
+                actions: "uint32[]",
             },
        },
         Action: {
