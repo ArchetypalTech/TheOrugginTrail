@@ -4,29 +4,39 @@ pragma solidity >=0.8.21;
 import {System} from "@latticexyz/world/src/System.sol";
 import {Output, CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen/index.sol";
 
-contract IncrementSystem is System {
+contract GameEngineSystem is System {
     function initData() public returns (uint32) {
 
+      //  Room.setTextDefId(0,[0,1,2,3,4,5,6,7]);
 
+        uint32[8] memory x = [0,1,2,3,4,5,6,7];
 
+       // Room.setActions(0,x);
 
+        Output.set('data initialised');
+
+        return 0;
     }
 
     function processCommand(string memory command) public returns (string memory) {
+
+        command;
+
         uint32 id = CurrentRoomId.get();
         uint32 newValue = id + 1;
         CurrentRoomId.set(newValue);
 
 
-        Output.set('ddt');
+        Output.set(command);
 
-        return 'fuck off';
+        return '';
     }
 }
-
+/*
 contract DescribeRoom is System {
     function desribe() public returns (string memory) {
         return "FOO-RETURN";
     }
 }
+*/
 

@@ -12,7 +12,7 @@ const {
     $('body').terminal(async function(command)  {
     // sanity test for calling the contract
     if(command == 'init') {
-        initData();
+        await initData();
     } else {
         await processCommand(command);
     }
@@ -20,20 +20,13 @@ const {
     { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
 );
 
-// Components expose a stream that triggers when the component is updated.
+
+/*
+not sure we care about these two
+
 components.CurrentRoomId.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   console.log("CurrentRoomId updated", update, { nextValue, prevValue });
-});
-
-components.Output.update$.subscribe((update) => {
-  const [nextValue, prevValue] = update.value;
-  console.log("Output updated", update, { nextValue, prevValue });
-
-    var term = $.terminal.active();
-    term.echo(nextValue.value);
-
-
 });
 
 components.Room.update$.subscribe((update) => {
@@ -41,6 +34,17 @@ components.Room.update$.subscribe((update) => {
   console.log("Room updated");
 //  document.getElementById("room_description")!.innerHTML = "We need to get the update text here";
 });
+*/
+
+
+components.Output.update$.subscribe((update) => {
+  const [nextValue, prevValue] = update.value;
+  console.log("Output updated", update, { nextValue, prevValue });
+    var term = $.terminal.active();
+    term.echo(nextValue.value);
+});
+
+
 
 (window as any).showDescription = async () => {
   console.log("looking for description:", await describe())

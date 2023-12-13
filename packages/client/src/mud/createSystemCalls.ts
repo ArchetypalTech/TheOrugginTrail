@@ -30,7 +30,7 @@ export function createSystemCalls(
   const initData = async () => {
     const tx = await worldContract.write.initData();
     await waitForTransaction(tx);
-    return getComponentValue(CurrentRoomId, singletonEntity);
+    return "FooString";
   };
 
   const describe = async () => {
@@ -40,7 +40,6 @@ export function createSystemCalls(
   };
 
   const processCommand = async (command) => {
-    console.log("processCommand", command);
     const tx = await worldContract.write.processCommand([command]);
     await waitForTransaction(tx);
     return "FooString";
