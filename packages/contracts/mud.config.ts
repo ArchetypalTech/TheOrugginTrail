@@ -36,7 +36,7 @@ export default mudConfig({
             keySchema: {},
             valueSchema: "uint32",
         },
-        Counter: {
+        CurrentRoomId: {
             keySchema: {},
             valueSchema: "uint32",
         },

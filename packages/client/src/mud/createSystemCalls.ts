@@ -23,15 +23,9 @@ export function createSystemCalls(
    *
    *   - waitForTransaction (which comes from syncToRecs, see
    *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
-   *
-   * - From the second parameter, which is a ClientComponent,
-   *   we only care about Counter. This parameter comes to use
-   *   through createClientComponents.ts, but it originates in
-   *   syncToRecs
-   *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
-   */
+  */
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { Counter }: ClientComponents
+  { CurrentRoomId }: ClientComponents
 ) {
   const increment = async () => {
     /*
@@ -42,7 +36,7 @@ export function createSystemCalls(
      */
     const tx = await worldContract.write.increment();
     await waitForTransaction(tx);
-    return getComponentValue(Counter, singletonEntity);
+    return getComponentValue(CurrentRoomId, singletonEntity);
   };
 
   const describe = async () => {

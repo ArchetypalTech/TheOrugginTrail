@@ -21,9 +21,9 @@ $('body').terminal(async function(command)  {
 );
 
 // Components expose a stream that triggers when the component is updated.
-components.Counter.update$.subscribe((update) => {
+components.CurrentRoomId.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
-  console.log("Counter updated", update, { nextValue, prevValue });
+  console.log("CurrentRoomId updated", update, { nextValue, prevValue });
 //  document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 

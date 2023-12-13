@@ -6,4 +6,4 @@ pragma solidity >=0.8.21;
 import { Room, RoomData, RoomTableId } from "./tables/Room.sol";
 import { Action, ActionTableId } from "./tables/Action.sol";
 import { TextDef, TextDefTableId } from "./tables/TextDef.sol";
-import { Counter, CounterTableId } from "./tables/Counter.sol";
+import { CurrentRoomId, CurrentRoomIdTableId } from "./tables/CurrentRoomId.sol";
