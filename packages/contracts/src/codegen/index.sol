@@ -7,4 +7,3 @@ import { Room, RoomData, RoomTableId } from "./tables/Room.sol";
 import { Action, ActionTableId } from "./tables/Action.sol";
 import { TextDef, TextDefTableId } from "./tables/TextDef.sol";
 import { Counter, CounterTableId } from "./tables/Counter.sol";
-import { History, HistoryData, HistoryTableId } from "./tables/History.sol";

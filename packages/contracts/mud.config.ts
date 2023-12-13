@@ -7,10 +7,10 @@ export default mudConfig({
     },
     tables: {
         // all rooms take a description and a set of actions that themselves
-        // have descriptions. Strings such as Decriptions get passed back as 
+        // have descriptions. Strings such as Decriptions get passed back as
         // uint32's that then get mapped to a client side hash map of heavily
         // compressed strings. Ergo the key is the hash of that description.
-        // This actual encoding has to be done by the adventure loader which 
+        // This actual encoding has to be done by the adventure loader which
         // actually should set up the game "map" and as such the contracts.
         Room: {
             keySchema: {
@@ -39,15 +39,6 @@ export default mudConfig({
         Counter: {
             keySchema: {},
             valueSchema: "uint32",
-        },
-        History: {
-            keySchema: {
-                counterValue: "uint32",
-            },
-            valueSchema: {
-                blockNumber: "uint256",
-                time: "uint256",
-            },
         },
     },
 });
