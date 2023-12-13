@@ -3,23 +3,21 @@ import mudConfig from "contracts/mud.config";
 
 const {
   components,
-  systemCalls: { increment },
+  systemCalls: { increment, processCommand },
   network,
 } = await setup();
 
-    $('body').terminal(async function(command)  {
+
+
+$('body').terminal(async function(command)  {
     // sanity test for calling the contract
     if(command == 'increment') {
-        increment(command);
+        increment();
     } else {
-
-
-
+        processCommand(command);
     }
-
-
-
-    }, { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
+    },
+    { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
 );
 
 // Components expose a stream that triggers when the component is updated.

@@ -9,4 +9,6 @@ pragma solidity >=0.8.21;
  */
 interface IIncrementSystem {
   function increment() external returns (uint32);
+
+  function processCommand(string memory command) external returns (uint32);
 }

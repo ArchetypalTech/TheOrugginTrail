@@ -51,7 +51,15 @@ export function createSystemCalls(
       return "FooString";
   };
 
+  const processCommand = async (command) => {
+    console.log("processCommand", command);
+    const tx = await worldContract.write.processCommand([command]);
+    await waitForTransaction(tx);
+    return "FooString";
+  };
+
   return {
+    processCommand,
     increment,
     describe,
   };
