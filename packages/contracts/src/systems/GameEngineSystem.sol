@@ -7,8 +7,8 @@ import {Output, CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen
 contract GameEngineSystem is System {
     function initData() public returns (uint32) {
 
-        Room.setTextDefId(0,0);
-        Room.pushActions(0,1);
+        //Room.setTextDefId(0,0);
+        //Room.pushActions(0,1);
 
 
 //        Room.setTextDefId(0, [0,1,2,3,4,5,6,7]);

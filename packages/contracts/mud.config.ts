@@ -6,7 +6,13 @@ export default mudConfig({
         // 0x00 | 0x01
         // Voids have no Objects 
         // Places have Objects, of which Door is one.
-        // Objects have actions, eg Doors can Open or not.
+        // Objects have Actions, eg Doors can Open or not.
+        // Actions generate NESS or Bool 
+        // ie. "Lock Door":
+        // the Room/Place with Door with Lock -> Lock-NESS -> Place(Door(Lock(NESS(1))))
+        // NB This doesn't equate to Open-NESS, a door could be LockY AND OpenY
+        //
+        // For now fuck it...
         //
         RoomType: ["Void", "Place"],
         ActionType: ["Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock"],
@@ -17,8 +23,17 @@ export default mudConfig({
         // have descriptions. Strings such as Decriptions get passed back as
         // uint32's that then get mapped to a client side hash map of heavily
         // compressed strings. Ergo the key is the hash of that description.
-        // This actual encoding has to be done by the adventure loader which
-        // actually should set up the game "map" and as such the contracts.
+        // In theory anyway.
+        GameMap: {
+            // we are just setting bigOlePlace to bytes16
+            // for this try but it should probably be dynamic?
+            keySchema: {},
+            valueSchema: {
+                width: "uint32",
+                height: "uint32",
+                bigOlePlace: "bytes16",
+            },
+        },       
         Room: {
             keySchema: {
                 roomId: "uint32",
@@ -28,15 +43,25 @@ export default mudConfig({
             valueSchema: {
                 roomType: "RoomType",
                 textDefId: "uint32",
-                actions: "uint32[]",
+                //objects: "uint32[]",
             },
-       },
+        },
         Action: {
             keySchema: {
                 actionId: "uint32",
             },
             valueSchema: {
                 actionType: "ActionType",
+            },
+        },
+        Object: {
+            keySchema: {
+                objectId: "uint32",
+            },
+            valueSchema: {
+                objectType: "ObjectType",
+                texDefId: "uint32",
+                objectActions: "uint32[]",
             },
         },
         TextDef: {
