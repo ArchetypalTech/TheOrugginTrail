@@ -7,3 +7,4 @@ import { Room, RoomData, RoomTableId } from "./tables/Room.sol";
 import { Action, ActionTableId } from "./tables/Action.sol";
 import { TextDef, TextDefTableId } from "./tables/TextDef.sol";
 import { CurrentRoomId, CurrentRoomIdTableId } from "./tables/CurrentRoomId.sol";
+import { Output, OutputTableId } from "./tables/Output.sol";

@@ -40,5 +40,9 @@ export default mudConfig({
             keySchema: {},
             valueSchema: "uint32",
         },
+        Output: {
+            keySchema: {},
+            valueSchema: "string",
+        },
     },
 });

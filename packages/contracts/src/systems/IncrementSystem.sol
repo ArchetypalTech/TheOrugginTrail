@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import {System} from "@latticexyz/world/src/System.sol";
-import {CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen/index.sol";
+import {Output, CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen/index.sol";
 
 contract IncrementSystem is System {
     function initData() public returns (uint32) {
@@ -16,6 +16,10 @@ contract IncrementSystem is System {
         uint32 id = CurrentRoomId.get();
         uint32 newValue = id + 1;
         CurrentRoomId.set(newValue);
+
+
+        Output.set('ddt');
+
         return 'fuck off';
     }
 }

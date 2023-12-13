@@ -25,7 +25,7 @@ export function createSystemCalls(
    *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
   */
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { CurrentRoomId }: ClientComponents
+  { Output }: ClientComponents
 ) {
   const initData = async () => {
     const tx = await worldContract.write.initData();

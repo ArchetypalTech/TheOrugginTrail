@@ -24,11 +24,16 @@ const {
 components.CurrentRoomId.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   console.log("CurrentRoomId updated", update, { nextValue, prevValue });
+});
 
-  var term = $.terminal.active();
-  term.echo(nextValue.value);
+components.Output.update$.subscribe((update) => {
+  const [nextValue, prevValue] = update.value;
+  console.log("Output updated", update, { nextValue, prevValue });
 
-  //document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+    var term = $.terminal.active();
+    term.echo(nextValue.value);
+
+
 });
 
 components.Room.update$.subscribe((update) => {
