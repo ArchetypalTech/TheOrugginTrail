@@ -3,18 +3,18 @@ import mudConfig from "contracts/mud.config";
 
 const {
   components,
-  systemCalls: { increment, processCommand },
+  systemCalls: { initData, processCommand },
   network,
 } = await setup();
 
 
 
-$('body').terminal(async function(command)  {
+    $('body').terminal(async function(command)  {
     // sanity test for calling the contract
-    if(command == 'increment') {
-        increment();
+    if(command == 'init') {
+        initData();
     } else {
-        processCommand(command);
+        await processCommand(command);
     }
     },
     { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
@@ -24,7 +24,11 @@ $('body').terminal(async function(command)  {
 components.CurrentRoomId.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   console.log("CurrentRoomId updated", update, { nextValue, prevValue });
-//  document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+
+  var term = $.terminal.active();
+  term.echo(nextValue.value);
+
+  //document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
 components.Room.update$.subscribe((update) => {

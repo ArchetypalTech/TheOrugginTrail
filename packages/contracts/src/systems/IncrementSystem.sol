@@ -5,14 +5,18 @@ import {System} from "@latticexyz/world/src/System.sol";
 import {CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen/index.sol";
 
 contract IncrementSystem is System {
-    function increment() public returns (uint32) {
+    function initData() public returns (uint32) {
+
+
+
+
     }
 
-    function processCommand(string memory command) public returns (uint32) {
+    function processCommand(string memory command) public returns (string memory) {
         uint32 id = CurrentRoomId.get();
         uint32 newValue = id + 1;
         CurrentRoomId.set(newValue);
-        return newValue;
+        return 'fuck off';
     }
 }
 

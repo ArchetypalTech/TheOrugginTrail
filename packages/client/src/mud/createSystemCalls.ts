@@ -27,14 +27,8 @@ export function createSystemCalls(
   { worldContract, waitForTransaction }: SetupNetworkResult,
   { CurrentRoomId }: ClientComponents
 ) {
-  const increment = async () => {
-    /*
-     * Because IncrementSystem
-     * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
-     * is in the root namespace, `.increment` can be called directly
-     * on the World contract.
-     */
-    const tx = await worldContract.write.increment();
+  const initData = async () => {
+    const tx = await worldContract.write.initData();
     await waitForTransaction(tx);
     return getComponentValue(CurrentRoomId, singletonEntity);
   };
@@ -54,7 +48,7 @@ export function createSystemCalls(
 
   return {
     processCommand,
-    increment,
+    initData,
     describe,
   };
 }

@@ -8,7 +8,7 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IIncrementSystem {
-  function increment() external returns (uint32);
+  function initData() external returns (uint32);
 
-  function processCommand(string memory command) external returns (uint32);
+  function processCommand(string memory command) external returns (string memory);
 }
