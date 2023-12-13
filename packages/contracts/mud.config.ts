@@ -2,8 +2,15 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
     enums: {
-        RoomType: ["Transport", "Actionable",],
-        ActionType: ["Move", "Loot", "Describe",],
+        // all places on the 2d map grid are either Void or Place:
+        // 0x00 | 0x01
+        // Voids have no Objects 
+        // Places have Objects, of which Door is one.
+        // Objects have actions, eg Doors can Open or not.
+        //
+        RoomType: ["Void", "Place"],
+        ActionType: ["Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock"],
+        ObjectType: ["Door", "Ball", "Key", "Window"],
     },
     tables: {
         // all rooms take a description and a set of actions that themselves
