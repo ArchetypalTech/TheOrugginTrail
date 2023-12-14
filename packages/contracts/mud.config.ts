@@ -32,7 +32,7 @@ export default mudConfig({
             valueSchema: {
                 width: "uint32",
                 height: "uint32",
-                bigOlePlace: "bytes",
+                bigOlePlace: "uint32[]",
             },
         },       
         RoomStore: {

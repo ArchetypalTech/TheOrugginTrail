@@ -17,6 +17,7 @@ import { ObjectType } from "../src/codegen/common.sol";
 import { RoomStore } from "../src/codegen/index.sol";
 import { ObjectStore } from "../src/codegen/index.sol";
 import { ActionStore } from "../src/codegen/index.sol";
+import { GameMap } from "../src/codegen/index.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
@@ -45,15 +46,36 @@ contract PostDeploy is Script {
         [O,O,O,O]
     ];
 
-    // parse the map and build the rooms
+    // OBJECTS: The DOOR
+    // as this needs an Open action we are gonna store a
+    // new row on that table
+    uint32 openDoorActionId = 3;
+    ActionStore.set(openDoorActionId, ActionType.Open);
+    
+    // ACTIONS: we need an array of actionId's to pass to the Door Object 
+    uint32[] memory actionIds = new uint32[](3);
+    actionIds[0] = openDoorActionId;
+    uint32 doorObjectId = 1;
+    ObjectStore.set(doorObjectId, ObjectType.Door, 7, actionIds);
+    
+    // we now have stored a Door type object 
+    // (with an objectId of 1 in the ObjectStore) that has in turn 
+    // had the Open action set on it (stored at actionId 3 in the ActionsStore)
+    // it also has a textDefId of 7 set on it but we havent actually made one of
+    // those rows yet.
+    uint32[] memory objectIds = new uint32[](3);
+    objectIds[0] = doorObjectId;
+
+
+    // Now parse the map and build the rooms
     // first we need to allocate the memory
     // we will store the roomId's in this map
     // and then we will some thing clever like
     // set a start poition to the console?
     uint8 h = uint8(map.length);
     uint8 w = uint8(map[0].length);
-    bytes memory worldMap = new bytes(h * w);
-    
+    uint32[] memory worldMap = new uint32[](h * w);
+
     console.log("Running room creation");
     for(uint32 y = 0; y < h; y++ ) {
         for( uint32 x = 0; x < w; x++) {
@@ -61,16 +83,18 @@ contract PostDeploy is Script {
             if (room == RoomType.Void) continue;
             // Now we will make a room and based on
             // right now pure bullshit give it some 
-            // Door objects and give those Door O's
-            // some Actions, well the Open action anyway
-            // The DOOR
-            // as this needs an Open action we are gonna store a
-            // new row on that table
-            ActionStore.set(1, ActionType.Open);
-            //Object.set
-
+            // Door objects we are sharing the door object
+            // becasue we are cheating.
+            uint32 newRoomId = x * y;
+            RoomStore.set(newRoomId, RoomType.Place, 9, objectIds);
+            worldMap[(y * w) + x] = newRoomId;
         }
     }
+
+    // now add these roomId's to the GameMap singleton
+    GameMap.set(w, h, worldMap);
+
+    // I guess we need to alert the console now...
 
     vm.stopBroadcast();
   }
