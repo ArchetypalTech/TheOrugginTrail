@@ -20,6 +20,6 @@ node_modules/
 tags*
 
 packages/contracts/broadcast/PostDeploy.s.sol/*
-packages/contracts/cache/*
+**/contracts/cache
 packages/contracts/deploys/*
 packages/contracts/out/*
