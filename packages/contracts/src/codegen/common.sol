@@ -14,7 +14,8 @@ enum ActionType {
   Take,
   Kick,
   Lock,
-  Unlock
+  Unlock,
+  Open
 }
 
 enum ObjectType {

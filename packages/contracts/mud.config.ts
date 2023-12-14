@@ -15,7 +15,7 @@ export default mudConfig({
         // For now fuck it...
         //
         RoomType: ["Void", "Place"],
-        ActionType: ["Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock"],
+        ActionType: ["Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock", "Open"],
         ObjectType: ["Door", "Ball", "Key", "Window"],
     },
     tables: {
@@ -27,26 +27,25 @@ export default mudConfig({
         GameMap: {
             // we are just setting bigOlePlace to bytes16
             // for this try but it should probably be dynamic?
+            // 
             keySchema: {},
             valueSchema: {
                 width: "uint32",
                 height: "uint32",
-                bigOlePlace: "bytes16",
+                bigOlePlace: "bytes",
             },
         },       
-        Room: {
+        RoomStore: {
             keySchema: {
                 roomId: "uint32",
             },
-            // Rooms have for now 8 arbitrary descriptions attached because ?
-            // also an arbitrary 8 Actions
             valueSchema: {
                 roomType: "RoomType",
                 textDefId: "uint32",
-                //objects: "uint32[]",
+                objectIds: "uint32[]",
             },
         },
-        Action: {
+        ActionStore: {
             keySchema: {
                 actionId: "uint32",
             },
@@ -54,7 +53,7 @@ export default mudConfig({
                 actionType: "ActionType",
             },
         },
-        Object: {
+        ObjectStore: {
             keySchema: {
                 objectId: "uint32",
             },

@@ -24,21 +24,21 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { ObjectType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Object")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("ObjectStore")))
 );
-ResourceId constant ObjectTableId = _tableId;
+ResourceId constant ObjectStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0005020101040000000000000000000000000000000000000000000000000000
 );
 
-struct ObjectData {
+struct ObjectStoreData {
   ObjectType objectType;
   uint32 texDefId;
   uint32[] objectActions;
 }
 
-library Object {
+library ObjectStore {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -354,7 +354,7 @@ library Object {
   /**
    * @notice Get the full data.
    */
-  function get(uint32 objectId) internal view returns (ObjectData memory _table) {
+  function get(uint32 objectId) internal view returns (ObjectStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
@@ -369,7 +369,7 @@ library Object {
   /**
    * @notice Get the full data.
    */
-  function _get(uint32 objectId) internal view returns (ObjectData memory _table) {
+  function _get(uint32 objectId) internal view returns (ObjectStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
@@ -414,7 +414,7 @@ library Object {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(uint32 objectId, ObjectData memory _table) internal {
+  function set(uint32 objectId, ObjectStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.objectType, _table.texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActions);
@@ -429,7 +429,7 @@ library Object {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(uint32 objectId, ObjectData memory _table) internal {
+  function _set(uint32 objectId, ObjectStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.objectType, _table.texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActions);
@@ -475,7 +475,7 @@ library Object {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (ObjectData memory _table) {
+  ) internal pure returns (ObjectStoreData memory _table) {
     (_table.objectType, _table.texDefId) = decodeStatic(_staticData);
 
     (_table.objectActions) = decodeDynamic(_encodedLengths, _dynamicData);

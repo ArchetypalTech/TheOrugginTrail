@@ -14,9 +14,9 @@ import { ActionType } from "../src/codegen/common.sol";
 import { ObjectType } from "../src/codegen/common.sol";
 
 
-import { Room } from "../src/codegen/index.sol";
-import { Object } from "../src/codegen/index.sol";
-import { Action } from "../src/codegen/index.sol";
+import { RoomStore } from "../src/codegen/index.sol";
+import { ObjectStore } from "../src/codegen/index.sol";
+import { ActionStore } from "../src/codegen/index.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
@@ -47,6 +47,9 @@ contract PostDeploy is Script {
 
     // parse the map and build the rooms
     // first we need to allocate the memory
+    // we will store the roomId's in this map
+    // and then we will some thing clever like
+    // set a start poition to the console?
     uint8 h = uint8(map.length);
     uint8 w = uint8(map[0].length);
     bytes memory worldMap = new bytes(h * w);
@@ -56,7 +59,16 @@ contract PostDeploy is Script {
         for( uint32 x = 0; x < w; x++) {
             RoomType room = map[x][y];
             if (room == RoomType.Void) continue;
-            //Room.set
+            // Now we will make a room and based on
+            // right now pure bullshit give it some 
+            // Door objects and give those Door O's
+            // some Actions, well the Open action anyway
+            // The DOOR
+            // as this needs an Open action we are gonna store a
+            // new row on that table
+            ActionStore.set(1, ActionType.Open);
+            //Object.set
+
         }
     }
 

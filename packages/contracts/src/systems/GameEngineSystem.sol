@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import {System} from "@latticexyz/world/src/System.sol";
-import {Output, CurrentRoomId, Room, RoomData, Action, TextDef} from "../codegen/index.sol";
+import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, TextDef} from "../codegen/index.sol";
 
 contract GameEngineSystem is System {
     function initData() public returns (uint32) {
@@ -35,12 +35,4 @@ contract GameEngineSystem is System {
         return '';
     }
 }
-
-/*
-contract DescribeRoom is System {
-    function desribe() public returns (string memory) {
-        return "FOO-RETURN";
-    }
-}
-*/
 

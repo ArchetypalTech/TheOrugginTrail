@@ -26,13 +26,13 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant GameMapTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0018030004041000000000000000000000000000000000000000000000000000
+  0x0008020104040000000000000000000000000000000000000000000000000000
 );
 
 struct GameMapData {
   uint32 width;
   uint32 height;
-  bytes16 bigOlePlace;
+  bytes bigOlePlace;
 }
 
 library GameMap {
@@ -62,7 +62,7 @@ library GameMap {
     SchemaType[] memory _valueSchema = new SchemaType[](3);
     _valueSchema[0] = SchemaType.UINT32;
     _valueSchema[1] = SchemaType.UINT32;
-    _valueSchema[2] = SchemaType.BYTES16;
+    _valueSchema[2] = SchemaType.BYTES;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -179,39 +179,149 @@ library GameMap {
   /**
    * @notice Get bigOlePlace.
    */
-  function getBigOlePlace() internal view returns (bytes16 bigOlePlace) {
+  function getBigOlePlace() internal view returns (bytes memory bigOlePlace) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (bytes16(_blob));
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (bytes(_blob));
   }
 
   /**
    * @notice Get bigOlePlace.
    */
-  function _getBigOlePlace() internal view returns (bytes16 bigOlePlace) {
+  function _getBigOlePlace() internal view returns (bytes memory bigOlePlace) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (bytes16(_blob));
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (bytes(_blob));
   }
 
   /**
    * @notice Set bigOlePlace.
    */
-  function setBigOlePlace(bytes16 bigOlePlace) internal {
+  function setBigOlePlace(bytes memory bigOlePlace) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((bigOlePlace)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((bigOlePlace)));
   }
 
   /**
    * @notice Set bigOlePlace.
    */
-  function _setBigOlePlace(bytes16 bigOlePlace) internal {
+  function _setBigOlePlace(bytes memory bigOlePlace) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((bigOlePlace)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((bigOlePlace)));
+  }
+
+  /**
+   * @notice Get the length of bigOlePlace.
+   */
+  function lengthBigOlePlace() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of bigOlePlace.
+   */
+  function _lengthBigOlePlace() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get an item of bigOlePlace.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemBigOlePlace(uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of bigOlePlace.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemBigOlePlace(uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Push a slice to bigOlePlace.
+   */
+  function pushBigOlePlace(bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to bigOlePlace.
+   */
+  function _pushBigOlePlace(bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Pop a slice from bigOlePlace.
+   */
+  function popBigOlePlace() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from bigOlePlace.
+   */
+  function _popBigOlePlace() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Update a slice of bigOlePlace at `_index`.
+   */
+  function updateBigOlePlace(uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of bigOlePlace at `_index`.
+   */
+  function _updateBigOlePlace(uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
   }
 
   /**
@@ -245,11 +355,11 @@ library GameMap {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 width, uint32 height, bytes16 bigOlePlace) internal {
-    bytes memory _staticData = encodeStatic(width, height, bigOlePlace);
+  function set(uint32 width, uint32 height, bytes memory bigOlePlace) internal {
+    bytes memory _staticData = encodeStatic(width, height);
 
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+    PackedCounter _encodedLengths = encodeLengths(bigOlePlace);
+    bytes memory _dynamicData = encodeDynamic(bigOlePlace);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -259,11 +369,11 @@ library GameMap {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 width, uint32 height, bytes16 bigOlePlace) internal {
-    bytes memory _staticData = encodeStatic(width, height, bigOlePlace);
+  function _set(uint32 width, uint32 height, bytes memory bigOlePlace) internal {
+    bytes memory _staticData = encodeStatic(width, height);
 
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+    PackedCounter _encodedLengths = encodeLengths(bigOlePlace);
+    bytes memory _dynamicData = encodeDynamic(bigOlePlace);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -274,10 +384,10 @@ library GameMap {
    * @notice Set the full data using the data struct.
    */
   function set(GameMapData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.width, _table.height, _table.bigOlePlace);
+    bytes memory _staticData = encodeStatic(_table.width, _table.height);
 
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+    PackedCounter _encodedLengths = encodeLengths(_table.bigOlePlace);
+    bytes memory _dynamicData = encodeDynamic(_table.bigOlePlace);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -288,10 +398,10 @@ library GameMap {
    * @notice Set the full data using the data struct.
    */
   function _set(GameMapData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.width, _table.height, _table.bigOlePlace);
+    bytes memory _staticData = encodeStatic(_table.width, _table.height);
 
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+    PackedCounter _encodedLengths = encodeLengths(_table.bigOlePlace);
+    bytes memory _dynamicData = encodeDynamic(_table.bigOlePlace);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -301,26 +411,41 @@ library GameMap {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint32 width, uint32 height, bytes16 bigOlePlace) {
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 width, uint32 height) {
     width = (uint32(Bytes.slice4(_blob, 0)));
 
     height = (uint32(Bytes.slice4(_blob, 4)));
+  }
 
-    bigOlePlace = (Bytes.slice16(_blob, 8));
+  /**
+   * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (bytes memory bigOlePlace) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    bigOlePlace = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
   }
 
   /**
    * @notice Decode the tightly packed blobs using this table's field layout.
    * @param _staticData Tightly packed static fields.
-   *
-   *
+   * @param _encodedLengths Encoded lengths of dynamic fields.
+   * @param _dynamicData Tightly packed dynamic fields.
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
-    bytes memory
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
   ) internal pure returns (GameMapData memory _table) {
-    (_table.width, _table.height, _table.bigOlePlace) = decodeStatic(_staticData);
+    (_table.width, _table.height) = decodeStatic(_staticData);
+
+    (_table.bigOlePlace) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -345,8 +470,27 @@ library GameMap {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint32 width, uint32 height, bytes16 bigOlePlace) internal pure returns (bytes memory) {
-    return abi.encodePacked(width, height, bigOlePlace);
+  function encodeStatic(uint32 width, uint32 height) internal pure returns (bytes memory) {
+    return abi.encodePacked(width, height);
+  }
+
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema.
+   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
+   */
+  function encodeLengths(bytes memory bigOlePlace) internal pure returns (PackedCounter _encodedLengths) {
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(bytes(bigOlePlace).length);
+    }
+  }
+
+  /**
+   * @notice Tightly pack dynamic (variable length) data using this table's schema.
+   * @return The dynamic data, encoded into a sequence of bytes.
+   */
+  function encodeDynamic(bytes memory bigOlePlace) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((bigOlePlace)));
   }
 
   /**
@@ -358,12 +502,12 @@ library GameMap {
   function encode(
     uint32 width,
     uint32 height,
-    bytes16 bigOlePlace
+    bytes memory bigOlePlace
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(width, height, bigOlePlace);
+    bytes memory _staticData = encodeStatic(width, height);
 
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+    PackedCounter _encodedLengths = encodeLengths(bigOlePlace);
+    bytes memory _dynamicData = encodeDynamic(bigOlePlace);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
