@@ -19,15 +19,11 @@ export default mudConfig({
         ObjectType: ["Door", "Ball", "Key", "Window"],
     },
     tables: {
-        // all rooms take a description and a set of actions that themselves
-        // have descriptions. Strings such as Decriptions get passed back as
-        // uint32's that then get mapped to a client side hash map of heavily
-        // compressed strings. Ergo the key is the hash of that description.
-        // In theory anyway.
+        // all rooms take a description and a set of Objects that themselves
+        // have descriptions and Actions.
+        // We handle descriptions like everything else, its a ref to a 
+        // row in a Table.
         GameMap: {
-            // we are just setting bigOlePlace to bytes16
-            // for this try but it should probably be dynamic?
-            // 
             keySchema: {},
             valueSchema: {
                 width: "uint32",

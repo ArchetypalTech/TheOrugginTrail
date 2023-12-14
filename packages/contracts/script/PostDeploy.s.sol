@@ -48,7 +48,8 @@ contract PostDeploy is Script {
 
     // OBJECTS: The DOOR
     // as this needs an Open action we are gonna store a
-    // new row on that table
+    // new row on that table we can use this on other 
+    // Objects now that its initialised
     uint32 openDoorActionId = 3;
     ActionStore.set(openDoorActionId, ActionType.Open);
     
@@ -58,10 +59,10 @@ contract PostDeploy is Script {
     uint32 doorObjectId = 1;
     ObjectStore.set(doorObjectId, ObjectType.Door, 7, actionIds);
     
-    // we now have stored a Door type object 
+    // We now have stored a Door type object 
     // (with an objectId of 1 in the ObjectStore) that has in turn 
     // had the Open action set on it (stored at actionId 3 in the ActionsStore)
-    // it also has a textDefId of 7 set on it but we havent actually made one of
+    // It also has a textDefId of 7 set on it but we haven't actually made one of
     // those rows yet.
     uint32[] memory objectIds = new uint32[](3);
     objectIds[0] = doorObjectId;
