@@ -40,9 +40,9 @@ contract PostDeploy is Script {
     RoomType X = RoomType.Place;
 
     RoomType[4][4] memory map = [
-        [O,O,O,X],
-        [O,O,O,X],
         [O,O,O,O],
+        [O,O,O,O],
+        [O,O,X,O],
         [O,O,O,O]
     ];
 

@@ -32,7 +32,7 @@ contract GameEngineSystem is System {
         // we need to change
         Output.set(command);
 
-        return '';
+       return '';
     }
 }
 
