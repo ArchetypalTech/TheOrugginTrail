@@ -10,5 +10,7 @@ pragma solidity >=0.8.21;
 interface IGameEngineSystem {
   function initData() external returns (uint32);
 
-  function processCommand(string memory command) external returns (string memory);
+  function enterRoom(uint32 rId) external returns (uint32 err);
+
+  function processCommand(uint8[][] calldata tokens) external returns (uint8 err);
 }

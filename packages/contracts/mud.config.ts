@@ -15,8 +15,13 @@ export default mudConfig({
         // For now fuck it...
         //
         RoomType: ["Void", "Place"],
-        ActionType: ["Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock", "Open"],
+        ActionType: [
+            "None", "North", "Go", "Move", "Loot", 
+            "Describe", "Take", "Kick", "Lock", "Unlock", 
+            "Open"
+        ],
         ObjectType: ["Door", "Ball", "Key", "Window"],
+        CommandError: ["Boring"],
     },
     tables: {
         // all rooms take a description and a set of Objects that themselves

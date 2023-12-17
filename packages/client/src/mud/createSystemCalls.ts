@@ -30,19 +30,16 @@ export function createSystemCalls(
   const initData = async () => {
     const tx = await worldContract.write.initData();
     await waitForTransaction(tx);
-    return "FooString";
   };
 
   const describe = async () => {
       const tx = await worldContract.write.describe();
       await waitForTransaction(tx);
-      return "FooString";
   };
 
   const processCommand = async (command) => {
     const tx = await worldContract.write.processCommand([command]);
     await waitForTransaction(tx);
-    return "FooString";
   };
 
   return {

@@ -8,6 +8,9 @@ enum RoomType {
 }
 
 enum ActionType {
+  None,
+  North,
+  Go,
   Move,
   Loot,
   Describe,
@@ -23,4 +26,8 @@ enum ObjectType {
   Ball,
   Key,
   Window
+}
+
+enum CommandError {
+  Boring
 }
