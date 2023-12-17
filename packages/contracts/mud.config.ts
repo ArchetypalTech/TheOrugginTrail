@@ -19,6 +19,9 @@ export default mudConfig({
         //
         // For now fuck it...
         //
+        // we will use the keys for left shifting values
+        // in a 32 bit var so we have maskable state from the
+        // map data 
         TypeKeys: [
             "None", "BiomeTypes", "TerrainTypes", 
             "RoomType", "ActionType",
@@ -42,6 +45,7 @@ export default mudConfig({
         ],
         ObjectType: ["None", "Door", "Ball", "Key", "Window", "Knife", "Bottle"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
+        // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
         CommandError: ["LEN", "NOP"],
     },
