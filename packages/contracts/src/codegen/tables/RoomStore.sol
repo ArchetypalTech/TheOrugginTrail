@@ -23,20 +23,22 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 // Import user types
 import { RoomType } from "./../common.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Room"))));
-ResourceId constant RoomTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("RoomStore")))
+);
+ResourceId constant RoomStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0005020101040000000000000000000000000000000000000000000000000000
 );
 
-struct RoomData {
+struct RoomStoreData {
   RoomType roomType;
   uint32 textDefId;
-  uint32[] actions;
+  uint32[] objectIds;
 }
 
-library Room {
+library RoomStore {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -86,7 +88,7 @@ library Room {
     fieldNames = new string[](3);
     fieldNames[0] = "roomType";
     fieldNames[1] = "textDefId";
-    fieldNames[2] = "actions";
+    fieldNames[2] = "objectIds";
   }
 
   /**
@@ -188,9 +190,9 @@ library Room {
   }
 
   /**
-   * @notice Get actions.
+   * @notice Get objectIds.
    */
-  function getActions(uint32 roomId) internal view returns (uint32[] memory actions) {
+  function getObjectIds(uint32 roomId) internal view returns (uint32[] memory objectIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -199,9 +201,9 @@ library Room {
   }
 
   /**
-   * @notice Get actions.
+   * @notice Get objectIds.
    */
-  function _getActions(uint32 roomId) internal view returns (uint32[] memory actions) {
+  function _getObjectIds(uint32 roomId) internal view returns (uint32[] memory objectIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -210,29 +212,29 @@ library Room {
   }
 
   /**
-   * @notice Set actions.
+   * @notice Set objectIds.
    */
-  function setActions(uint32 roomId, uint32[] memory actions) internal {
+  function setObjectIds(uint32 roomId, uint32[] memory objectIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((actions)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectIds)));
   }
 
   /**
-   * @notice Set actions.
+   * @notice Set objectIds.
    */
-  function _setActions(uint32 roomId, uint32[] memory actions) internal {
+  function _setObjectIds(uint32 roomId, uint32[] memory objectIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((actions)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectIds)));
   }
 
   /**
-   * @notice Get the length of actions.
+   * @notice Get the length of objectIds.
    */
-  function lengthActions(uint32 roomId) internal view returns (uint256) {
+  function lengthObjectIds(uint32 roomId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -243,9 +245,9 @@ library Room {
   }
 
   /**
-   * @notice Get the length of actions.
+   * @notice Get the length of objectIds.
    */
-  function _lengthActions(uint32 roomId) internal view returns (uint256) {
+  function _lengthObjectIds(uint32 roomId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -256,10 +258,10 @@ library Room {
   }
 
   /**
-   * @notice Get an item of actions.
+   * @notice Get an item of objectIds.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function getItemActions(uint32 roomId, uint256 _index) internal view returns (uint32) {
+  function getItemObjectIds(uint32 roomId, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -270,10 +272,10 @@ library Room {
   }
 
   /**
-   * @notice Get an item of actions.
+   * @notice Get an item of objectIds.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function _getItemActions(uint32 roomId, uint256 _index) internal view returns (uint32) {
+  function _getItemObjectIds(uint32 roomId, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -284,9 +286,9 @@ library Room {
   }
 
   /**
-   * @notice Push an element to actions.
+   * @notice Push an element to objectIds.
    */
-  function pushActions(uint32 roomId, uint32 _element) internal {
+  function pushObjectIds(uint32 roomId, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -294,9 +296,9 @@ library Room {
   }
 
   /**
-   * @notice Push an element to actions.
+   * @notice Push an element to objectIds.
    */
-  function _pushActions(uint32 roomId, uint32 _element) internal {
+  function _pushObjectIds(uint32 roomId, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -304,9 +306,9 @@ library Room {
   }
 
   /**
-   * @notice Pop an element from actions.
+   * @notice Pop an element from objectIds.
    */
-  function popActions(uint32 roomId) internal {
+  function popObjectIds(uint32 roomId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -314,9 +316,9 @@ library Room {
   }
 
   /**
-   * @notice Pop an element from actions.
+   * @notice Pop an element from objectIds.
    */
-  function _popActions(uint32 roomId) internal {
+  function _popObjectIds(uint32 roomId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -324,9 +326,9 @@ library Room {
   }
 
   /**
-   * @notice Update an element of actions at `_index`.
+   * @notice Update an element of objectIds at `_index`.
    */
-  function updateActions(uint32 roomId, uint256 _index, uint32 _element) internal {
+  function updateObjectIds(uint32 roomId, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -337,9 +339,9 @@ library Room {
   }
 
   /**
-   * @notice Update an element of actions at `_index`.
+   * @notice Update an element of objectIds at `_index`.
    */
-  function _updateActions(uint32 roomId, uint256 _index, uint32 _element) internal {
+  function _updateObjectIds(uint32 roomId, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -352,7 +354,7 @@ library Room {
   /**
    * @notice Get the full data.
    */
-  function get(uint32 roomId) internal view returns (RoomData memory _table) {
+  function get(uint32 roomId) internal view returns (RoomStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -367,7 +369,7 @@ library Room {
   /**
    * @notice Get the full data.
    */
-  function _get(uint32 roomId) internal view returns (RoomData memory _table) {
+  function _get(uint32 roomId) internal view returns (RoomStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
@@ -382,11 +384,11 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory actions) internal {
+  function set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory objectIds) internal {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(actions);
-    bytes memory _dynamicData = encodeDynamic(actions);
+    PackedCounter _encodedLengths = encodeLengths(objectIds);
+    bytes memory _dynamicData = encodeDynamic(objectIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -397,11 +399,11 @@ library Room {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory actions) internal {
+  function _set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory objectIds) internal {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(actions);
-    bytes memory _dynamicData = encodeDynamic(actions);
+    PackedCounter _encodedLengths = encodeLengths(objectIds);
+    bytes memory _dynamicData = encodeDynamic(objectIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -412,11 +414,11 @@ library Room {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(uint32 roomId, RoomData memory _table) internal {
+  function set(uint32 roomId, RoomStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.actions);
-    bytes memory _dynamicData = encodeDynamic(_table.actions);
+    PackedCounter _encodedLengths = encodeLengths(_table.objectIds);
+    bytes memory _dynamicData = encodeDynamic(_table.objectIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -427,11 +429,11 @@ library Room {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(uint32 roomId, RoomData memory _table) internal {
+  function _set(uint32 roomId, RoomStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.actions);
-    bytes memory _dynamicData = encodeDynamic(_table.actions);
+    PackedCounter _encodedLengths = encodeLengths(_table.objectIds);
+    bytes memory _dynamicData = encodeDynamic(_table.objectIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -454,13 +456,13 @@ library Room {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[] memory actions) {
+  ) internal pure returns (uint32[] memory objectIds) {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
-    actions = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+    objectIds = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
   }
 
   /**
@@ -473,10 +475,10 @@ library Room {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (RoomData memory _table) {
+  ) internal pure returns (RoomStoreData memory _table) {
     (_table.roomType, _table.textDefId) = decodeStatic(_staticData);
 
-    (_table.actions) = decodeDynamic(_encodedLengths, _dynamicData);
+    (_table.objectIds) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -511,10 +513,10 @@ library Room {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(uint32[] memory actions) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(uint32[] memory objectIds) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(actions.length * 4);
+      _encodedLengths = PackedCounterLib.pack(objectIds.length * 4);
     }
   }
 
@@ -522,8 +524,8 @@ library Room {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(uint32[] memory actions) internal pure returns (bytes memory) {
-    return abi.encodePacked(EncodeArray.encode((actions)));
+  function encodeDynamic(uint32[] memory objectIds) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((objectIds)));
   }
 
   /**
@@ -535,12 +537,12 @@ library Room {
   function encode(
     RoomType roomType,
     uint32 textDefId,
-    uint32[] memory actions
+    uint32[] memory objectIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(actions);
-    bytes memory _dynamicData = encodeDynamic(actions);
+    PackedCounter _encodedLengths = encodeLengths(objectIds);
+    bytes memory _dynamicData = encodeDynamic(objectIds);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }

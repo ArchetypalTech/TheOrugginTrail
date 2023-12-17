@@ -24,15 +24,15 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { ActionType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Action")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("ActionStore")))
 );
-ResourceId constant ActionTableId = _tableId;
+ResourceId constant ActionStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0001010001000000000000000000000000000000000000000000000000000000
 );
 
-library Action {
+library ActionStore {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

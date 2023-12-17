@@ -14,8 +14,25 @@ import { SetupNetworkResult } from "./setupNetwork";
 export type ClientComponents = ReturnType<typeof createClientComponents>;
 
 export function createClientComponents({ components }: SetupNetworkResult) {
-  return {
-    ...components,
-    // add your client components or overrides here
-  };
+
+    function tokenise(input: string): number[][] {
+        // Split the input string on whitespace
+        const tokens = input.split(/\s+/);
+
+        // Filter out tokens that are longer than 16 characters
+        const filteredTokens = tokens.filter(token => token.length <= 16);
+
+        // Convert each character of each token to its uint8 ASCII value
+        const encodedTokens = filteredTokens.map(token =>
+                                                 Array.from(token).map(char => char.charCodeAt(0))
+                                                );
+
+                                                return encodedTokens;
+    }
+
+    return {
+        ...components,
+        tokenise,
+        // add your client components or overrides here
+    };
 }

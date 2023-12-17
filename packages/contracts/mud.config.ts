@@ -2,34 +2,66 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
     enums: {
-        RoomType: ["Transport", "Actionable",],
-        ActionType: ["Move", "Loot", "Describe",],
+        // all places on the 2d map grid are either Void or Place:
+        // 0x00 | 0x01
+        // Voids have no Objects 
+        // Places have Objects, of which Door is one.
+        // Objects have Actions, eg Doors can Open or not.
+        // Actions generate NESS or Bool 
+        // ie. "Lock Door":
+        // the Room/Place with Door with Lock -> Lock-NESS -> Place(Door(Lock(NESS(1))))
+        // NB This doesn't equate to Open-NESS, a door could be LockY AND OpenY
+        //
+        // For now fuck it...
+        //
+        RoomType: ["Void", "Place"],
+        ActionType: [
+            "None", "North", "Go", "Move", "Loot", 
+            "Describe", "Take", "Kick", "Lock", "Unlock", 
+            "Open"
+        ],
+        ObjectType: ["Door", "Ball", "Key", "Window"],
+        CommandError: ["Boring"],
     },
     tables: {
-        // all rooms take a description and a set of actions that themselves
-        // have descriptions. Strings such as Decriptions get passed back as
-        // uint32's that then get mapped to a client side hash map of heavily
-        // compressed strings. Ergo the key is the hash of that description.
-        // This actual encoding has to be done by the adventure loader which
-        // actually should set up the game "map" and as such the contracts.
-        Room: {
+        // all rooms take a description and a set of Objects that themselves
+        // have descriptions and Actions.
+        // We handle descriptions like everything else, its a ref to a 
+        // row in a Table.
+        GameMap: {
+            keySchema: {},
+            valueSchema: {
+                width: "uint32",
+                height: "uint32",
+                bigOlePlace: "uint32[]",
+            },
+        },       
+        RoomStore: {
             keySchema: {
                 roomId: "uint32",
             },
-            // Rooms have for now 8 arbitrary descriptions attached because ?
-            // also an arbitrary 8 Actions
             valueSchema: {
                 roomType: "RoomType",
                 textDefId: "uint32",
-                actions: "uint32[]",
+                objectIds: "uint32[]",
             },
-       },
-        Action: {
+        },
+        ActionStore: {
             keySchema: {
                 actionId: "uint32",
             },
             valueSchema: {
                 actionType: "ActionType",
+            },
+        },
+        ObjectStore: {
+            keySchema: {
+                objectId: "uint32",
+            },
+            valueSchema: {
+                objectType: "ObjectType",
+                texDefId: "uint32",
+                objectActions: "uint32[]",
             },
         },
         TextDef: {
