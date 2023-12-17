@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
-import { ObjectType } from "./../common.sol";
+import { ObjectType, MaterialType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("ObjectStore")))
@@ -29,11 +29,12 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant ObjectStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0005020101040000000000000000000000000000000000000000000000000000
+  0x0006030101010400000000000000000000000000000000000000000000000000
 );
 
 struct ObjectStoreData {
   ObjectType objectType;
+  MaterialType materialType;
   uint32 texDefId;
   uint32[] objectActions;
 }
@@ -63,10 +64,11 @@ library ObjectStore {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](3);
+    SchemaType[] memory _valueSchema = new SchemaType[](4);
     _valueSchema[0] = SchemaType.UINT8;
-    _valueSchema[1] = SchemaType.UINT32;
-    _valueSchema[2] = SchemaType.UINT32_ARRAY;
+    _valueSchema[1] = SchemaType.UINT8;
+    _valueSchema[2] = SchemaType.UINT32;
+    _valueSchema[3] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -85,10 +87,11 @@ library ObjectStore {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](3);
+    fieldNames = new string[](4);
     fieldNames[0] = "objectType";
-    fieldNames[1] = "texDefId";
-    fieldNames[2] = "objectActions";
+    fieldNames[1] = "materialType";
+    fieldNames[2] = "texDefId";
+    fieldNames[3] = "objectActions";
   }
 
   /**
@@ -148,13 +151,55 @@ library ObjectStore {
   }
 
   /**
+   * @notice Get materialType.
+   */
+  function getMaterialType(uint32 objectId) internal view returns (MaterialType materialType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(objectId));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return MaterialType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Get materialType.
+   */
+  function _getMaterialType(uint32 objectId) internal view returns (MaterialType materialType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(objectId));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return MaterialType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Set materialType.
+   */
+  function setMaterialType(uint32 objectId, MaterialType materialType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(objectId));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(uint8(materialType)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set materialType.
+   */
+  function _setMaterialType(uint32 objectId, MaterialType materialType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(objectId));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(uint8(materialType)), _fieldLayout);
+  }
+
+  /**
    * @notice Get texDefId.
    */
   function getTexDefId(uint32 objectId) internal view returns (uint32 texDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
 
@@ -165,7 +210,7 @@ library ObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
 
@@ -176,7 +221,7 @@ library ObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((texDefId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((texDefId)), _fieldLayout);
   }
 
   /**
@@ -186,7 +231,7 @@ library ObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((texDefId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((texDefId)), _fieldLayout);
   }
 
   /**
@@ -384,8 +429,14 @@ library ObjectStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 objectId, ObjectType objectType, uint32 texDefId, uint32[] memory objectActions) internal {
-    bytes memory _staticData = encodeStatic(objectType, texDefId);
+  function set(
+    uint32 objectId,
+    ObjectType objectType,
+    MaterialType materialType,
+    uint32 texDefId,
+    uint32[] memory objectActions
+  ) internal {
+    bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActions);
     bytes memory _dynamicData = encodeDynamic(objectActions);
@@ -399,8 +450,14 @@ library ObjectStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 objectId, ObjectType objectType, uint32 texDefId, uint32[] memory objectActions) internal {
-    bytes memory _staticData = encodeStatic(objectType, texDefId);
+  function _set(
+    uint32 objectId,
+    ObjectType objectType,
+    MaterialType materialType,
+    uint32 texDefId,
+    uint32[] memory objectActions
+  ) internal {
+    bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActions);
     bytes memory _dynamicData = encodeDynamic(objectActions);
@@ -415,7 +472,7 @@ library ObjectStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 objectId, ObjectStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objectType, _table.texDefId);
+    bytes memory _staticData = encodeStatic(_table.objectType, _table.materialType, _table.texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActions);
     bytes memory _dynamicData = encodeDynamic(_table.objectActions);
@@ -430,7 +487,7 @@ library ObjectStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 objectId, ObjectStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objectType, _table.texDefId);
+    bytes memory _staticData = encodeStatic(_table.objectType, _table.materialType, _table.texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActions);
     bytes memory _dynamicData = encodeDynamic(_table.objectActions);
@@ -444,10 +501,14 @@ library ObjectStore {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (ObjectType objectType, uint32 texDefId) {
+  function decodeStatic(
+    bytes memory _blob
+  ) internal pure returns (ObjectType objectType, MaterialType materialType, uint32 texDefId) {
     objectType = ObjectType(uint8(Bytes.slice1(_blob, 0)));
 
-    texDefId = (uint32(Bytes.slice4(_blob, 1)));
+    materialType = MaterialType(uint8(Bytes.slice1(_blob, 1)));
+
+    texDefId = (uint32(Bytes.slice4(_blob, 2)));
   }
 
   /**
@@ -476,7 +537,7 @@ library ObjectStore {
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (ObjectStoreData memory _table) {
-    (_table.objectType, _table.texDefId) = decodeStatic(_staticData);
+    (_table.objectType, _table.materialType, _table.texDefId) = decodeStatic(_staticData);
 
     (_table.objectActions) = decodeDynamic(_encodedLengths, _dynamicData);
   }
@@ -505,8 +566,12 @@ library ObjectStore {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(ObjectType objectType, uint32 texDefId) internal pure returns (bytes memory) {
-    return abi.encodePacked(objectType, texDefId);
+  function encodeStatic(
+    ObjectType objectType,
+    MaterialType materialType,
+    uint32 texDefId
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(objectType, materialType, texDefId);
   }
 
   /**
@@ -536,10 +601,11 @@ library ObjectStore {
    */
   function encode(
     ObjectType objectType,
+    MaterialType materialType,
     uint32 texDefId,
     uint32[] memory objectActions
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(objectType, texDefId);
+    bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActions);
     bytes memory _dynamicData = encodeDynamic(objectActions);

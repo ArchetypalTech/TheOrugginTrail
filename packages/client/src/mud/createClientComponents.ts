@@ -15,21 +15,16 @@ export type ClientComponents = ReturnType<typeof createClientComponents>;
 
 export function createClientComponents({ components }: SetupNetworkResult) {
 
+    // we only handle for 16 word inputs and we further
+    // only handle for verbs, objects with names <16
     function tokenise(input: string): string[] {
-        // Split the input string on whitespace
         const tokens = input.split(/\s+/);
-
-        // Filter out tokens that are longer than 16 characters
         const filteredTokens = tokens.filter(token => token.length <= 16);
-
         return filteredTokens;
-        // Convert each character of each token to its uint8 ASCII value
-        // this is almost certainly a mistake
-        //const encodedTokens = filteredTokens.map(token =>
-                                                 //Array.from(token).map(char => char.charCodeAt(0))
-                                                //);
+    }
 
-                                                //return encodedTokens;
+    function handleTextDecompression(input: number ): string {
+        return "Foo";
     }
 
     return {

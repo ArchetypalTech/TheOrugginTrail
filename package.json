@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "2.0.0-next.14",
+    "@types/jquery": "^3.5.29",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",
@@ -23,5 +24,9 @@
   "engines": {
     "node": "18.x",
     "pnpm": "8.x"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "js-sha3": "^0.9.3"
   }
 }
