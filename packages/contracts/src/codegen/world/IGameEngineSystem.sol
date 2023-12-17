@@ -12,5 +12,5 @@ interface IGameEngineSystem {
 
   function enterRoom(uint32 rId) external returns (uint32 err);
 
-  function processCommand(uint8[][] calldata tokens) external returns (uint8 err);
+  function processCommand(string[] calldata tokens) external returns (uint8 err);
 }

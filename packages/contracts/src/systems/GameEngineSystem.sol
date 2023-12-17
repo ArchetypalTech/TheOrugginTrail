@@ -8,6 +8,10 @@ import {System} from "@latticexyz/world/src/System.sol";
 import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore,  TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError} from "../codegen/common.sol";
 
+
+// NOTE of interest in the return types of the functions, these
+// are later used in the logs of the game provided by the MUD 
+// dev tooling
 contract GameEngineSystem is System {
    
     uint8 constant MAX_TOK = 16;
@@ -74,7 +78,7 @@ contract GameEngineSystem is System {
         return msg;
     }
 
-    function processCommand(uint8[][] calldata tokens) public returns (uint8 err) {
+    function processCommand(string[] calldata tokens) public returns (uint8 err) {
 
         if (tokens.length > MAX_TOK) {
             string memory response = _beWitty(CommandError.Boring); 
@@ -92,22 +96,16 @@ contract GameEngineSystem is System {
         for (uint8 i = 0; i < tokens.length; i++) {
             // we want to compare against our mapped sting => enum
             // data structure which takes strings and we have tokenised
-            // to uint8[] array's because that's good right?
-            // we did that in the tokeniser in the TS `createClientComponents`
-            // maybe we shouldn't
-            // so now we go back to string'y data for the enum
-            uint8[] calldata input = tokens[i];
-            bytes memory stringBytes = new bytes(input.length);
-            for (uint8 j = 0; j < input.length; j++) {
-                stringBytes[i] = bytes1(input[i]);
-            }
+
+            string calldata cmd = tokens[i];
+
             // check that its not a `None` which will be the default return
             // if there is no matching key in the map. When the lookup fails
             // the the default type is returned, our type is ENUM and as such
             // the first value is 0 so we set that to `None` amd handle for 
             // the failing case this way
-            if (commandLookup[string(stringBytes)] != ActionType.None) {
-                ActionType VERB = commandLookup[string(stringBytes)];
+            if (commandLookup[cmd] != ActionType.None) {
+                ActionType VERB = commandLookup[cmd];
                 if (VERB != ActionType.None) {
                     enterRoom(1);
                     return 1;
