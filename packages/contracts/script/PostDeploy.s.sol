@@ -51,18 +51,15 @@ contract PostDeploy is Script, Constants {
 
     function setupMapData() internal {
         console.log("Running map creation");
-        // this is shit actually
-        // what we need to do is shift some
-        // bits around to get a packed uint32 
-        // and then extract this later and make the
-        // room
+        // Pack a bunch of bits into the uint32 using 4 blocks
+        // | TERRAIN | ROOM | OBJECT | ACTION |
         uint32 O = uint32(TerrainType.None);
-        uint32 X = uint32(TerrainType.DirtPath);
-        uint32 P = uint32(TerrainType.Portal);
-        uint32 C = uint32(RoomType.WoodCabin);
+        uint32 X = uint32(uint32(TerrainType.DirtPath) << TERRAIN_BITS);
+        uint32 P = uint32(uint32(TerrainType.Portal) << TERRAIN_BITS);
+        uint32 C = uint32(uint32(RoomType.WoodCabin) << ROOM_BITS);
 
-        // a PATH heads EAST then a DOOR
-        // to a CABIN appears
+        // a DIRT PATH heads EAST then a DOOR
+        // to a CABIN appears to the SOUTH
         uint32[4][4] memory map = [
             [X,X,X,O],
             [O,O,P,O],
@@ -74,14 +71,20 @@ contract PostDeploy is Script, Constants {
         uint8 w = uint8(map[0].length);
         uint32[] memory worldMap = new uint32[](h * w);
 
-
         // build up the rooms from the map
         console.log("Running room creation");
         for(uint32 y = 0; y < h; y++ ) {
             for( uint32 x = 0; x < w; x++) {
                 uint32 room = map[x][y];
                 if (room & uint32(RoomType.None) == 0) continue;
-                // Now we will make a room 
+                // parse the map data to "rooms" 
+                if ( room & X == 0x1000000 ) {
+                    // dirt path
+                }else if ( room & P == 0x6000000 ) {
+                    // portal
+                }else if ( room & C == 0x10000 ) {
+                    // log cabin
+                }
             }
         }
         // now add these roomId's to the GameMap singleton
