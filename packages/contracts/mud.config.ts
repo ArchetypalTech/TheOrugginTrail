@@ -39,9 +39,9 @@ export default mudConfig({
             "Cavern", "StoneCabin", "Fort"
         ],
         ActionType: [
-            "None", "North", "Go", "Move", "Loot", 
-            "Describe", "Take", "Kick", "Lock", "Unlock", 
-            "Open"
+            "None", "North", "East", "South", "West", 
+            "Go", "Move", "Loot", "Describe", "Take", 
+            "Kick", "Lock", "Unlock", "Open"
         ],
         ObjectType: ["None", "Door", "Ball", "Key", "Window", "Knife", "Bottle"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],

@@ -42,6 +42,9 @@ enum RoomType {
 enum ActionType {
   None,
   North,
+  East,
+  South,
+  West,
   Go,
   Move,
   Loot,
