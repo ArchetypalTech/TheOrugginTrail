@@ -67,19 +67,19 @@ contract GameEngineSystem is System {
 
     // we really should return a id to a hash table of compressed data, we shouldnt
     // be storing this shite here
-    function _beWitty(CommandError ce) private pure returns (string memory msg) {
-        string memory msg;
+    function _beWitty(CommandError ce) private pure returns (string memory) {
+        string memory eMsg;
         if (ce == CommandError.LEN) {
-        msg = "WTF, slow down cowboy, your gonna hurt yourself\n"
+        eMsg = "WTF, slow down cowboy, your gonna hurt yourself\n"
         "Now take a deep breath...\n"
         "Smell that?\n"
         "Yep its you, you done shit your pants again, that dysentry sure is a bitch\n"
         "Go on now, have a another crack there dude";
         } else if (ce == CommandError.NOP) {
-            msg = "Nope, gibberish\n"
+            eMsg = "Nope, gibberish\n"
             "Have another try, emote...";
         } 
-        return msg;
+        return eMsg;
     }
 
     function processCommand(string[] calldata tokens) public returns (uint8 err) {
@@ -87,7 +87,6 @@ contract GameEngineSystem is System {
         if (tokens.length > MAX_TOK) {
             string memory response = _beWitty(CommandError.LEN); 
             Output.set(response);
-            string memory rFoo = 'Foo Response';
             return 10;
         }
         
