@@ -36,7 +36,7 @@ struct ActionStoreData {
   ActionType actionType;
   uint32 texDefId;
   bool nESSy;
-  uint8 direction;
+  bool enabled;
 }
 
 library ActionStore {
@@ -68,7 +68,7 @@ library ActionStore {
     _valueSchema[0] = SchemaType.UINT8;
     _valueSchema[1] = SchemaType.UINT32;
     _valueSchema[2] = SchemaType.BOOL;
-    _valueSchema[3] = SchemaType.UINT8;
+    _valueSchema[3] = SchemaType.BOOL;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -91,7 +91,7 @@ library ActionStore {
     fieldNames[0] = "actionType";
     fieldNames[1] = "texDefId";
     fieldNames[2] = "nESSy";
-    fieldNames[3] = "direction";
+    fieldNames[3] = "enabled";
   }
 
   /**
@@ -235,45 +235,45 @@ library ActionStore {
   }
 
   /**
-   * @notice Get direction.
+   * @notice Get enabled.
    */
-  function getDirection(uint32 actionId) internal view returns (uint8 direction) {
+  function getEnabled(uint32 actionId) internal view returns (bool enabled) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Get direction.
+   * @notice Get enabled.
    */
-  function _getDirection(uint32 actionId) internal view returns (uint8 direction) {
+  function _getEnabled(uint32 actionId) internal view returns (bool enabled) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Set direction.
+   * @notice Set enabled.
    */
-  function setDirection(uint32 actionId, uint8 direction) internal {
+  function setEnabled(uint32 actionId, bool enabled) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((direction)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((enabled)), _fieldLayout);
   }
 
   /**
-   * @notice Set direction.
+   * @notice Set enabled.
    */
-  function _setDirection(uint32 actionId, uint8 direction) internal {
+  function _setEnabled(uint32 actionId, bool enabled) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((direction)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((enabled)), _fieldLayout);
   }
 
   /**
@@ -309,8 +309,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, uint8 direction) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, direction);
+  function set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) internal {
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -324,8 +324,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, uint8 direction) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, direction);
+  function _set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) internal {
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -340,7 +340,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.direction);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.enabled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -355,7 +355,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.direction);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.enabled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -371,14 +371,14 @@ library ActionStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (ActionType actionType, uint32 texDefId, bool nESSy, uint8 direction) {
+  ) internal pure returns (ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) {
     actionType = ActionType(uint8(Bytes.slice1(_blob, 0)));
 
     texDefId = (uint32(Bytes.slice4(_blob, 1)));
 
     nESSy = (_toBool(uint8(Bytes.slice1(_blob, 5))));
 
-    direction = (uint8(Bytes.slice1(_blob, 6)));
+    enabled = (_toBool(uint8(Bytes.slice1(_blob, 6))));
   }
 
   /**
@@ -392,7 +392,7 @@ library ActionStore {
     PackedCounter,
     bytes memory
   ) internal pure returns (ActionStoreData memory _table) {
-    (_table.actionType, _table.texDefId, _table.nESSy, _table.direction) = decodeStatic(_staticData);
+    (_table.actionType, _table.texDefId, _table.nESSy, _table.enabled) = decodeStatic(_staticData);
   }
 
   /**
@@ -423,9 +423,9 @@ library ActionStore {
     ActionType actionType,
     uint32 texDefId,
     bool nESSy,
-    uint8 direction
+    bool enabled
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(actionType, texDefId, nESSy, direction);
+    return abi.encodePacked(actionType, texDefId, nESSy, enabled);
   }
 
   /**
@@ -438,9 +438,9 @@ library ActionStore {
     ActionType actionType,
     uint32 texDefId,
     bool nESSy,
-    uint8 direction
+    bool enabled
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, direction);
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
