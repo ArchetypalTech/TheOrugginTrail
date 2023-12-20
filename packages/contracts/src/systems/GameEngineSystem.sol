@@ -7,14 +7,14 @@ import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
 import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore,  TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError} from "../codegen/common.sol";
+import { GameConstants } from "../constants/defines.sol";
 
 
 // NOTE of interest in the return types of the functions, these
 // are later used in the logs of the game provided by the MUD 
 // dev tooling
-contract GameEngineSystem is System {
+contract GameEngineSystem is System, GameConstants {
    
-    uint8 constant MAX_TOK = 16;
     
     mapping (string => ActionType) private commandLookup;
 
@@ -28,25 +28,6 @@ contract GameEngineSystem is System {
        // tbh and it does always seem to be called, no idea where
        // from as I am sure we dont call it directly
         Output.set('initData called...');
-
-
-        // so anyway as we are calling this friom somewhere
-        // we may as well actually init som more data this
-        // very should be done via tooling which we will hack
-        // together, should take a {file, [str]} of VERBS and then
-        // a SYSTEM to map them into. This is actually not a bad
-        // PR for MUD lattice.
-        // for now however hack at it....
-        commandLookup["North"] = ActionType.North;
-        commandLookup["Go"] = ActionType.Go;
-        commandLookup["Move"] = ActionType.Move;
-        commandLookup["Loot"] = ActionType.Loot;
-        commandLookup["Describe"] = ActionType.Describe;
-        commandLookup["Take"] = ActionType.Take;
-        commandLookup["Kick"] = ActionType.Kick;
-        commandLookup["Lock"] = ActionType.Lock;
-        commandLookup["Unlock"] = ActionType.Unlock;
-        commandLookup["Open"] = ActionType.Open;
 
         return 0;
     }
@@ -67,27 +48,26 @@ contract GameEngineSystem is System {
 
     // we really should return a id to a hash table of compressed data, we shouldnt
     // be storing this shite here
-    function _beWitty(CommandError ce) private pure returns (string memory msg) {
-        string memory msg;
+    function _beWitty(CommandError ce) private pure returns (string memory) {
+        string memory eMsg;
         if (ce == CommandError.LEN) {
-        msg = "WTF, slow down cowboy, your gonna hurt yourself\n"
+        eMsg = "WTF, slow down cowboy, your gonna hurt yourself\n"
         "Now take a deep breath...\n"
         "Smell that?\n"
         "Yep its you, you done shit your pants again, that dysentry sure is a bitch\n"
         "Go on now, have a another crack there dude";
         } else if (ce == CommandError.NOP) {
-            msg = "Nope, gibberish\n"
+            eMsg = "Nope, gibberish\n"
             "Have another try, emote...";
         } 
-        return msg;
+        return eMsg;
     }
 
     function processCommand(string[] calldata tokens) public returns (uint8 err) {
 
-        if (tokens.length > MAX_TOK) {
+        if (tokens.length > MAX_TOK ) {
             string memory response = _beWitty(CommandError.LEN); 
             Output.set(response);
-            string memory rFoo = 'Foo Response';
             return 10;
         }
         

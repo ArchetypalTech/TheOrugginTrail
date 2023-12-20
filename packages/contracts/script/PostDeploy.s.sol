@@ -21,11 +21,10 @@ import { MaterialType } from "../src/codegen/common.sol";
 import { RoomStore } from "../src/codegen/index.sol";
 import { ObjectStore } from "../src/codegen/index.sol";
 import { ActionStore } from "../src/codegen/index.sol";
-import { GameMap } from "../src/codegen/index.sol";
 
-import { Constants } from "../src/constants/defines.sol";
+import { GameConstants } from "../src/constants/defines.sol";
 
-contract PostDeploy is Script, Constants {
+contract PostDeploy is Script, GameConstants {
 
     // make the basic data for initial work on dev around
     // maps and actions etc this is only for an intial stab 
@@ -34,18 +33,18 @@ contract PostDeploy is Script, Constants {
         // OBJECTS: The DOOR
         // it's a wooden door and it opens
         uint8 dir = NORTH_DIR | SOUTH_DIR;
-        ActionStore.set(
-            OPEN_ACTION_ID, ActionType.Open, 
-            OPEN_ACTION_DESC_ID, true, 5
-        );
+        //ActionStore.set(
+            //OPEN_ACTION_ID, ActionType.Open, 
+            //OPEN_ACTION_DESC_ID, true, 5
+        //);
         uint32[] memory actionIds = new uint32[](3);
         actionIds[0] = OPEN_ACTION_ID;
 
-        ObjectStore.set(
-            WOOD_DOOR_OBJECT_ID, ObjectType.Door, 
-            MaterialType.Wood, WOOD_DOOR_DESC_ID,
-            actionIds
-        );
+        //ObjectStore.set(
+            //WOOD_DOOR_OBJECT_ID, ObjectType.Door, 
+            //MaterialType.Wood, WOOD_DOOR_DESC_ID,
+            //actionIds
+        //);
 
     }
 
@@ -91,6 +90,10 @@ contract PostDeploy is Script, Constants {
         // the ROOMS DOOR, etc and that's how we set base descriptions
         console.log("Running room creation");
         for(uint32 y = 0; y < h; y++ ) {
+            uint32 E;
+            uint32 W;
+            uint32 N;
+            uint32 S;
             for( uint32 x = 0; x < w; x++) {
                 uint32 room = map[x][y];
                 if (room & uint32(RoomType.None) == 0) continue;
@@ -102,24 +105,24 @@ contract PostDeploy is Script, Constants {
                         /* TOP ROW - NORTH */
                         if ( x == 0 ) {
                             /* TOP LEFT - NORTH WEST */
-                            uint32 e = map[y][++x];
-                            uint32 s = map[++y][x];
-                            if ( !(e & uint32(RoomType.None) == 0) ) {
+                            E = map[y][++x];
+                            S = map[++y][x];
+                            if ( !(E & uint32(RoomType.None) == 0) ) {
                                 /* PATH EAST set dir bits on the current room */
                                 room | EAST_DIR;
                             }
-                            if ( !(s & uint32(RoomType.None) == 0) ) {
+                            if ( !(S & uint32(RoomType.None) == 0) ) {
                                 room | SOUTH_DIR;
                             }
                         } else if ( x == --w ) {
                             /* TOP RIGHT - NORTH EAST */
-                            uint32 w = map[y][--x];
-                            uint32 s = map[++y][x];
+                            W = map[y][--x];
+                            S = map[++y][x];
                         } else {
                            /* TOP ROW */ 
-                            uint32 w = map[y][++x];
-                            uint32 e = map[y][--x];
-                            uint32 s = map[++y][x];
+                             W = map[y][++x];
+                             E = map[y][--x];
+                             S = map[++y][x];
                         }
                     }
 
@@ -130,8 +133,7 @@ contract PostDeploy is Script, Constants {
                 }
             }
         }
-        // now add these roomId's to the GameMap singleton
-        GameMap.set(w, h, worldMap);
+        // now add these roomId's to the RoomStore
     }
     
     function createType(uint32 mapPos) internal {
