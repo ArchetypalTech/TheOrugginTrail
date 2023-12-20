@@ -24,6 +24,11 @@ contract GameSetupSystem is System {
     }
 
     function setupWorld() private {
+
+        // really wanted the code to look like this
+        //createRoom(KPlain, 'You are on a plain with the wind blowing', createDir(DirectionType.North,KBarn),createDir(DirectionType.East, KMountainPath));
+        // but the dynamic arrays we use must be setup and passed as they are below
+
         uint32 KPlain = 0;
         uint32 KBarn = 1;
         uint32 KMountainPath = 2;
