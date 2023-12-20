@@ -15,9 +15,6 @@ import { GameConstants } from "../constants/defines.sol";
 // dev tooling
 contract GameEngineSystem is System, GameConstants {
 
-
-    mapping (string => ActionType) private commandLookup;
-
     // TO-DO remove this
     function initData() public returns (uint32) {
 
@@ -89,8 +86,8 @@ contract GameEngineSystem is System, GameConstants {
             // the the default type is returned, our type is ENUM and as such
             // the first value is 0 so we set that to `None` amd handle for
             // the failing case this way
-            if (commandLookup[cmd] != ActionType.None) {
-                ActionType VERB = commandLookup[cmd];
+            if (getActionType(cmd) != ActionType.None) {
+                ActionType VERB = getActionType(cmd);
                 if (VERB != ActionType.None) {
                     enterRoom(1);
                     return 1;
