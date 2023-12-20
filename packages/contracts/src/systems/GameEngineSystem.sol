@@ -11,16 +11,17 @@ import { GameConstants } from "../constants/defines.sol";
 
 
 // NOTE of interest in the return types of the functions, these
-// are later used in the logs of the game provided by the MUD 
+// are later used in the logs of the game provided by the MUD
 // dev tooling
 contract GameEngineSystem is System, GameConstants {
-   
-    
+
+
     mapping (string => ActionType) private commandLookup;
 
+    // TO-DO remove this
     function initData() public returns (uint32) {
 
-       // we are right now initing the data in the 
+       // we are right now initing the data in the
        // contracts/script/PostDeploy.s.sol
        // so the previous Room sets etc have been chopped
        // they should in fct be moved here I think but right
@@ -59,22 +60,22 @@ contract GameEngineSystem is System, GameConstants {
         } else if (ce == CommandError.NOP) {
             eMsg = "Nope, gibberish\n"
             "Have another try, emote...";
-        } 
+        }
         return eMsg;
     }
 
     function processCommand(string[] calldata tokens) public returns (uint8 err) {
 
         if (tokens.length > MAX_TOK ) {
-            string memory response = _beWitty(CommandError.LEN); 
+            string memory response = _beWitty(CommandError.LEN);
             Output.set(response);
             return 10;
         }
-        
-        // this is a very crude first step, as we are actually 
-        // using strings here and really we should tokenise to 
+
+        // this is a very crude first step, as we are actually
+        // using strings here and really we should tokenise to
         // ZORKish types VERB, DOBJ, IDOBJ
-        // pre running a behaviour engine then again whats really 
+        // pre running a behaviour engine then again whats really
         // the size of our vocab right now, like 256 * (16 ** 2)
         // its really not a huge amount
         for (uint8 i = 0; i < tokens.length; i++) {
@@ -86,7 +87,7 @@ contract GameEngineSystem is System, GameConstants {
             // check that its not a `None` which will be the default return
             // if there is no matching key in the map. When the lookup fails
             // the the default type is returned, our type is ENUM and as such
-            // the first value is 0 so we set that to `None` amd handle for 
+            // the first value is 0 so we set that to `None` amd handle for
             // the failing case this way
             if (commandLookup[cmd] != ActionType.None) {
                 ActionType VERB = commandLookup[cmd];
@@ -98,7 +99,7 @@ contract GameEngineSystem is System, GameConstants {
                 }
             }else {return 3;}
         }
-       return 0; 
+       return 0;
     }
 }
 

@@ -27,21 +27,21 @@ import { GameConstants } from "../src/constants/defines.sol";
 contract PostDeploy is Script, GameConstants {
 
     // make the basic data for initial work on dev around
-    // maps and actions etc this is only for an intial stab 
-    // at general object linkage and useage 
+    // maps and actions etc this is only for an intial stab
+    // at general object linkage and useage
     function setupData() internal {
         // OBJECTS: The DOOR
         // it's a wooden door and it opens
         uint8 dir = NORTH_DIR | SOUTH_DIR;
         //ActionStore.set(
-            //OPEN_ACTION_ID, ActionType.Open, 
+            //OPEN_ACTION_ID, ActionType.Open,
             //OPEN_ACTION_DESC_ID, true, 5
         //);
         uint32[] memory actionIds = new uint32[](3);
         actionIds[0] = OPEN_ACTION_ID;
 
         //ObjectStore.set(
-            //WOOD_DOOR_OBJECT_ID, ObjectType.Door, 
+            //WOOD_DOOR_OBJECT_ID, ObjectType.Door,
             //MaterialType.Wood, WOOD_DOOR_DESC_ID,
             //actionIds
         //);
@@ -71,11 +71,11 @@ contract PostDeploy is Script, GameConstants {
         uint32[] memory worldMap = new uint32[](h * w);
 
         // build up the rooms from the map
-        // This is probably a bit premture and the 
+        // This is probably a bit premture and the
         // BIT maks are wrong we should be masking off
-        // a whole set of bits ratehr than the single bit 
+        // a whole set of bits ratehr than the single bit
         // in the un amended code below
-        // The idea is to build up a set of room refs places at the 
+        // The idea is to build up a set of room refs places at the
         // correct positions X,Y and add direction bits
         //
         // The player can traverse TERRAIN and ROOMS
@@ -84,9 +84,9 @@ contract PostDeploy is Script, GameConstants {
         // TERRAINS connect to ROOMS via PORTALS
         //
         // ALL connecty things get DIRECTION bits set up to 0xF
-        // We go clockwise from N := 0x1, E := 0x2; S := 0x4 W := 0x8 
+        // We go clockwise from N := 0x1, E := 0x2; S := 0x4 W := 0x8
         //
-        // So then a TERRAIN -> PORTAL -> ROOM gets a description of 
+        // So then a TERRAIN -> PORTAL -> ROOM gets a description of
         // the ROOMS DOOR, etc and that's how we set base descriptions
         console.log("Running room creation");
         for(uint32 y = 0; y < h; y++ ) {
@@ -97,7 +97,7 @@ contract PostDeploy is Script, GameConstants {
             for( uint32 x = 0; x < w; x++) {
                 uint32 room = map[x][y];
                 if (room & uint32(RoomType.None) == 0) continue;
-                // parse the map data to "rooms" 
+                // parse the map data to "rooms"
                 if ( room & X == 0x1000000 ) {
                     // dirt path
                     // look around and see if we can set an exit direction
@@ -119,7 +119,7 @@ contract PostDeploy is Script, GameConstants {
                             W = map[y][--x];
                             S = map[++y][x];
                         } else {
-                           /* TOP ROW */ 
+                           /* TOP ROW */
                              W = map[y][++x];
                              E = map[y][--x];
                              S = map[++y][x];
@@ -135,9 +135,9 @@ contract PostDeploy is Script, GameConstants {
         }
         // now add these roomId's to the RoomStore
     }
-    
+
     function createType(uint32 mapPos) internal {
-        
+
     }
 
 
@@ -151,7 +151,7 @@ contract PostDeploy is Script, GameConstants {
         // Start broadcasting transactions from the deployer account
         vm.startBroadcast(deployerPrivateKey);
 
-        uint32 newValue = IWorld(worldAddress).initData();
+        uint32 newValue = IWorld(worldAddress).init();
         console.log("World initialised", newValue);
 
         setupData();

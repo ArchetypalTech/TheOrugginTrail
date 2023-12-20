@@ -8,7 +8,7 @@ export default mudConfig({
         //
         // Places have Objects
         // Objects have Actions, eg Chests can Open or not.
-        // Actions generate NESS or Bool 
+        // Actions generate NESS or Bool
         // ie. "Lock Door":
         // the Room/Place with Door with Lock -> Lock-NESS -> Place(Door(Lock(NESS(1))))
         // NB This doesn't equate to Open-NESS, a door could be LockY AND OpenY
@@ -24,30 +24,30 @@ export default mudConfig({
         //
         // we will use the keys for left shifting values
         // in a 32 bit var so we have maskable state from the
-        // map data 
+        // map data
         TypeKeys: [
-            "None", "BiomeTypes", "TerrainTypes", 
+            "None", "BiomeTypes", "TerrainTypes",
             "RoomType", "ActionType",
         ],
         // probably pointless
         BiomeType: [
-            "None","Tundra", "Arctic", "Temporate", 
+            "None","Tundra", "Arctic", "Temporate",
             "Alpine", "Jungle", "Faery"
         ],
         // Terrain has paths
         TerrainType: [
-            "None", "Path", "Forest", "Plains", 
+            "None", "Path", "Forest", "Plains",
             "Mud", "DirtPath", "Portal"
         ],
-        // Rooms have doors/exits 
+        // Rooms have doors/exits
         RoomType: [
-            "None", "WoodCabin", "Store", 
+            "None", "WoodCabin", "Store",
             "Cavern", "StoneCabin", "Fort"
         ],
         // use these to set direction bits on a DirectionObject
         // such as a door
         DirectionType: [
-            "North", "South", "East", "West", 
+            "North", "South", "East", "West",
             "Up", "Down", "Forward", "Backwards"
         ],
         // add a direction action to these to connect rooms
@@ -55,17 +55,17 @@ export default mudConfig({
         DirObjectType: [
             "None", "Door", "Window", "Stairs", "Ladder"
         ],
-        // use these in the parser, they are VERBS 
-        // 
+        // use these in the parser, they are VERBS
+        //
         ActionType: [
-            "None", "Go", "Move", "Loot", "Describe", 
+            "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
             "None", "Ball", "Key", "Knife", "Bottle"
         ],
-        
+
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
         // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
@@ -81,6 +81,7 @@ export default mudConfig({
             valueSchema: {
                 roomType: "RoomType",
                 textDefId: "uint32",
+                description: "string", //temp
                 objectIds: "uint32[]",
                 dirObjIds: "uint32[]",
             },
@@ -102,7 +103,7 @@ export default mudConfig({
                 // is it nESSy: ie. is it just a prop
                 // if it IS then CAN it be, like has it been unlocked
                 nESSy: "bool", // can it be used?
-                enabled: "bool" // is it useable if it CAN be used 
+                enabled: "bool" // is it useable if it CAN be used
             },
         },
         // attach to rooms/paths to set the exits
@@ -116,7 +117,8 @@ export default mudConfig({
             },
             valueSchema: {
                 objType: "DirObjectType", // Door/Window/CaveMouth etc
-                dirTypes: "uint8[]", // North, South, Up etc
+                dirType: "uint8", // North, South, Up etc
+                roomId: "uint32",
                 objectActionIds: "uint32[]" // Open/Lock/Break etc
             },
         },
