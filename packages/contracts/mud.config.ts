@@ -47,8 +47,8 @@ export default mudConfig({
         // use these to set direction bits on a DirectionObject
         // such as a door
         DirectionType: [
-            "North", "South", "East", "West",
-            "Up", "Down", "Forward", "Backwards"
+            "NORTH", "SOUTH", "EAST", "WEST",
+            "UP", "DOWN", "FORWARD", "BACKWARDS"
         ],
         // add a direction action to these to connect rooms
         // then add them to a room
@@ -58,8 +58,8 @@ export default mudConfig({
         // use these in the parser, they are VERBS
         //
         ActionType: [
-            "None", "Go", "Move", "Loot", "Describe",
-            "Take", "Kick", "Lock", "Unlock", "Open"
+            "NONE", "GO", "MOVE", "LOOT", "DESCRIBE",
+            "TAKE", "KICK", "LOCK", "UNLOCK", "OPEN"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
