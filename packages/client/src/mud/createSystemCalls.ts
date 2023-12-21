@@ -38,7 +38,7 @@ export function createSystemCalls(
   };
 
   const processCommand = async (command) => {
-    const tx = await worldContract.write.processCommand([command]);
+    const tx = await worldContract.write.processCommandTokens([command]);
     await waitForTransaction(tx);
   };
 

@@ -39,9 +39,28 @@ enum RoomType {
   Fort
 }
 
-enum ActionType {
+enum DirectionType {
   None,
   North,
+  South,
+  East,
+  West,
+  Up,
+  Down,
+  Forward,
+  Backwards
+}
+
+enum DirObjectType {
+  None,
+  Door,
+  Window,
+  Stairs,
+  Ladder
+}
+
+enum ActionType {
+  None,
   Go,
   Move,
   Loot,
@@ -55,10 +74,8 @@ enum ActionType {
 
 enum ObjectType {
   None,
-  Door,
   Ball,
   Key,
-  Window,
   Knife,
   Bottle
 }
@@ -81,6 +98,9 @@ enum TexDefType {
 }
 
 enum CommandError {
+  NONE,
   LEN,
-  NOP
+  NOP,
+  GONOWHERE,
+  GOWHERE
 }

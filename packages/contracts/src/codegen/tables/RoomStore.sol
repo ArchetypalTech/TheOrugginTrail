@@ -29,13 +29,15 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant RoomStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0005020101040000000000000000000000000000000000000000000000000000
+  0x0005020301040000000000000000000000000000000000000000000000000000
 );
 
 struct RoomStoreData {
   RoomType roomType;
   uint32 textDefId;
+  string description;
   uint32[] objectIds;
+  uint32[] dirObjIds;
 }
 
 library RoomStore {
@@ -63,10 +65,12 @@ library RoomStore {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](3);
+    SchemaType[] memory _valueSchema = new SchemaType[](5);
     _valueSchema[0] = SchemaType.UINT8;
     _valueSchema[1] = SchemaType.UINT32;
-    _valueSchema[2] = SchemaType.UINT32_ARRAY;
+    _valueSchema[2] = SchemaType.STRING;
+    _valueSchema[3] = SchemaType.UINT32_ARRAY;
+    _valueSchema[4] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -85,10 +89,12 @@ library RoomStore {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](3);
+    fieldNames = new string[](5);
     fieldNames[0] = "roomType";
     fieldNames[1] = "textDefId";
-    fieldNames[2] = "objectIds";
+    fieldNames[2] = "description";
+    fieldNames[3] = "objectIds";
+    fieldNames[4] = "dirObjIds";
   }
 
   /**
@@ -190,13 +196,175 @@ library RoomStore {
   }
 
   /**
+   * @notice Get description.
+   */
+  function getDescription(uint32 roomId) internal view returns (string memory description) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get description.
+   */
+  function _getDescription(uint32 roomId) internal view returns (string memory description) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Set description.
+   */
+  function setDescription(uint32 roomId, string memory description) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((description)));
+  }
+
+  /**
+   * @notice Set description.
+   */
+  function _setDescription(uint32 roomId, string memory description) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((description)));
+  }
+
+  /**
+   * @notice Get the length of description.
+   */
+  function lengthDescription(uint32 roomId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of description.
+   */
+  function _lengthDescription(uint32 roomId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get an item of description.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemDescription(uint32 roomId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of description.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemDescription(uint32 roomId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Push a slice to description.
+   */
+  function pushDescription(uint32 roomId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to description.
+   */
+  function _pushDescription(uint32 roomId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Pop a slice from description.
+   */
+  function popDescription(uint32 roomId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from description.
+   */
+  function _popDescription(uint32 roomId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Update a slice of description at `_index`.
+   */
+  function updateDescription(uint32 roomId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of description at `_index`.
+   */
+  function _updateDescription(uint32 roomId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get objectIds.
    */
   function getObjectIds(uint32 roomId) internal view returns (uint32[] memory objectIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -207,7 +375,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -218,7 +386,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectIds)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((objectIds)));
   }
 
   /**
@@ -228,7 +396,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectIds)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((objectIds)));
   }
 
   /**
@@ -238,7 +406,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 4;
     }
@@ -251,7 +419,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 4;
     }
@@ -266,7 +434,7 @@ library RoomStore {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -280,7 +448,7 @@ library RoomStore {
     _keyTuple[0] = bytes32(uint256(roomId));
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -292,7 +460,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /**
@@ -302,7 +470,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /**
@@ -312,7 +480,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -322,7 +490,7 @@ library RoomStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -334,7 +502,7 @@ library RoomStore {
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -347,7 +515,169 @@ library RoomStore {
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Get dirObjIds.
+   */
+  function getDirObjIds(uint32 roomId) internal view returns (uint32[] memory dirObjIds) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /**
+   * @notice Get dirObjIds.
+   */
+  function _getDirObjIds(uint32 roomId) internal view returns (uint32[] memory dirObjIds) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /**
+   * @notice Set dirObjIds.
+   */
+  function setDirObjIds(uint32 roomId, uint32[] memory dirObjIds) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((dirObjIds)));
+  }
+
+  /**
+   * @notice Set dirObjIds.
+   */
+  function _setDirObjIds(uint32 roomId, uint32[] memory dirObjIds) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((dirObjIds)));
+  }
+
+  /**
+   * @notice Get the length of dirObjIds.
+   */
+  function lengthDirObjIds(uint32 roomId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /**
+   * @notice Get the length of dirObjIds.
+   */
+  function _lengthDirObjIds(uint32 roomId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /**
+   * @notice Get an item of dirObjIds.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemDirObjIds(uint32 roomId, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
+      return (uint32(bytes4(_blob)));
+    }
+  }
+
+  /**
+   * @notice Get an item of dirObjIds.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemDirObjIds(uint32 roomId, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
+      return (uint32(bytes4(_blob)));
+    }
+  }
+
+  /**
+   * @notice Push an element to dirObjIds.
+   */
+  function pushDirObjIds(uint32 roomId, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to dirObjIds.
+   */
+  function _pushDirObjIds(uint32 roomId, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Pop an element from dirObjIds.
+   */
+  function popDirObjIds(uint32 roomId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 4);
+  }
+
+  /**
+   * @notice Pop an element from dirObjIds.
+   */
+  function _popDirObjIds(uint32 roomId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 4);
+  }
+
+  /**
+   * @notice Update an element of dirObjIds at `_index`.
+   */
+  function updateDirObjIds(uint32 roomId, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 4), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of dirObjIds at `_index`.
+   */
+  function _updateDirObjIds(uint32 roomId, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(roomId));
+
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -384,11 +714,18 @@ library RoomStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory objectIds) internal {
+  function set(
+    uint32 roomId,
+    RoomType roomType,
+    uint32 textDefId,
+    string memory description,
+    uint32[] memory objectIds,
+    uint32[] memory dirObjIds
+  ) internal {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(objectIds);
-    bytes memory _dynamicData = encodeDynamic(objectIds);
+    PackedCounter _encodedLengths = encodeLengths(description, objectIds, dirObjIds);
+    bytes memory _dynamicData = encodeDynamic(description, objectIds, dirObjIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -399,11 +736,18 @@ library RoomStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 roomId, RoomType roomType, uint32 textDefId, uint32[] memory objectIds) internal {
+  function _set(
+    uint32 roomId,
+    RoomType roomType,
+    uint32 textDefId,
+    string memory description,
+    uint32[] memory objectIds,
+    uint32[] memory dirObjIds
+  ) internal {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(objectIds);
-    bytes memory _dynamicData = encodeDynamic(objectIds);
+    PackedCounter _encodedLengths = encodeLengths(description, objectIds, dirObjIds);
+    bytes memory _dynamicData = encodeDynamic(description, objectIds, dirObjIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -417,8 +761,8 @@ library RoomStore {
   function set(uint32 roomId, RoomStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.objectIds);
-    bytes memory _dynamicData = encodeDynamic(_table.objectIds);
+    PackedCounter _encodedLengths = encodeLengths(_table.description, _table.objectIds, _table.dirObjIds);
+    bytes memory _dynamicData = encodeDynamic(_table.description, _table.objectIds, _table.dirObjIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -432,8 +776,8 @@ library RoomStore {
   function _set(uint32 roomId, RoomStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.roomType, _table.textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.objectIds);
-    bytes memory _dynamicData = encodeDynamic(_table.objectIds);
+    PackedCounter _encodedLengths = encodeLengths(_table.description, _table.objectIds, _table.dirObjIds);
+    bytes memory _dynamicData = encodeDynamic(_table.description, _table.objectIds, _table.dirObjIds);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
@@ -456,13 +800,25 @@ library RoomStore {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[] memory objectIds) {
+  ) internal pure returns (string memory description, uint32[] memory objectIds, uint32[] memory dirObjIds) {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
+    description = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
     objectIds = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    dirObjIds = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
   }
 
   /**
@@ -478,7 +834,7 @@ library RoomStore {
   ) internal pure returns (RoomStoreData memory _table) {
     (_table.roomType, _table.textDefId) = decodeStatic(_staticData);
 
-    (_table.objectIds) = decodeDynamic(_encodedLengths, _dynamicData);
+    (_table.description, _table.objectIds, _table.dirObjIds) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -513,10 +869,14 @@ library RoomStore {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(uint32[] memory objectIds) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(
+    string memory description,
+    uint32[] memory objectIds,
+    uint32[] memory dirObjIds
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(objectIds.length * 4);
+      _encodedLengths = PackedCounterLib.pack(bytes(description).length, objectIds.length * 4, dirObjIds.length * 4);
     }
   }
 
@@ -524,8 +884,12 @@ library RoomStore {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(uint32[] memory objectIds) internal pure returns (bytes memory) {
-    return abi.encodePacked(EncodeArray.encode((objectIds)));
+  function encodeDynamic(
+    string memory description,
+    uint32[] memory objectIds,
+    uint32[] memory dirObjIds
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((description)), EncodeArray.encode((objectIds)), EncodeArray.encode((dirObjIds)));
   }
 
   /**
@@ -537,12 +901,14 @@ library RoomStore {
   function encode(
     RoomType roomType,
     uint32 textDefId,
-    uint32[] memory objectIds
+    string memory description,
+    uint32[] memory objectIds,
+    uint32[] memory dirObjIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(roomType, textDefId);
 
-    PackedCounter _encodedLengths = encodeLengths(objectIds);
-    bytes memory _dynamicData = encodeDynamic(objectIds);
+    PackedCounter _encodedLengths = encodeLengths(description, objectIds, dirObjIds);
+    bytes memory _dynamicData = encodeDynamic(description, objectIds, dirObjIds);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }

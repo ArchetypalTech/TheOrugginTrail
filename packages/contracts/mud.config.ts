@@ -4,15 +4,18 @@ export default mudConfig({
     enums: {
         // all places on the 2d map grid are either Void or Place:
         // 0x00 | 0x01
-        // Voids have no Objects 
-        // Places have Objects, of which Door is one.
-        // Objects have Actions, eg Doors can Open or not.
-        // Actions generate NESS or Bool 
+        // Voids/None have no Objects cant be travelled through etc.
+        //
+        // Places have Objects
+        // Objects have Actions, eg Chests can Open or not.
+        // Actions generate NESS or Bool
         // ie. "Lock Door":
         // the Room/Place with Door with Lock -> Lock-NESS -> Place(Door(Lock(NESS(1))))
         // NB This doesn't equate to Open-NESS, a door could be LockY AND OpenY
         //
-        // NB Something else abour Doors, when they are in a room they are a Door,
+        // NB Something else abour Doors
+        // They are DirectionObjects.
+        // DirectionObjects also have a Direction
         // an ObjectType, when they are in a map they are a Portal. It allows us to
         // map a map, and it allows us to link a Places Door to the portal that it
         // links to. Portals connect non void places on the map.
@@ -21,47 +24,56 @@ export default mudConfig({
         //
         // we will use the keys for left shifting values
         // in a 32 bit var so we have maskable state from the
-        // map data 
+        // map data
         TypeKeys: [
-            "None", "BiomeTypes", "TerrainTypes", 
+            "None", "BiomeTypes", "TerrainTypes",
             "RoomType", "ActionType",
         ],
+        // probably pointless
         BiomeType: [
-            "None","Tundra", "Arctic", "Temporate", 
+            "None","Tundra", "Arctic", "Temporate",
             "Alpine", "Jungle", "Faery"
         ],
+        // Terrain has paths
         TerrainType: [
-            "None", "Path", "Forest", "Plains", 
+            "None", "Path", "Forest", "Plains",
             "Mud", "DirtPath", "Portal"
         ],
+        // Rooms have doors/exits
         RoomType: [
-            "None", "WoodCabin", "Store", 
+            "None", "WoodCabin", "Store",
             "Cavern", "StoneCabin", "Fort"
         ],
-        ActionType: [
-            "None", "North", "Go", "Move", "Loot", 
-            "Describe", "Take", "Kick", "Lock", "Unlock", 
-            "Open"
+        // use these to set direction bits on a DirectionObject
+        // such as a door
+        DirectionType: [
+            "None", "North", "South", "East", "West",
+            "Up", "Down", "Forward", "Backwards"
         ],
-        ObjectType: ["None", "Door", "Ball", "Key", "Window", "Knife", "Bottle"],
+        // add a direction action to these to connect rooms
+        // then add them to a room
+        DirObjectType: [
+            "None", "Door", "Window", "Stairs", "Ladder"
+        ],
+        // use these in the parser, they are VERBS
+        //
+        ActionType: [
+            "None", "Go", "Move", "Loot", "Describe",
+            "Take", "Kick", "Lock", "Unlock", "Open"
+        ],
+        // add these to rooms for stuff to do
+        ObjectType: [
+            "None", "Ball", "Key", "Knife", "Bottle"
+        ],
+
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
         // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
-        CommandError: ["LEN", "NOP"],
+        CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],
     },
     tables: {
         // all rooms take a description and a set of Objects that themselves
         // have descriptions and Actions.
-        // We handle descriptions like everything else, its a ref to a 
-        // row in a Table.
-        GameMap: {
-            keySchema: {},
-            valueSchema: {
-                width: "uint32",
-                height: "uint32",
-                bigOlePlace: "uint32[]",
-            },
-        },       
         RoomStore: {
             keySchema: {
                 roomId: "uint32",
@@ -69,17 +81,17 @@ export default mudConfig({
             valueSchema: {
                 roomType: "RoomType",
                 textDefId: "uint32",
+                description: "string", //temp
                 objectIds: "uint32[]",
+                dirObjIds: "uint32[]",
             },
         },
         // Actions have a NESSy property
         // like are they doable, do'y
         // eg a Winow can have an Open ActionType
-        // so that wout=ld make it NESSy OpenY
+        // so that would make it NESSy OpenY
         // this isn't the same as it being Open
         // it's wether it can be opened, Openy
-        // this has implications and the immediate one 
-        // the springs to mind is wghere is this set?
         ActionStore: {
             keySchema: {
                 actionId: "uint32",
@@ -87,8 +99,27 @@ export default mudConfig({
             valueSchema: {
                 actionType: "ActionType",
                 texDefId: "uint32",
-                nESSy: "bool",
-                direction: "uint8",
+                // the next 2 are a pair really a door is a good example
+                // is it nESSy: ie. is it just a prop
+                // if it IS then CAN it be, like has it been unlocked
+                nESSy: "bool", // can it be used?
+                enabled: "bool" // is it useable if it CAN be used
+            },
+        },
+        // attach to rooms/paths to set the exits
+        // give it a DirObjType like DOOR
+        // then give it a directionType like NORTH
+        // then give it an Action like OPEN or LOCKED
+        // or BOTH!
+        DirObjStore: {
+            keySchema: {
+                dirObjId: "uint32",
+            },
+            valueSchema: {
+                objType: "DirObjectType", // Door/Window/CaveMouth etc
+                dirType: "uint8", // North, South, Up etc
+                roomId: "uint32",
+                objectActionIds: "uint32[]" // Open/Lock/Break etc
             },
         },
         ObjectStore: {
@@ -99,7 +130,7 @@ export default mudConfig({
                 objectType: "ObjectType",
                 materialType: "MaterialType",
                 texDefId: "uint32",
-                objectActions: "uint32[]",
+                objectActionIds: "uint32[]",
             },
         },
         // we are going to store a hash over the actual description

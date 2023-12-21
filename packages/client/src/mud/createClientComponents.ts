@@ -19,7 +19,9 @@ export function createClientComponents({ components }: SetupNetworkResult) {
     // only handle for verbs, objects with names <16
     function tokenise(input: string): string[] {
         const tokens = input.split(/\s+/);
-        const filteredTokens = tokens.filter(token => token.length <= 16);
+        const filteredTokens = tokens
+            .filter(token => token.length <= 16)
+            .map(token => token.toUpperCase());
         return filteredTokens;
     }
 
