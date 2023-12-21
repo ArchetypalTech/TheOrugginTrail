@@ -15,18 +15,22 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     // we call this from the post deploy contract 
     function initGES() public returns (uint32) {
         Output.set('initGES called...');
-        initCES();
+        initCLS();
+        spawn(0);
         return 0;
     }
 
-    function enterRoom(uint32 rId) public returns (uint32 err) {
-        // TODO:  on entering describe the room
-        uint32 id = CurrentRoomId.get();
-        uint32 newValue = id + 1;
-        CurrentRoomId.set(newValue);
+    function spawn(uint32 startId) public {
+       _enterRoom(0); 
+    }
 
-        string memory roomDesc = "Minging room, bedsit carpet, smells of fags and soap bar";
-        Output.set(roomDesc);
+    function _enterRoom(uint32 rId) private returns (uint32 err) {
+        // TODO:  on entering describe the room
+        CurrentRoomId.set(rId);
+
+        
+        RoomStoreData memory currRoom = RoomStore.get(CurrentRoomId.get());
+        Output.set(currRoom.description);
 
         return 0;
     }
@@ -69,7 +73,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
                     // this is just a start... GO is easy
                     DirectionType DIR = dirLookup[tokens[1]];
                     if (DIR != DirectionType.None) {
-                        enterRoom(CurrentRoomId.get());
+                        _enterRoom(CurrentRoomId.get());
                         return uint8(CommandError.NONE);
                     }else {
                         Output.set(_beWitty(CommandError.GOWHERE, tokens[1]));

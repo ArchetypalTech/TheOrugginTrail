@@ -12,7 +12,7 @@ contract CommandLookups {
     mapping (string => ActionType) public cmdLookup;
     mapping (string => DirectionType) public dirLookup;
     
-    function initCES() public returns (uint32) {
+    function initCLS() public returns (uint32) {
         Output.set('initCES called...');
         setupCmds();
         return 0;
@@ -21,7 +21,7 @@ contract CommandLookups {
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
-    function setupCmds() public returns (uint32) {
+    function setupCmds() private returns (uint32) {
        // the mapping thats in the GE.
         cmdLookup["GO"] = ActionType.Go;
         cmdLookup["MOVE"] = ActionType.Move;

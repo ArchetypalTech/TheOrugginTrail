@@ -10,7 +10,7 @@ pragma solidity >=0.8.21;
 interface IMeatPuppetSystem {
   function initGES() external returns (uint32);
 
-  function enterRoom(uint32 rId) external returns (uint32 err);
+  function spawn(uint32 startId) external;
 
   function processCommandTokens(string[] calldata tokens) external returns (uint8 err);
 }
