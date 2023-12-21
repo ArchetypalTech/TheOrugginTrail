@@ -50,7 +50,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
 
 
     // should probably not return a uint8 but a CommandError
-    function processCommand(string[] calldata tokens) public returns (uint8 err) {
+    function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
 
         if (tokens.length > MAX_TOK ) {
             string memory response = _beWitty(CommandError.LEN, "");

@@ -12,5 +12,5 @@ interface IMeatPuppetSystem {
 
   function enterRoom(uint32 rId) external returns (uint32 err);
 
-  function processCommand(string[] calldata tokens) external returns (uint8 err);
+  function processCommandTokens(string[] calldata tokens) external returns (uint8 err);
 }
