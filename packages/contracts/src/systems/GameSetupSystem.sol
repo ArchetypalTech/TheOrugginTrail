@@ -25,9 +25,10 @@ contract GameSetupSystem is System {
 
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
-    function setupCmds(string[] memory cmds) public returns (uint32) {
+    function setupCmds(uint32 cmds) public returns (uint32) {
        // maybe populate the unused VERB tables etc? for now we just use
        // the mapping thats in the GE.
+       return 23;
     }
 
     function setupWorld() private {
@@ -57,7 +58,7 @@ contract GameSetupSystem is System {
     }
 
     function createDir(DirectionType directionType, uint32 roomId) private returns (uint32){
-        DirObjStore.setDirType(dirId, uint8(directionType));
+        DirObjStore.setDirType(dirId, directionType);
         DirObjStore.setRoomId(dirId, roomId);
         return ++dirId;
     }

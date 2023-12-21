@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 
-import {System} from "@latticexyz/world/src/System.sol";
+//import {System} from "@latticexyz/world/src/System.sol";
 import {Output} from "../codegen/index.sol";
 import {ActionType, DirectionType} from "../codegen/common.sol";
 
@@ -15,6 +15,7 @@ contract CommandLookups {
     function initCLS() public returns (uint32) {
         Output.set('initCES called...');
         setupCmds();
+        //setupDirs();
         return 0;
     }
 
@@ -34,6 +35,10 @@ contract CommandLookups {
         cmdLookup["OPEN"] = ActionType.Open;
 
         dirLookup["NORTH"] = DirectionType.North;
+    }
+
+    function setupDirLookups () private returns (uint32) {
+        //dirLookup[]
     }
     
 }

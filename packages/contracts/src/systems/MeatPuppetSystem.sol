@@ -10,38 +10,60 @@ import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../
 import { CommandLookups } from "./CommandLookup.sol";
 import { GameConstants } from "../constants/defines.sol";
 
+// an attempt at calling another system
+// we nneed the below
+import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+// then the system interface
+import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
+
+import { console } from "forge-std/console.sol";
+
 contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     
+    event debugLog(string msg, uint8 val);
     // we call this from the post deploy contract 
     function initGES() public returns (uint32) {
         Output.set('initGES called...');
         initCLS();
+
+        // our empty test function from the GSS that just returns a uint32
+        uint32 returnValue = abi.decode(
+            SystemSwitch.call(
+                abi.encodeCall(IGameSetupSystem.setupCmds, (22))
+        ),
+        (uint32)
+        );
+
         spawn(0);
         return 0;
     }
 
     function spawn(uint32 startId) public {
+        console.log("spawn");
        _enterRoom(0); 
     }
 
-    // we are building these up but they should be attached to the DirObj ?? 
-    // but either this is wrong or we dont have any direction types set 
     function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
         string memory msgStr;
         for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
-            DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[1]);
-            if (uint8(dir.dirType) == uint8(DirectionType.North)) {
-                dirStrings[i] = "North";
-            }else if (uint8(dir.dirType) == uint8(DirectionType.East)) {
-                dirStrings[i] = "East";
-            }else {
-                dirStrings[i] = "to Hell";
-            }
+            DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
+            
+            console.log("dir.dirType", uint8(dir.dirType)); 
+
+            if (dir.dirType == DirectionType.North) {
+                dirStrings[i] = " North";
+            }else if (dir.dirType == DirectionType.East) {
+                dirStrings[i] = " East";
+            }else if (dir.dirType == DirectionType.South) {
+                dirStrings[i] = " South";
+            }else if (dir.dirType == DirectionType.West) {
+                dirStrings[i] = " South";
+            }else {dirStrings[i] = " to hell";}
         }
         for(uint16 i = 0; i < dirStrings.length; i++) {
-            msgStr = string(abi.encodePacked(msgStr, " ", dirStrings[i]));
+            msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
         return msgStr;
     }
@@ -52,7 +74,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         RoomStoreData memory currRoom = RoomStore.get(CurrentRoomId.get());
         string memory actions = _describeActions(rId);
         string memory pack = string(abi.encodePacked(currRoom.description, "\n", 
-                                                      "You can go ", _describeActions(rId))
+                                     "You can go", _describeActions(rId))
                                    );
         Output.set(pack);
 

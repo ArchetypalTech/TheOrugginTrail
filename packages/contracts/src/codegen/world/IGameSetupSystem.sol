@@ -10,5 +10,5 @@ pragma solidity >=0.8.21;
 interface IGameSetupSystem {
   function init() external returns (uint32);
 
-  function setupCmds(string[] memory cmds) external returns (uint32);
+  function setupCmds(uint32 cmds) external returns (uint32);
 }

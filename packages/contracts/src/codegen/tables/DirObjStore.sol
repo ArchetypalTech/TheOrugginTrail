@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
-import { DirObjectType } from "./../common.sol";
+import { DirObjectType, DirectionType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("DirObjStore")))
@@ -34,7 +34,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 
 struct DirObjStoreData {
   DirObjectType objType;
-  uint8 dirType;
+  DirectionType dirType;
   uint32 roomId;
   uint32[] objectActionIds;
 }
@@ -153,43 +153,43 @@ library DirObjStore {
   /**
    * @notice Get dirType.
    */
-  function getDirType(uint32 dirObjId) internal view returns (uint8 dirType) {
+  function getDirType(uint32 dirObjId) internal view returns (DirectionType dirType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    return DirectionType(uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Get dirType.
    */
-  function _getDirType(uint32 dirObjId) internal view returns (uint8 dirType) {
+  function _getDirType(uint32 dirObjId) internal view returns (DirectionType dirType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    return DirectionType(uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Set dirType.
    */
-  function setDirType(uint32 dirObjId, uint8 dirType) internal {
+  function setDirType(uint32 dirObjId, DirectionType dirType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((dirType)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(uint8(dirType)), _fieldLayout);
   }
 
   /**
    * @notice Set dirType.
    */
-  function _setDirType(uint32 dirObjId, uint8 dirType) internal {
+  function _setDirType(uint32 dirObjId, DirectionType dirType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((dirType)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(uint8(dirType)), _fieldLayout);
   }
 
   /**
@@ -432,7 +432,7 @@ library DirObjStore {
   function set(
     uint32 dirObjId,
     DirObjectType objType,
-    uint8 dirType,
+    DirectionType dirType,
     uint32 roomId,
     uint32[] memory objectActionIds
   ) internal {
@@ -453,7 +453,7 @@ library DirObjStore {
   function _set(
     uint32 dirObjId,
     DirObjectType objType,
-    uint8 dirType,
+    DirectionType dirType,
     uint32 roomId,
     uint32[] memory objectActionIds
   ) internal {
@@ -503,10 +503,10 @@ library DirObjStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (DirObjectType objType, uint8 dirType, uint32 roomId) {
+  ) internal pure returns (DirObjectType objType, DirectionType dirType, uint32 roomId) {
     objType = DirObjectType(uint8(Bytes.slice1(_blob, 0)));
 
-    dirType = (uint8(Bytes.slice1(_blob, 1)));
+    dirType = DirectionType(uint8(Bytes.slice1(_blob, 1)));
 
     roomId = (uint32(Bytes.slice4(_blob, 2)));
   }
@@ -566,7 +566,11 @@ library DirObjStore {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(DirObjectType objType, uint8 dirType, uint32 roomId) internal pure returns (bytes memory) {
+  function encodeStatic(
+    DirObjectType objType,
+    DirectionType dirType,
+    uint32 roomId
+  ) internal pure returns (bytes memory) {
     return abi.encodePacked(objType, dirType, roomId);
   }
 
@@ -597,7 +601,7 @@ library DirObjStore {
    */
   function encode(
     DirObjectType objType,
-    uint8 dirType,
+    DirectionType dirType,
     uint32 roomId,
     uint32[] memory objectActionIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {

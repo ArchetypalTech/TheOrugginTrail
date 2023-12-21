@@ -32,6 +32,6 @@ contract GameConstants {
     uint8 public constant WEST_DIR = 8;         // 0x1000
 
     /* ----- CRAPPY LOGGING ----- */
-    //event LogVar(string msg);
-    //event LogVarInt(uint8 msg);
+    event LogVar(string msg);
+    event LogVarInt(uint8 msg);
 }
