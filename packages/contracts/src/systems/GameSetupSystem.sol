@@ -17,15 +17,23 @@ contract GameSetupSystem is System {
     function init() public returns (uint32) {
 
         setupWorld();
+        
         // we are right now initing the data in the
         Output.set('init called...');
         return 0;
     }
 
+    // we need to somewhere somehow read in the possible verbs if we
+    // want users to have their own VERBS
+    function setupCmds(string[] memory cmds) public returns (uint32) {
+       // maybe populate the unused VERB tables etc? for now we just use
+       // the mapping thats in the GE.
+    }
+
     function setupWorld() private {
         // really wanted the code to look like this
         // createRoom(KPlain, 'You are on a plain with the wind blowing', [createDir(DirectionType.North,KBarn),createDir(DirectionType.East, KMountainPath)]);
-        // but the dynamic arrays we use must be setup and passed as they are below
+        // but the dynamic arrays we use must be etup and passed as they are below
 
         uint32 KPlain = 0;
         uint32 KBarn = 1;

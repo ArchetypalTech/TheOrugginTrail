@@ -47,8 +47,8 @@ export default mudConfig({
         // use these to set direction bits on a DirectionObject
         // such as a door
         DirectionType: [
-            "NORTH", "SOUTH", "EAST", "WEST",
-            "UP", "DOWN", "FORWARD", "BACKWARDS"
+            "None", "North", "South", "East", "West",
+            "Up", "Down", "Forward", "Backwards"
         ],
         // add a direction action to these to connect rooms
         // then add them to a room
@@ -58,8 +58,8 @@ export default mudConfig({
         // use these in the parser, they are VERBS
         //
         ActionType: [
-            "NONE", "GO", "MOVE", "LOOT", "DESCRIBE",
-            "TAKE", "KICK", "LOCK", "UNLOCK", "OPEN"
+            "None", "Go", "Move", "Loot", "Describe",
+            "Take", "Kick", "Lock", "Unlock", "Open"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
@@ -69,7 +69,7 @@ export default mudConfig({
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
         // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
-        CommandError: ["LEN", "NOP"],
+        CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],
     },
     tables: {
         // all rooms take a description and a set of Objects that themselves

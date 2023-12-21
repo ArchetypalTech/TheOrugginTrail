@@ -40,14 +40,15 @@ enum RoomType {
 }
 
 enum DirectionType {
-  NORTH,
-  SOUTH,
-  EAST,
-  WEST,
-  UP,
-  DOWN,
-  FORWARD,
-  BACKWARDS
+  None,
+  North,
+  South,
+  East,
+  West,
+  Up,
+  Down,
+  Forward,
+  Backwards
 }
 
 enum DirObjectType {
@@ -59,16 +60,16 @@ enum DirObjectType {
 }
 
 enum ActionType {
-  NONE,
-  GO,
-  MOVE,
-  LOOT,
-  DESCRIBE,
-  TAKE,
-  KICK,
-  LOCK,
-  UNLOCK,
-  OPEN
+  None,
+  Go,
+  Move,
+  Loot,
+  Describe,
+  Take,
+  Kick,
+  Lock,
+  Unlock,
+  Open
 }
 
 enum ObjectType {
@@ -97,6 +98,9 @@ enum TexDefType {
 }
 
 enum CommandError {
+  NONE,
   LEN,
-  NOP
+  NOP,
+  GONOWHERE,
+  GOWHERE
 }

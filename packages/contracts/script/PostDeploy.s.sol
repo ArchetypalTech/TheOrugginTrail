@@ -154,6 +154,9 @@ contract PostDeploy is Script, GameConstants {
         uint32 newValue = IWorld(worldAddress).init();
         console.log("World initialised", newValue);
 
+        uint32 worldLookups = IWorld(worldAddress).initGES();
+        console.log("Lookups initialised", worldLookups);
+
         setupData();
         setupMapData();
 

@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import {ActionType, DirectionType} from "../codegen/common.sol";
-
 // this should be auto generated ? but it isnt
 // but it can then be used in Obj creation
 // by the PreyEngine or perhaps we just use 
@@ -22,10 +20,6 @@ contract GameConstants {
     // some MAX_SIZES for functions 
     uint8 public constant MAX_TOK = 16;
 
-    // some maps for verb lookups
-    mapping (string => ActionType) private commandLookup;
-    mapping (string => DirectionType) private directionLookup;
-
     // some DATA_BITS for packing
     uint8 public constant TERRAIN_BITS = 24;    // << 24
     uint8 public constant ROOM_BITS = 16;       // << 16
@@ -37,25 +31,7 @@ contract GameConstants {
     uint8 public constant SOUTH_DIR = 4;        // 0x0100
     uint8 public constant WEST_DIR = 8;         // 0x1000
 
-    constructor() {
-        commandLookup["GO"] = ActionType.Go;
-        commandLookup["MOVE"] = ActionType.Move;
-        commandLookup["LOOT"] = ActionType.Loot;
-        commandLookup["DESCRIBE"] = ActionType.Describe;
-        commandLookup["TAKE"] = ActionType.Take;
-        commandLookup["KICK"] = ActionType.Kick;
-        commandLookup["LOCK"] = ActionType.Lock;
-        commandLookup["UNLOCK"] = ActionType.Unlock;
-        commandLookup["OPEN"] = ActionType.Open;
-
-        directionLookup["NORTH"] = DirectionType.North;
-    }
-
-    function getActionType(string memory cmd) public view returns (ActionType) {
-        return commandLookup[cmd];
-    }
-    
-    function getDirType(string memory cmd) public view returns (DirectionType) {
-        return directionLookup[cmd];
-    }
+    /* ----- CRAPPY LOGGING ----- */
+    //event LogVar(string msg);
+    //event LogVarInt(uint8 msg);
 }
