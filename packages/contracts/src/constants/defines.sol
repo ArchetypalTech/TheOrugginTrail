@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import {ActionType} from "../codegen/common.sol";
-
 // this should be auto generated ? but it isnt
 // but it can then be used in Obj creation
 // by the PreyEngine or perhaps we just use 
@@ -22,9 +20,6 @@ contract GameConstants {
     // some MAX_SIZES for functions 
     uint8 public constant MAX_TOK = 16;
 
-    // a map for verb lookups
-    mapping (string => ActionType) private commandLookup;
-
     // some DATA_BITS for packing
     uint8 public constant TERRAIN_BITS = 24;    // << 24
     uint8 public constant ROOM_BITS = 16;       // << 16
@@ -36,20 +31,7 @@ contract GameConstants {
     uint8 public constant SOUTH_DIR = 4;        // 0x0100
     uint8 public constant WEST_DIR = 8;         // 0x1000
 
-    constructor() {
-        commandLookup["Go"] = ActionType.Go;
-        commandLookup["Move"] = ActionType.Move;
-        commandLookup["Loot"] = ActionType.Loot;
-        commandLookup["Describe"] = ActionType.Describe;
-        commandLookup["Take"] = ActionType.Take;
-        commandLookup["Kick"] = ActionType.Kick;
-        commandLookup["Lock"] = ActionType.Lock;
-        commandLookup["Unlock"] = ActionType.Unlock;
-        commandLookup["Open"] = ActionType.Open;
-    }
-
-    // Function to access the mapping
-    function getActionType(string memory command) public view returns (ActionType) {
-        return commandLookup[command];
-    }
+    /* ----- CRAPPY LOGGING ----- */
+    //event LogVar(string msg);
+    //event LogVarInt(uint8 msg);
 }

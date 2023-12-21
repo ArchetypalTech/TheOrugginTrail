@@ -40,6 +40,7 @@ enum RoomType {
 }
 
 enum DirectionType {
+  None,
   North,
   South,
   East,
@@ -97,6 +98,9 @@ enum TexDefType {
 }
 
 enum CommandError {
+  NONE,
   LEN,
-  NOP
+  NOP,
+  GONOWHERE,
+  GOWHERE
 }
