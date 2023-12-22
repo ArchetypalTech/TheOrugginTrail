@@ -1,5 +1,5 @@
-# TheOrugginTrail
-An experiment in fully onchain text adventures
+# TheOrugginTrail ZorkMUD
+A MUD based Zork-like experiment in fully onchain text adventures, framework interoperability, and the engines that drive them.
 
 
 >        \/|
@@ -13,6 +13,10 @@ An experiment in fully onchain text adventures
 >           '-\/     '/_(       `Y88P' fL
 
 What lies ahead, is anyone's guess...
+
+This project is a test-case for taking a zork-like text adventure engine and porting it to onchain gaming engines and frameworks like MUD and Dojo, and from there seeing if interesting interoperability between the engines can be connected and experimented with.
+
+This will be piloted by a text adventure aclled the O'ruggin Trail.
 
 WARNING: attempting a crossing to the frontiers of crypto country ultimately always results in horrible death... physical, moral, ego, or otherwise.
 
