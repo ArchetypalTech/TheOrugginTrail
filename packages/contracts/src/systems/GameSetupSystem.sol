@@ -44,6 +44,7 @@ contract GameSetupSystem is System {
         uint32[] memory plainDirs = new uint32[](2);
         plainDirs[0] = createDir(DirectionType.North, KBarn);
         plainDirs[1] = createDir(DirectionType.East, KMountainPath);
+        //plainDirs[2] = createDir(DirectionType.South, KMountainPath);
         createRoom(KPlain, 'You are on a plain with the wind blowing', plainDirs);
 
         // barn has one exit, back to the plain
@@ -57,14 +58,16 @@ contract GameSetupSystem is System {
         createRoom(KMountainPath, 'You are on the mountain path, you cant go any further though', mountainDirs);
     }
 
+    // this is where the bug was, we should get rid of this and create the ID's better
     function createDir(DirectionType directionType, uint32 roomId) private returns (uint32){
         DirObjStore.setDirType(dirId, directionType);
         DirObjStore.setRoomId(dirId, roomId);
-        return ++dirId;
+        return dirId++;
     }
 
     function createRoom(uint32 roomId, string memory description, uint32[] memory dirs) private {
         RoomStore.setDescription(roomId, description);
+        // add the dObjs to the room
         for (uint8 i = 0; i < dirs.length; i++) {
             RoomStore.pushDirObjIds(roomId, dirs[i]);
         }

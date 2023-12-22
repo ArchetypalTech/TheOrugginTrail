@@ -40,7 +40,8 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
 
     function spawn(uint32 startId) public {
         console.log("spawn");
-       _enterRoom(0); 
+        // start on the mountain
+       _enterRoom(2); 
     }
 
     function _describeActions(uint32 rId) private returns (string memory) {
@@ -59,7 +60,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
             }else if (dir.dirType == DirectionType.South) {
                 dirStrings[i] = " South";
             }else if (dir.dirType == DirectionType.West) {
-                dirStrings[i] = " South";
+                dirStrings[i] = " West";
             }else {dirStrings[i] = " to hell";}
         }
         for(uint16 i = 0; i < dirStrings.length; i++) {
@@ -77,7 +78,6 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
                                      "You can go", _describeActions(rId))
                                    );
         Output.set(pack);
-
         return 0;
     }
 
