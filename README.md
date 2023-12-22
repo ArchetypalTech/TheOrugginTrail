@@ -1,5 +1,5 @@
-# TheOrugginTrail ZorkMUD
-A MUD based Zork-like experiment in fully onchain text adventures, onchain games framework interoperability, and the engines that drive them.
+# TheOrugginTrail ZorkMUD<>ZorkDojo
+A MUD (and eventually also Dojo) based Zork-like experiment in fully onchain text adventures, onchain games framework interoperability, and the engines that drive them.
 
 >        \/|
 >       /"" ;,_               _________
