@@ -41,7 +41,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     function spawn(uint32 startId) public {
         console.log("spawn");
         // start on the mountain
-       _enterRoom(2); 
+       _enterRoom(0); 
     }
 
     function _describeActions(uint32 rId) private returns (string memory) {
@@ -51,7 +51,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
             DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
             
-            console.log("dir.dirType", uint8(dir.dirType)); 
+            //console.log("dir.dirType", uint8(dir.dirType)); 
 
             if (dir.dirType == DirectionType.North) {
                 dirStrings[i] = " North";
@@ -98,6 +98,9 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         return eMsg;
     }
 
+    function movePLayer(uint32 dirObjId, string[] memory tokens ) private {
+
+    }
 
     // should probably not return a uint8 but a CommandError
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
