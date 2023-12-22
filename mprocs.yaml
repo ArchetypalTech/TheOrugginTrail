@@ -1,10 +1,7 @@
 procs:
-  anvil:
-    cwd: packages/contracts
-    shell: anvil --block-time 1 --block-base-fee-per-gas 0
   contracts:
     cwd: packages/contracts
-    shell: pnpm run dev --rpc http://127.0.0.1:8545
+    shell: pnpm run dev
   client:
     cwd: packages/client
     shell: pnpm run dev
