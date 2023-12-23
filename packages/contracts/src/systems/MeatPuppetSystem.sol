@@ -86,6 +86,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     }
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
+        console.log("--------->CURR_RM:", rId);
         CurrentRoomId.set(rId);
         RoomStoreData memory currRoom = RoomStore.get(CurrentRoomId.get());
         string memory actions = _describeActions(rId);
@@ -107,7 +108,53 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     /* handle MOVEMENT*/
     function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
        console.log("----->MV_PL to: ", tokens[0]);
-       string memory  tok;
+       string memory  tok = tokens[0];
+       if (dirLookup[tok] != DirectionType.None) {
+           /* Direction form
+            *
+            * dir = n | e | s | w
+            *
+            */
+          DirectionType DIR = dirLookup[tok]; 
+          (bool mv, uint32 dObjId) = _directionCheck(currRmId, DIR);
+          if (mv) {
+              console.log("->MP--->DOBJ:", dObjId);
+              uint32 nxtRm = DirObjStore.getDestId(dObjId);
+              console.log("->MP --------->NXTRM:", nxtRm);
+              _enterRoom(nxtRm);
+          } else { console.log("--->DC:0000"); }
+       }else {
+           /* GO form
+            * 
+            * go_cmd = go, [pp, da], dir | obj 
+            * pp = "to";
+            * da = "the";
+            * dir = n | e | s | w
+            *
+            */
+           DirectionType DIR = dirLookup[tokens[1]];
+       }
+    }
+
+    function _directionCheck (uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
+        console.log("---->DC room:", rId, "---> DR:", uint8(d));
+      uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
+
+        console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
+      for (uint8 i = 0; i < exitIds.length; i++) {
+          console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
+          
+          DirectionType dt = DirObjStore.getDirType(exitIds[i]);
+          
+          console.log( "-->i:", i, "-->", uint8(dt) );
+         if ( DirObjStore.getDirType(exitIds[i]) == d) {
+             return (true, exitIds[i]);
+         } 
+      }  
+      // bad idea but we use 0 as a roomId
+      // need to fix, we should stick with Solidity idiom
+      // which is 0 is always false/None/Null
+      return (false, 0x10000);
     }
 
     // intended soley to process tokens and then hand off to other systems
@@ -125,7 +172,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
 
         string memory tok1 = tokens[0];
         console.log("---->PR", tok1);
-        console.log("---->PR ---->DL", uint8(dirLookup[tok1]));
+        console.log("---->PR ---->DIR", uint8(dirLookup[tok1]));
         if (dirLookup[tok1] != DirectionType.None) {
             err = _movePlayer(tokens, CurrentRoomId.get());
         } else if (cmdLookup[tok1] != ActionType.None ) {
