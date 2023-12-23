@@ -60,6 +60,8 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
        _enterRoom(0); 
     }
 
+    // MOVE TO OWN SYSTEM -- MEATWHISPERER
+    /* build up the text description strings for general output */
     function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
@@ -77,11 +79,9 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
                 dirStrings[i] = " West";
             }else {dirStrings[i] = " to hell";}
         }
-
         for(uint16 i = 0; i < dirStrings.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
-
         return msgStr;
     }
 
@@ -96,23 +96,18 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         return 0;
     }
 
+    // MOVE TO OWN SYSTEM -- MEATCOMMANDER
+    /* handle NON MOVEMENT VERBS */
+    function _handleAction(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
+        console.log("---->HDL_ACT", tokens[1]);
+        return 0;
+    }
+
     // MOVE TO ITS OWN SYTEM -- MEATMOVER
-    // handle logic for testing direction are available and thus moving the player 
-    //or not as the case may be
+    /* handle MOVEMENT*/
     function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
-       // first check we have a decent token 
+       console.log("----->MV_PL to: ", tokens[0]);
        string memory  tok;
-       if (tokens.length > 2) {
-           /* dir valid? */
-           if ( dirLookup[tokens[3]] != DirectionType.None ) {
-               /* dir found */
-           }else if (dirLookup[tokens[2]] != DirectionType.None ) {
-               /* dir found */
-           }else {
-               /* no dir found in tokens */
-               return ER_DR_ND;
-           }
-       }
     }
 
     // intended soley to process tokens and then hand off to other systems
@@ -120,40 +115,50 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     // Assuming these look good then in an ideal world drops token[0] and 
     // passes the tail to either the movement system or the actions system
     // Actually we dont because actually doing that is an expensive op in Sol
-    // and therefore the EVM (don't know) so we pass the whole thing around
+    // and therefore the EVM (???) so we pass the whole thing 
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
-
-        if (tokens.length > ER_PR_MXT ) {
-            string memory response = _insultMeat(ER_PR_MXT, "");
-            Output.set(response);
-            return uint8(CommandError.LEN);
+        /* see action diagram in VP (tokenise) for logic */
+        uint8 err; // guaranteed to init to 0 value
+        if (tokens.length > MAX_TOK ) {
+            err = ER_PR_TK_CX;
         }
 
-        for (uint8 i = 0; i < tokens.length; i++) {
-            // we want to compare against our mapped sting => enum
-            // data structure which takes strings we have tokenised
-            string memory vrb = tokens[i];
-            if (cmdLookup[vrb] != ActionType.None) {
-                ActionType VERB = cmdLookup[vrb];
-                if (VERB == ActionType.Go && tokens.length >= 2) {
-                    // this is a GO
-                    _movePlayer(tokens, CurrentRoomId.get());
+        string memory tok1 = tokens[0];
+        console.log("---->PR", tok1);
+        console.log("---->PR ---->DL", uint8(dirLookup[tok1]));
+        if (dirLookup[tok1] != DirectionType.None) {
+            err = _movePlayer(tokens, CurrentRoomId.get());
+        } else if (cmdLookup[tok1] != ActionType.None ) {
+            if (tokens.length >= 2) {
+                if ( cmdLookup[tok1] == ActionType.Go ) {
+                    err = _movePlayer(tokens, CurrentRoomId.get());
+                } else {
+                    err = _handleAction(tokens, CurrentRoomId.get());
                 }
-                else if (tokens.length >= 2) {
-                    // some other VERB 
-                }   
+            }else {
+                err = ER_PR_NO;
             }
+        } else {
+            err = ER_PR_NOP;
+        }
+
+        /* we have gone through the TOKENS, give err feedback if needed */
+        if (err != 0) {
+            console.log("----->PCR_ERR: err:", err);
+            string memory errMsg;
+            errMsg = _insultMeat(err, "");
+            Output.set(errMsg);
+            return err;
         }
     }
 
     //MOVE TO ITS OWN SYTEM - MEATINSULTOR
-    // we really should return a id to a hash table of compressed data, we shouldnt
-    // be storing this shite here
+    /* process errors and build up err output */
     function _insultMeat(uint8 ce, string memory badCmd) private pure returns (string memory) {
         string memory eMsg;
-        if (ce == ER_PR_MXT) {
+        if (ce == ER_PR_TK_CX) {
             eMsg = "WTF, slow down cowboy, your gonna hurt yourself";
-        } else if (ce == ER_PR_NOP) {
+        } else if (ce == ER_PR_NOP || ce == ER_PR_TK_C1) {
             eMsg = "Nope, gibberish\n"
             "Stop breathing with your mouth.";
         } else if (ce == ER_PR_ND) {

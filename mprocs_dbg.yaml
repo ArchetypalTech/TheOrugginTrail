@@ -1,7 +1,7 @@
 procs:
   anvil:
     cwd: packages/contracts
-    shell: anvil --block-time 1 --block-base-fee-per-gas 0
+    shell: anvil --block-time 1 --block-base-fee-per-gas 0 | ggrep -P "^-+>"
   contracts:
     cwd: packages/contracts
     shell: pnpm run dev --rpc http://127.0.0.1:8545

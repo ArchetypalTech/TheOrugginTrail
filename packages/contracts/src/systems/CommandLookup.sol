@@ -15,7 +15,7 @@ contract CommandLookups {
     function initCLS() public returns (uint32) {
         Output.set('initCES called...');
         setupCmds();
-        //setupDirs();
+        setupDirs();
         return 0;
     }
 
@@ -23,7 +23,6 @@ contract CommandLookups {
     // want users to have their own VERBS
     // how do we dynamically populate this ??
     function setupCmds() private returns (uint32) {
-       // the mapping thats in the GE.
         cmdLookup["GO"]         = ActionType.Go;
         cmdLookup["MOVE"]       = ActionType.Move;
         cmdLookup["LOOT"]       = ActionType.Loot;
@@ -38,7 +37,7 @@ contract CommandLookups {
     // this could autogen because we just take set of "str"
     // iterate and gen a line for each str.
     // fooLookup["FOO"] = FoosType.foo;
-    function setupDirLookups () private returns (uint32) {
+    function setupDirs () private returns (uint32) {
         dirLookup["NORTH"]  = DirectionType.North;
         dirLookup["SOUTH"]  = DirectionType.South;
         dirLookup["EAST"]   = DirectionType.East;

@@ -11,10 +11,12 @@ contract GameConstants {
     uint8 public constant ER_DR_NOP = 123;
     uint8 public constant ER_PR_ND = 124; // Error ParserRoutine DR
     uint8 public constant ER_PR_NT = 125;
-    uint8 public constant ER_PR_MXT = 126;
+    uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
     uint8 public constant ER_PR_NOP = 127;
+    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
+    uint8 public constant ER_PR_NO = 129; // Error No DirectObject
 
-    //uint32 public constant OPEN_ACTION_DESC_ID = 123;
+    //uint32 public constant ON_DESC_ID = 123;
     //uint32 public constant WOOD_DOOR_OBJECT_ID = 124;
     //uint32 public constant WOOD_DOOR_DESC_ID = 125;
     //uint32 public constant WOOD_MATERIAL_ID = 126;
@@ -22,6 +24,7 @@ contract GameConstants {
 
     // some MAX_SIZES for functions 
     uint8 public constant MAX_TOK = 16;
+    uint8 public constant MIN_TOK = 2;
 
     // some DATA_BITS for packing
     uint8 public constant TERRAIN_BITS = 24;    // << 24
