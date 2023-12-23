@@ -32,13 +32,13 @@ contract PostDeploy is Script, GameConstants {
     function setupData() internal {
         // OBJECTS: The DOOR
         // it's a wooden door and it opens
-        uint8 dir = NORTH_DIR | SOUTH_DIR;
+        // uint8 dir = NORTH_DIR | SOUTH_DIR;
         //ActionStore.set(
             //OPEN_ACTION_ID, ActionType.Open,
             //OPEN_ACTION_DESC_ID, true, 5
         //);
-        uint32[] memory actionIds = new uint32[](3);
-        actionIds[0] = OPEN_ACTION_ID;
+        //uint32[] memory actionIds = new uint32[](3);
+        //actionIds[0] = OPEN_ACTION_ID;
 
         //ObjectStore.set(
             //WOOD_DOOR_OBJECT_ID, ObjectType.Door,

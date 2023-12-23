@@ -23,8 +23,8 @@ contract GameSetupSystem is System {
         return 0;
     }
 
-    // we need to somewhere somehow read in the possible verbs if we
-    // want users to have their own VERBS
+    // left in here as an example for how to call systems via the world
+    // see MeatPuppetSystem for call
     function setupCmds(uint32 cmds) public returns (uint32) {
        // maybe populate the unused VERB tables etc? for now we just use
        // the mapping thats in the GE.
@@ -55,7 +55,7 @@ contract GameSetupSystem is System {
     // this is the case for all the id's really... well perhaps?
     function createDir(DirectionType directionType, uint32 roomId) private returns (uint32){
         DirObjStore.setDirType(dirId, directionType);
-        DirObjStore.setRoomId(dirId, roomId);
+        DirObjStore.setDestId(dirId, roomId);
         return dirId++;
     }
 }

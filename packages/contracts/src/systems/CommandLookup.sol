@@ -24,21 +24,27 @@ contract CommandLookups {
     // how do we dynamically populate this ??
     function setupCmds() private returns (uint32) {
        // the mapping thats in the GE.
-        cmdLookup["GO"] = ActionType.Go;
-        cmdLookup["MOVE"] = ActionType.Move;
-        cmdLookup["LOOT"] = ActionType.Loot;
-        cmdLookup["DESCRIBE"] = ActionType.Describe;
-        cmdLookup["TAKE"] = ActionType.Take;
-        cmdLookup["KICK"] = ActionType.Kick;
-        cmdLookup["LOCK"] = ActionType.Lock;
-        cmdLookup["UNLOCK"] = ActionType.Unlock;
-        cmdLookup["OPEN"] = ActionType.Open;
-
-        dirLookup["NORTH"] = DirectionType.North;
+        cmdLookup["GO"]         = ActionType.Go;
+        cmdLookup["MOVE"]       = ActionType.Move;
+        cmdLookup["LOOT"]       = ActionType.Loot;
+        cmdLookup["DESCRIBE"]   = ActionType.Describe;
+        cmdLookup["TAKE"]       = ActionType.Take;
+        cmdLookup["KICK"]       = ActionType.Kick;
+        cmdLookup["LOCK"]       = ActionType.Lock;
+        cmdLookup["UNLOCK"]     = ActionType.Unlock;
+        cmdLookup["OPEN"]       = ActionType.Open;
     }
 
+    // this could autogen because we just take set of "str"
+    // iterate and gen a line for each str.
+    // fooLookup["FOO"] = FoosType.foo;
     function setupDirLookups () private returns (uint32) {
-        //dirLookup[]
+        dirLookup["NORTH"]  = DirectionType.North;
+        dirLookup["SOUTH"]  = DirectionType.South;
+        dirLookup["EAST"]   = DirectionType.East;
+        dirLookup["WEST"]   = DirectionType.West;
+        dirLookup["UP"]     = DirectionType.Up;
+        dirLookup["DOWN"]   = DirectionType.Down;
     }
     
 }

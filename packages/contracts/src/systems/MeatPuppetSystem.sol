@@ -20,13 +20,29 @@ import { console } from "forge-std/console.sol";
 
 contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     
+    // TODO: 
+    // * common parser should be the same for actions as for
+    //   directions:
+    //   dircmd = "go", ["to"], target | dir;
+    //   dir = north | south | east | west;
+    //   target = object;
+    //   object = ...
+
     event debugLog(string msg, uint8 val);
+
     // we call this from the post deploy contract 
     function initGES() public returns (uint32) {
         Output.set('initGES called...');
+
+        // i dont like this there must be a cleaner way
+        // perhaps we should init() all systems via postdeploy ??
         initCLS();
 
         // our empty test function from the GSS that just returns a uint32
+        // for ref of how to call another systen, I think the system has to 
+        // be in the root namespace but it would be handy to figure out 
+        // how to actually use namespaces properly, its in the docs but not
+        // exactly clear
         uint32 returnValue = abi.decode(
             SystemSwitch.call(
                 abi.encodeCall(IGameSetupSystem.setupCmds, (22))
@@ -50,8 +66,6 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         string memory msgStr;
         for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
             DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
-            
-            //console.log("dir.dirType", uint8(dir.dirType)); 
 
             if (dir.dirType == DirectionType.North) {
                 dirStrings[i] = " North";
@@ -63,14 +77,15 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
                 dirStrings[i] = " West";
             }else {dirStrings[i] = " to hell";}
         }
+
         for(uint16 i = 0; i < dirStrings.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
+
         return msgStr;
     }
 
-    function _enterRoom(uint32 rId) private returns (uint32 err) {
-        // TODO:  on entering describe the room
+    function _enterRoom(uint32 rId) private returns (uint8 err) {
         CurrentRoomId.set(rId);
         RoomStoreData memory currRoom = RoomStore.get(CurrentRoomId.get());
         string memory actions = _describeActions(rId);
@@ -81,32 +96,35 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
         return 0;
     }
 
-    // we really should return a id to a hash table of compressed data, we shouldnt
-    // be storing this shite here
-    function _beWitty(CommandError ce, string memory badCmd) private pure returns (string memory) {
-        string memory eMsg;
-        if (ce == CommandError.LEN) {
-        eMsg = "WTF, slow down cowboy, your gonna hurt yourself";
-        } else if (ce == CommandError.NOP) {
-            eMsg = "Nope, gibberish\n"
-            "Stop breathing with your mouth.";
-        } else if (ce == CommandError.GONOWHERE) {
-            eMsg = "Go where pilgrim?";
-        } else if (ce == CommandError.GOWHERE) {
-            eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));    
-        }
-        return eMsg;
+    // MOVE TO ITS OWN SYTEM -- MEATMOVER
+    // handle logic for testing direction are available and thus moving the player 
+    //or not as the case may be
+    function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
+       // first check we have a decent token 
+       string memory  tok;
+       if (tokens.length > 2) {
+           /* dir valid? */
+           if ( dirLookup[tokens[3]] != DirectionType.None ) {
+               /* dir found */
+           }else if (dirLookup[tokens[2]] != DirectionType.None ) {
+               /* dir found */
+           }else {
+               /* no dir found in tokens */
+               return ER_DR_ND;
+           }
+       }
     }
 
-    function movePLayer(uint32 dirObjId, string[] memory tokens ) private {
-
-    }
-
-    // should probably not return a uint8 but a CommandError
+    // intended soley to process tokens and then hand off to other systems
+    // checks for first TOKEN which can be either a GO or another VERB.
+    // Assuming these look good then in an ideal world drops token[0] and 
+    // passes the tail to either the movement system or the actions system
+    // Actually we dont because actually doing that is an expensive op in Sol
+    // and therefore the EVM (don't know) so we pass the whole thing around
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
 
-        if (tokens.length > MAX_TOK ) {
-            string memory response = _beWitty(CommandError.LEN, "");
+        if (tokens.length > ER_PR_MXT ) {
+            string memory response = _insultMeat(ER_PR_MXT, "");
             Output.set(response);
             return uint8(CommandError.LEN);
         }
@@ -118,26 +136,33 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
             if (cmdLookup[vrb] != ActionType.None) {
                 ActionType VERB = cmdLookup[vrb];
                 if (VERB == ActionType.Go && tokens.length >= 2) {
-                    // hand off here to the engine it should take the current room id
-                    // this is just a start... GO is easy
-                    DirectionType DIR = dirLookup[tokens[1]];
-                    if (DIR != DirectionType.None) {
-                        _enterRoom(CurrentRoomId.get());
-                        return uint8(CommandError.NONE);
-                    }else {
-                        Output.set(_beWitty(CommandError.GOWHERE, tokens[1]));
-                        return uint8(CommandError.NOP); 
-                    }
-                } else {
-                    // didnt give use enough tokens for verb
-                    Output.set(_beWitty(CommandError.GONOWHERE, ""));
-                    return 12; //uint8(CommandError.NOP);
+                    // this is a GO
+                    _movePlayer(tokens, CurrentRoomId.get());
                 }
-            }else {
-                Output.set(_beWitty(CommandError.NOP, ""));
-                return 3;}
+                else if (tokens.length >= 2) {
+                    // some other VERB 
+                }   
+            }
         }
-       return 0;
+    }
+
+    //MOVE TO ITS OWN SYTEM - MEATINSULTOR
+    // we really should return a id to a hash table of compressed data, we shouldnt
+    // be storing this shite here
+    function _insultMeat(uint8 ce, string memory badCmd) private pure returns (string memory) {
+        string memory eMsg;
+        if (ce == ER_PR_MXT) {
+            eMsg = "WTF, slow down cowboy, your gonna hurt yourself";
+        } else if (ce == ER_PR_NOP) {
+            eMsg = "Nope, gibberish\n"
+            "Stop breathing with your mouth.";
+        } else if (ce == ER_PR_ND) {
+            eMsg = "Go where pilgrim?";
+        } else if (ce == ER_DR_NOP) {
+            eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));    
+        }
+        
+        return eMsg;
     }
 }
 

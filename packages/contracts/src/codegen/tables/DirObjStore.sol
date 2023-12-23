@@ -35,7 +35,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 struct DirObjStoreData {
   DirObjectType objType;
   DirectionType dirType;
-  uint32 roomId;
+  uint32 destId;
   uint32[] objectActionIds;
 }
 
@@ -90,7 +90,7 @@ library DirObjStore {
     fieldNames = new string[](4);
     fieldNames[0] = "objType";
     fieldNames[1] = "dirType";
-    fieldNames[2] = "roomId";
+    fieldNames[2] = "destId";
     fieldNames[3] = "objectActionIds";
   }
 
@@ -193,9 +193,9 @@ library DirObjStore {
   }
 
   /**
-   * @notice Get roomId.
+   * @notice Get destId.
    */
-  function getRoomId(uint32 dirObjId) internal view returns (uint32 roomId) {
+  function getDestId(uint32 dirObjId) internal view returns (uint32 destId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
@@ -204,9 +204,9 @@ library DirObjStore {
   }
 
   /**
-   * @notice Get roomId.
+   * @notice Get destId.
    */
-  function _getRoomId(uint32 dirObjId) internal view returns (uint32 roomId) {
+  function _getDestId(uint32 dirObjId) internal view returns (uint32 destId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
@@ -215,23 +215,23 @@ library DirObjStore {
   }
 
   /**
-   * @notice Set roomId.
+   * @notice Set destId.
    */
-  function setRoomId(uint32 dirObjId, uint32 roomId) internal {
+  function setDestId(uint32 dirObjId, uint32 destId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((roomId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((destId)), _fieldLayout);
   }
 
   /**
-   * @notice Set roomId.
+   * @notice Set destId.
    */
-  function _setRoomId(uint32 dirObjId, uint32 roomId) internal {
+  function _setDestId(uint32 dirObjId, uint32 destId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((roomId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((destId)), _fieldLayout);
   }
 
   /**
@@ -433,10 +433,10 @@ library DirObjStore {
     uint32 dirObjId,
     DirObjectType objType,
     DirectionType dirType,
-    uint32 roomId,
+    uint32 destId,
     uint32[] memory objectActionIds
   ) internal {
-    bytes memory _staticData = encodeStatic(objType, dirType, roomId);
+    bytes memory _staticData = encodeStatic(objType, dirType, destId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);
@@ -454,10 +454,10 @@ library DirObjStore {
     uint32 dirObjId,
     DirObjectType objType,
     DirectionType dirType,
-    uint32 roomId,
+    uint32 destId,
     uint32[] memory objectActionIds
   ) internal {
-    bytes memory _staticData = encodeStatic(objType, dirType, roomId);
+    bytes memory _staticData = encodeStatic(objType, dirType, destId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);
@@ -472,7 +472,7 @@ library DirObjStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 dirObjId, DirObjStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.roomId);
+    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
     bytes memory _dynamicData = encodeDynamic(_table.objectActionIds);
@@ -487,7 +487,7 @@ library DirObjStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 dirObjId, DirObjStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.roomId);
+    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
     bytes memory _dynamicData = encodeDynamic(_table.objectActionIds);
@@ -503,12 +503,12 @@ library DirObjStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (DirObjectType objType, DirectionType dirType, uint32 roomId) {
+  ) internal pure returns (DirObjectType objType, DirectionType dirType, uint32 destId) {
     objType = DirObjectType(uint8(Bytes.slice1(_blob, 0)));
 
     dirType = DirectionType(uint8(Bytes.slice1(_blob, 1)));
 
-    roomId = (uint32(Bytes.slice4(_blob, 2)));
+    destId = (uint32(Bytes.slice4(_blob, 2)));
   }
 
   /**
@@ -537,7 +537,7 @@ library DirObjStore {
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (DirObjStoreData memory _table) {
-    (_table.objType, _table.dirType, _table.roomId) = decodeStatic(_staticData);
+    (_table.objType, _table.dirType, _table.destId) = decodeStatic(_staticData);
 
     (_table.objectActionIds) = decodeDynamic(_encodedLengths, _dynamicData);
   }
@@ -569,9 +569,9 @@ library DirObjStore {
   function encodeStatic(
     DirObjectType objType,
     DirectionType dirType,
-    uint32 roomId
+    uint32 destId
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(objType, dirType, roomId);
+    return abi.encodePacked(objType, dirType, destId);
   }
 
   /**
@@ -602,10 +602,10 @@ library DirObjStore {
   function encode(
     DirObjectType objType,
     DirectionType dirType,
-    uint32 roomId,
+    uint32 destId,
     uint32[] memory objectActionIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(objType, dirType, roomId);
+    bytes memory _staticData = encodeStatic(objType, dirType, destId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);
