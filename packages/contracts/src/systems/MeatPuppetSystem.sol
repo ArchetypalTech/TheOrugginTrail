@@ -108,6 +108,7 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
     /* handle MOVEMENT*/
     function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
        console.log("----->MV_PL to: ", tokens[0]);
+       uint8 tok_err;
        string memory  tok = tokens[0];
        if (dirLookup[tok] != DirectionType.None) {
            /* Direction form
@@ -123,16 +124,24 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
               console.log("->MP --------->NXTRM:", nxtRm);
               _enterRoom(nxtRm);
           } else { console.log("--->DC:0000"); }
-       }else {
+       }else if ( cmdLookup[tok] == ActionType.Go ){
            /* GO form
             * 
-            * go_cmd = go, [pp, da], dir | obj 
+            * go_cmd = go, [(pp da)], dir | obj 
             * pp = "to";
             * da = "the";
             * dir = n | e | s | w
             *
             */
-           DirectionType DIR = dirLookup[tokens[1]];
+
+           DirectionType DIR;
+
+           if ( tokens.length >= 4 ) {
+              /* long form */ 
+           } else if (tokens.length == 2) {
+               /* short form */
+           }
+           
        }
     }
 
@@ -142,11 +151,12 @@ contract MeatPuppetSystem is System, GameConstants, CommandLookups  {
 
         console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
       for (uint8 i = 0; i < exitIds.length; i++) {
+
           console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
-          
+          // just for debug output
           DirectionType dt = DirObjStore.getDirType(exitIds[i]);
-          
           console.log( "-->i:", i, "-->", uint8(dt) );
+
          if ( DirObjStore.getDirType(exitIds[i]) == d) {
              return (true, exitIds[i]);
          } 

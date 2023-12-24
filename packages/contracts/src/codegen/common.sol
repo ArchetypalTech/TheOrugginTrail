@@ -80,6 +80,12 @@ enum ObjectType {
   Bottle
 }
 
+enum GrammarType {
+  None,
+  DefiniteArticle,
+  Preposition
+}
+
 enum MaterialType {
   None,
   Wood,

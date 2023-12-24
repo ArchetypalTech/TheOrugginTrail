@@ -65,9 +65,8 @@ export default mudConfig({
         ObjectType: [
             "None", "Ball", "Key", "Knife", "Bottle"
         ],
-
+        GrammarType: ["None", "DefiniteArticle", "Preposition"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
-        // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
         CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],
     },
