@@ -104,20 +104,17 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
         return 0;
     }
 
-    // MOVE TO ITS OWN SYTEM -- MEATMOVER
-    /* handle MOVEMENT to DIRECTIONs or THINGs */
-    function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
-        console.log("----->MV_PL to: ", tokens[0]);
-        uint8 tok_err;
-        string memory  tok = tokens[0];
-        if (dirLookup[tok] != DirectionType.None) {
+
+    function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
+        
+        if (dirLookup[tokens[0]] != DirectionType.None) {
             /* Direction form
             *
             * dir = n | e | s | w
             *
             */
-            tok_err = 0;
-        }else if ( cmdLookup[tok] == ActionType.Go ){
+            tok = tokens[0];
+        } else if ( cmdLookup[tokens[0]] != ActionType.None ) {
             /* GO form
             * 
             * go_cmd = go, [(pp da)], dir | obj 
@@ -128,16 +125,61 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
             if ( tokens.length >= 4 ) {
                 /* long form */
                 /* go_cmd = go, ("to" "the"), dir|obj */
+                tok = tokens[3]; // dir | obj
             } else if (tokens.length == 2) {
                 /* short form */
                 /* go_cmd = go, dir|obj */
                 tok = tokens[1]; // dir | obj
-                if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
-                //TODO: handle for obj
-                tok_err = 0;  
+                //TODO: handle for obj we probably dont even need it tbh
+                // but anyway its here because I get carried away...
             }
 
+            if ( dirLookup[tok] != DirectionType.None ) {
+                return (tok, 0); 
+            } else {
+                return ("", ER_DR_ND);
+            }
         }
+    }
+
+    // MOVE TO ITS OWN SYTEM -- MEATMOVER
+    /* handle MOVEMENT to DIRECTIONs or THINGs */
+    function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
+        console.log("----->MV_PL to: ", tokens[0]);
+        (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
+        //if (dirLookup[tok] != DirectionType.None) {
+            /* Direction form
+            *
+            * dir = n | e | s | w
+            *
+            */
+            //tok_err = 0;
+        //}else if ( cmdLookup[tok] == ActionType.Go ){
+            /* GO form
+            * 
+            * go_cmd = go, [(pp da)], dir | obj 
+            * pp = "to";
+            * da = "the";
+            * dir = n | e | s | w
+            */
+            //if ( tokens.length >= 4 ) {
+                //[> long form <]
+                //[> go_cmd = go, ("to" "the"), dir|obj <]
+                //tok = tokens[3]; // dir | obj
+                ////if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
+            //} else if (tokens.length == 2) {
+                //[> short form <]
+                //[> go_cmd = go, dir|obj <]
+                //tok = tokens[1]; // dir | obj
+                ////if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
+                ////TODO: handle for obj we probably dont even need it tbh
+                //// but anyway its here because I get carried away...
+                //tok_err = 0;  
+            //}
+
+            //if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
+
+        //}
 
         if (tok_err != 0) { return tok_err; }
         /* do direction tests */
