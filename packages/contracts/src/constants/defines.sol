@@ -7,14 +7,14 @@ pragma solidity >=0.8.21;
 // this set of constants to define the entire// digetic set of poassible things
 contract GameConstants {
  
-    uint8 public constant ER_DR_ND = 122; // Erroe DirectionRoutine DR
-    uint8 public constant ER_DR_NOP = 123;
-    uint8 public constant ER_PR_ND = 124; // Error ParserRoutine DR
-    uint8 public constant ER_PR_NT = 125;
-    uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
-    uint8 public constant ER_PR_NOP = 127;
-    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
-    uint8 public constant ER_PR_NO = 129; // Error No DirectObject
+    //uint8 public constant ER_DR_ND = 122; // Error DirectionRoutine DR
+    //uint8 public constant ER_DR_NOP = 123;
+    //uint8 public constant ER_PR_ND = 124; // Error ParserRoutine DR
+    //uint8 public constant ER_PR_NT = 125;
+    //uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
+    //uint8 public constant ER_PR_NOP = 127;
+    //uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
+    //uint8 public constant ER_PR_NO = 129; // Error No DirectObject
 
     //uint32 public constant ON_DESC_ID = 123;
     //uint32 public constant WOOD_DOOR_OBJECT_ID = 124;
@@ -40,4 +40,17 @@ contract GameConstants {
     /* ----- CRAPPY LOGGING ----- */
     event LogVar(string msg);
     event LogVarInt(uint8 msg);
+}
+
+contract ErrCodes {
+
+    uint8 public constant ER_DR_ND = 122; // Error DirectionRoutine DR
+    uint8 public constant ER_DR_NOP = 123;
+    uint8 public constant ER_PR_ND = 124; // Error ParserRoutine DR
+    uint8 public constant ER_PR_NT = 125;
+    uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
+    uint8 public constant ER_PR_NOP = 127;
+    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
+    uint8 public constant ER_PR_NO = 129; // Error No DirectObject
+
 }
