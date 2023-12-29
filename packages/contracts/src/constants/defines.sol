@@ -6,19 +6,25 @@ pragma solidity >=0.8.21;
 // by the PreyEngine or perhaps we just use 
 // this set of constants to define the entire// digetic set of poassible things
 contract GameConstants {
-    // some general purpose object ID's
-    // these really shoulf be uefull bit masks
-    // but for now we will just throw some shitty
-    // numbers in there
-    uint32 public constant OPEN_ACTION_ID = 122;
-    uint32 public constant OPEN_ACTION_DESC_ID = 123;
-    uint32 public constant WOOD_DOOR_OBJECT_ID = 124;
-    uint32 public constant WOOD_DOOR_DESC_ID = 125;
-    uint32 public constant WOOD_MATERIAL_ID = 126;
-    uint32 public constant PORTAL_ID = 127;
+ 
+    uint8 public constant ER_DR_ND = 122; // Erroe DirectionRoutine DR
+    uint8 public constant ER_DR_NOP = 123;
+    uint8 public constant ER_PR_ND = 124; // Error ParserRoutine DR
+    uint8 public constant ER_PR_NT = 125;
+    uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
+    uint8 public constant ER_PR_NOP = 127;
+    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
+    uint8 public constant ER_PR_NO = 129; // Error No DirectObject
+
+    //uint32 public constant ON_DESC_ID = 123;
+    //uint32 public constant WOOD_DOOR_OBJECT_ID = 124;
+    //uint32 public constant WOOD_DOOR_DESC_ID = 125;
+    //uint32 public constant WOOD_MATERIAL_ID = 126;
+    //uint32 public constant PORTAL_ID = 127;
 
     // some MAX_SIZES for functions 
     uint8 public constant MAX_TOK = 16;
+    uint8 public constant MIN_TOK = 2;
 
     // some DATA_BITS for packing
     uint8 public constant TERRAIN_BITS = 24;    // << 24
@@ -32,6 +38,6 @@ contract GameConstants {
     uint8 public constant WEST_DIR = 8;         // 0x1000
 
     /* ----- CRAPPY LOGGING ----- */
-    //event LogVar(string msg);
-    //event LogVarInt(uint8 msg);
+    event LogVar(string msg);
+    event LogVarInt(uint8 msg);
 }
