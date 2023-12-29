@@ -8,7 +8,7 @@ import {System} from "@latticexyz/world/src/System.sol";
 import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData, TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 import { CommandLookups } from "./CommandLookup.sol";
-import { GameConstants, ErrCodes } from "../constants/defines.sol";
+import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 // an attempt at calling another system
 // we nneed the below
@@ -18,7 +18,7 @@ import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
 
 import { console } from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System, GameConstants, ErrCodes, CommandLookups  {
+contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandLookups  {
 
     // TODO: 
     // * common parser should be the same for actions as for
@@ -148,9 +148,19 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, CommandLookups  {
             console.log("->MP --------->NXTRM:", nxtRm);
             _enterRoom(nxtRm);
             return 0;
-        }else { console.log("--->DC:0000"); }
+        }else { 
+            console.log("--->DC:0000"); 
+            // check reason we didnt move this can currently only 
+            // be cannot actually move that way because no exit
+            //string memory errMsg;
+            //errMsg = _insultMeat(GO_NO_EXT, tok);
+            //Output.set(errMsg);
+            return GO_NO_EXIT;
+        }
     }
 
+    // currently just handles if the DIR matches an dirObjs dirType value
+    // needs to also test lockedness/openability
     function _directionCheck (uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
         console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
@@ -203,12 +213,12 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, CommandLookups  {
             }
 
             /* we have gone through the TOKENS, give err feedback if needed */
-                    if (err != 0) {
+            if (err != 0) {
                 console.log("----->PCR_ERR: err:", err);
-            string memory errMsg;
-            errMsg = _insultMeat(err, "");
-            Output.set(errMsg);
-            return err;
+                string memory errMsg;
+                errMsg = _insultMeat(err, "");
+                Output.set(errMsg);
+                return err;
             }
     }
 
@@ -225,8 +235,9 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, CommandLookups  {
             eMsg = "Go where pilgrim?";
         } else if (ce == ER_DR_NOP) {
             eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));    
+        } else if (ce == GO_NO_EXIT) {
+            eMsg = string(abi.encodePacked("Can't go that away", badCmd));    
         }
-
         return eMsg;
     }
 }

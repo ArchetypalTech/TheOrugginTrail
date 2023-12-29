@@ -42,6 +42,11 @@ contract GameConstants {
     event LogVarInt(uint8 msg);
 }
 
+// some result codes (from game commands)
+contract ResCodes {
+    uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
+}
+
 contract ErrCodes {
 
     uint8 public constant ER_DR_ND = 122; // Error DirectionRoutine DR
