@@ -62,27 +62,27 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
-            function _describeActions(uint32 rId) private returns (string memory) {
+    function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
-    string[8] memory dirStrings;
-    string memory msgStr;
-    for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
-        DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
+        string[8] memory dirStrings;
+        string memory msgStr;
+        for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
+            DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
 
-        if (dir.dirType == DirectionType.North) {
-            dirStrings[i] = " North";
-        }else if (dir.dirType == DirectionType.East) {
-            dirStrings[i] = " East";
-        }else if (dir.dirType == DirectionType.South) {
-            dirStrings[i] = " South";
-        }else if (dir.dirType == DirectionType.West) {
-            dirStrings[i] = " West";
-        }else {dirStrings[i] = " to hell";}
-    }
-    for(uint16 i = 0; i < dirStrings.length; i++) {
-        msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
-    }
-    return msgStr;
+            if (dir.dirType == DirectionType.North) {
+                dirStrings[i] = " North";
+            }else if (dir.dirType == DirectionType.East) {
+                dirStrings[i] = " East";
+            }else if (dir.dirType == DirectionType.South) {
+                dirStrings[i] = " South";
+            }else if (dir.dirType == DirectionType.West) {
+                dirStrings[i] = " West";
+            }else {dirStrings[i] = " to hell";}
+        }
+        for(uint16 i = 0; i < dirStrings.length; i++) {
+            msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
+        }
+        return msgStr;
     }
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
@@ -132,12 +132,13 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
                 /* short form */
                 /* go_cmd = go, dir|obj */
                 tok = tokens[1]; // dir | obj
-                if (dirLookup[tok] == DirectionType.None) {return ER_DR_ND;}    
+                if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
                 //TODO: handle for obj
-                    tok_err = 0;  
-                }
+                tok_err = 0;  
+            }
 
         }
+
         if (tok_err != 0) { return tok_err; }
         /* do direction tests */
         DirectionType DIR = dirLookup[tok]; 
@@ -188,50 +189,50 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
     // and therefore the EVM (???) so we pass the whole thing 
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
-                uint8 err; // guaranteed to init to 0 value
-            if (tokens.length > MAX_TOK ) {
-                err = ER_PR_TK_CX;
-            }
+        uint8 err; // guaranteed to init to 0 value
+        if (tokens.length > MAX_TOK ) {
+            err = ER_PR_TK_CX;
+        }
 
-            string memory tok1 = tokens[0];
-            console.log("---->PR", tok1);
-            console.log("---->PR ---->TOK[0]", uint8(dirLookup[tok1]));
-            if (dirLookup[tok1] != DirectionType.None) {
-                err = _movePlayer(tokens, CurrentRoomId.get());
-            } else if (cmdLookup[tok1] != ActionType.None ) {
-                if (tokens.length >= 2) {
-                    if ( cmdLookup[tok1] == ActionType.Go ) {
-                        err = _movePlayer(tokens, CurrentRoomId.get());
-                    } else {
-                        err = _handleAction(tokens, CurrentRoomId.get());
-                    }
-                }else {
-                    err = ER_PR_NO;
+        string memory tok1 = tokens[0];
+        console.log("---->PR", tok1);
+        console.log("---->PR ---->TOK[0]", uint8(dirLookup[tok1]));
+        if (dirLookup[tok1] != DirectionType.None) {
+            err = _movePlayer(tokens, CurrentRoomId.get());
+        } else if (cmdLookup[tok1] != ActionType.None ) {
+            if (tokens.length >= 2) {
+                if ( cmdLookup[tok1] == ActionType.Go ) {
+                    err = _movePlayer(tokens, CurrentRoomId.get());
+                } else {
+                    err = _handleAction(tokens, CurrentRoomId.get());
                 }
-            } else {
-                err = ER_PR_NOP;
+            }else {
+                err = ER_PR_NO;
             }
+        } else {
+            err = ER_PR_NOP;
+        }
 
-            /* we have gone through the TOKENS, give err feedback if needed */
-            if (err != 0) {
-                console.log("----->PCR_ERR: err:", err);
-                string memory errMsg;
-                errMsg = _insultMeat(err, "");
-                Output.set(errMsg);
-                return err;
-            }
+        /* we have gone through the TOKENS, give err feedback if needed */
+        if (err != 0) {
+            console.log("----->PCR_ERR: err:", err);
+            string memory errMsg;
+            errMsg = _insultMeat(err, "");
+            Output.set(errMsg);
+            return err;
+        }
     }
 
     //MOVE TO ITS OWN SYTEM - MEATINSULTOR
     /* process errors and build up err output */
-        function _insultMeat(uint8 ce, string memory badCmd) private pure returns (string memory) {
+    function _insultMeat(uint8 ce, string memory badCmd) private pure returns (string memory) {
         string memory eMsg;
         if (ce == ER_PR_TK_CX) {
             eMsg = "WTF, slow down cowboy, your gonna hurt yourself";
         } else if (ce == ER_PR_NOP || ce == ER_PR_TK_C1) {
             eMsg = "Nope, gibberish\n"
             "Stop breathing with your mouth.";
-        } else if (ce == ER_PR_ND) {
+        } else if (ce == ER_PR_ND || ce == ER_DR_ND) {
             eMsg = "Go where pilgrim?";
         } else if (ce == ER_DR_NOP) {
             eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));    
