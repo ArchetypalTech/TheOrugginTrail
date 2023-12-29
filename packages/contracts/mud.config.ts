@@ -117,8 +117,8 @@ export default mudConfig({
             },
             valueSchema: {
                 objType: "DirObjectType", // Door/Window/CaveMouth etc
-                dirType: "uint8", // North, South, Up etc
-                roomId: "uint32",
+                dirType: "DirectionType", // North, South, Up etc
+                destId: "uint32",
                 objectActionIds: "uint32[]" // Open/Lock/Break etc
             },
         },
