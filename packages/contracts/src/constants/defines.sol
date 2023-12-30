@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 // but it can then be used in Obj creation
 // by the PreyEngine or perhaps we just use 
 // this set of constants to define the entire// digetic set of poassible things
-contract GameConstants {
+library GameConstants {
  
     //uint8 public constant ER_DR_ND = 122; // Error DirectionRoutine DR
     //uint8 public constant ER_DR_NOP = 123;
@@ -37,17 +37,14 @@ contract GameConstants {
     uint8 public constant SOUTH_DIR = 4;        // 0x0100
     uint8 public constant WEST_DIR = 8;         // 0x1000
 
-    /* ----- CRAPPY LOGGING ----- */
-    event LogVar(string msg);
-    event LogVarInt(uint8 msg);
 }
 
 // some result codes (from game commands)
-contract ResCodes {
+library ResCodes {
     uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
 }
 
-contract ErrCodes {
+library ErrCodes {
 
     uint8 public constant ER_DR_ND = 122; // Error DirectionRoutine DR
     uint8 public constant ER_DR_NOP = 123;

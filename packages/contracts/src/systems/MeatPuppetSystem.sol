@@ -9,16 +9,16 @@ import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStor
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 import { CommandLookups } from "./CommandLookup.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
-import { BaseContract } from './Base.sol';
-// an attempt at calling another system
-// we nneed the below
+
+/* CALLING INTO OTHER SYSTEMS VIA ABI CALLS*/
+// we need the Switcher
 import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
 // then the system interface
 import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
 
 import { console } from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
+contract MeatPuppetSystem is System, CommandLookups  {
 
     event debugLog(string msg, uint8 val);
 
@@ -130,7 +130,7 @@ contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
             if ( dirLookup[tok] != DirectionType.None ) {
                 return (tok, 0); 
             } else {
-                return ("", ER_DR_ND);
+                return ("", ErrCodes.ER_DR_ND);
             }
         }
     }
@@ -191,7 +191,7 @@ contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
             //string memory errMsg;
             //errMsg = _insultMeat(GO_NO_EXT, tok);
             //Output.set(errMsg);
-            return GO_NO_EXIT;
+            return ResCodes.GO_NO_EXIT;
         }
     }
 
@@ -225,8 +225,8 @@ contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
         uint8 err; // guaranteed to init to 0 value
-        if (tokens.length > MAX_TOK ) {
-            err = ER_PR_TK_CX;
+        if (tokens.length > GameConstants.MAX_TOK ) {
+            err = ErrCodes.ER_PR_TK_CX;
         }
 
         string memory tok1 = tokens[0];
@@ -242,10 +242,10 @@ contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
                     err = _handleAction(tokens, CurrentRoomId.get());
                 }
             }else {
-                err = ER_PR_NO;
+                err = ErrCodes.ER_PR_NO;
             }
         } else {
-            err = ER_PR_NOP;
+            err = ErrCodes.ER_PR_NOP;
         }
 
         /* we have gone through the TOKENS, give err feedback if needed */
@@ -262,16 +262,16 @@ contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
     /* process errors and build up err output */
     function _insultMeat(uint8 ce, string memory badCmd) private pure returns (string memory) {
         string memory eMsg;
-        if (ce == ER_PR_TK_CX) {
+        if (ce == ErrCodes.ER_PR_TK_CX) {
             eMsg = "WTF, slow down cowboy, your gonna hurt yourself";
-        } else if (ce == ER_PR_NOP || ce == ER_PR_TK_C1) {
+        } else if (ce == ErrCodes.ER_PR_NOP || ce == ErrCodes.ER_PR_TK_C1) {
             eMsg = "Nope, gibberish\n"
             "Stop breathing with your mouth.";
-        } else if (ce == ER_PR_ND || ce == ER_DR_ND) {
+        } else if (ce == ErrCodes.ER_PR_ND || ce == ErrCodes.ER_DR_ND) {
             eMsg = "Go where pilgrim?";
-        } else if (ce == ER_DR_NOP) {
+        } else if (ce == ErrCodes.ER_DR_NOP) {
             eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));    
-        } else if (ce == GO_NO_EXIT) {
+        } else if (ce == ResCodes.GO_NO_EXIT) {
             eMsg = string(abi.encodePacked("Can't go that away", badCmd));    
         }
         return eMsg;
