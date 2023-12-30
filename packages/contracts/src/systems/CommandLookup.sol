@@ -34,6 +34,7 @@ contract CommandLookups {
         cmdLookup["LOCK"]       = ActionType.Lock;
         cmdLookup["UNLOCK"]     = ActionType.Unlock;
         cmdLookup["OPEN"]       = ActionType.Open;
+        cmdLookup["LOOK"]       = ActionType.Look;
     }
 
     // this could autogen because we just take set of "str"

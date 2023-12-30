@@ -9,7 +9,7 @@ import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStor
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 import { CommandLookups } from "./CommandLookup.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
-
+import { BaseContract } from './Base.sol';
 // an attempt at calling another system
 // we nneed the below
 import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
@@ -18,15 +18,7 @@ import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
 
 import { console } from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandLookups  {
-
-    // TODO: 
-    // * common parser should be the same for actions as for
-    //   directions:
-    //   dircmd = "go", ["to"], target | dir;
-    //   dir = north | south | east | west;
-    //   target = object;
-    //   object = ...
+contract MeatPuppetSystem is System, BaseContract, CommandLookups  {
 
     event debugLog(string msg, uint8 val);
 
@@ -34,8 +26,9 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
     function initGES() public returns (uint32) {
         Output.set('initGES called...');
 
-        // i dont like this there must be a cleaner way
-        // perhaps we should init() all systems via postdeploy ??
+        // Not a fan of this init call here
+        // but we need to calol setup on the mappings
+        // in CommandLookups
         initCLS();
 
         // our empty test function from the GSS that just returns a uint32

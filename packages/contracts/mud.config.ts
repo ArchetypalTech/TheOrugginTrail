@@ -59,11 +59,12 @@ export default mudConfig({
         //
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
-            "Take", "Kick", "Lock", "Unlock", "Open"
+            "Take", "Kick", "Lock", "Unlock", "Open",
+            "Look"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
-            "None", "Ball", "Key", "Knife", "Bottle"
+            "None", "Football", "Key", "Knife", "Bottle"
         ],
         GrammarType: ["None", "DefiniteArticle", "Preposition"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
