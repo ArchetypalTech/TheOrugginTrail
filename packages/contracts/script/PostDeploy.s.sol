@@ -152,13 +152,14 @@ contract PostDeploy is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         uint32 newValue = IWorld(worldAddress).init();
-        console.log("World initialised", newValue);
 
         address tokeniser = IWorld(worldAddress).initTS();
         
-        uint32 worldLookups = IWorld(worldAddress).initGES(tokeniser);
+        address meatPuppet = IWorld(worldAddress).initGES(tokeniser);
+
+        address directionFinder = IWorld(worldAddress).initDFS(tokeniser);
         
-        console.log("Lookups initialised", worldLookups);
+        console.log("--->init systems");
 
         //setupData();
         //setupMapData();

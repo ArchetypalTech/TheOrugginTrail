@@ -8,7 +8,9 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IMeatPuppetSystem {
-  function initGES(address tokeniser) external returns (uint32);
+  function initGES(address tokeniser) external returns (address);
 
   function spawn(uint32 startId) external;
+
+  function processCommandTokens(string[] calldata tokens) external returns (uint8 err);
 }

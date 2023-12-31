@@ -28,7 +28,7 @@ contract MeatPuppetSystem is System  {
     ITokeniserSystem luts;
 
     // we call this from the post deploy contract 
-    function initGES(address tokeniser) public returns (uint32) {
+    function initGES(address tokeniser) public returns (address) {
         Output.set('initGES called...');
 
         // Not a fan of this init call here
@@ -51,7 +51,7 @@ contract MeatPuppetSystem is System  {
         );
 
         spawn(0);
-        return 0;
+        return address(this);
     }
 
     function spawn(uint32 startId) public {
@@ -85,7 +85,6 @@ contract MeatPuppetSystem is System  {
         return msgStr;
     }
 
-    
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->CURR_RM:", rId);
         CurrentRoomId.set(rId);
@@ -213,10 +212,8 @@ contract MeatPuppetSystem is System  {
     // passes the tail to either the movement system or the actions system
     // Actually we dont because actually doing that is an expensive op in Sol
     // and therefore the EVM (???) so we pass the whole thing 
-    /*
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
-    /*
         uint8 err; // guaranteed to init to 0 value
         if (tokens.length > GameConstants.MAX_TOK ) {
             err = ErrCodes.ER_PR_TK_CX;
@@ -224,17 +221,17 @@ contract MeatPuppetSystem is System  {
 
         string memory tok1 = tokens[0];
         console.log("---->PR", tok1);
-        console.log("---->PR ---->TOK[0]", uint8(dirLookup(tok1)));
-        if (dirLookup(tok1) != DirectionType.None) {
-            err = _movePlayer(tokens, CurrentRoomId.get());
-        } else if (cmdLookup(tok1) != ActionType.None ) {
+        console.log("---->PR ---->TOK[0]", uint8(luts.getDirectionType(tok1)));
+        if (luts.getDirectionType(tok1) != DirectionType.None) {
+            //err = _movePlayer(tokens, CurrentRoomId.get());
+        } else if (luts.getActionType(tok1) != ActionType.None ) {
             if (tokens.length >= 2) {
-                if ( cmdLookup(tok1) == ActionType.Go ) {
-                    err = _movePlayer(tokens, CurrentRoomId.get());
+                if ( luts.getActionType(tok1) == ActionType.Go ) {
+                    //err = _movePlayer(tokens, CurrentRoomId.get());
                 } else {
-                    err = _handleAction(tokens, CurrentRoomId.get());
+                    //err = _handleAction(tokens, CurrentRoomId.get());
                 }
-            }else {
+            } else {
                 err = ErrCodes.ER_PR_NO;
             }
         } else {
@@ -242,7 +239,6 @@ contract MeatPuppetSystem is System  {
         }
 
         /* we have gone through the TOKENS, give err feedback if needed */
-    /*
         if (err != 0) {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
@@ -251,7 +247,6 @@ contract MeatPuppetSystem is System  {
             return err;
         }
     }
-    */
 
     //MOVE TO ITS OWN SYTEM - MEATINSULTOR
     /* process errors and build up err output */
