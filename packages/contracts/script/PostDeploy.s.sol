@@ -154,11 +154,14 @@ contract PostDeploy is Script {
         uint32 newValue = IWorld(worldAddress).init();
         console.log("World initialised", newValue);
 
-        uint32 worldLookups = IWorld(worldAddress).initGES();
+        address tokeniser = IWorld(worldAddress).initTS();
+        
+        uint32 worldLookups = IWorld(worldAddress).initGES(tokeniser);
+        
         console.log("Lookups initialised", worldLookups);
 
-        setupData();
-        setupMapData();
+        //setupData();
+        //setupMapData();
 
         vm.stopBroadcast();
     }

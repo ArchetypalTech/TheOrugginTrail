@@ -7,8 +7,9 @@ import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
 import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData, TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
-import { CommandLookups } from "./CommandLookup.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
+
+import { Look } from './actions/Look.sol';
 
 /* CALLING INTO OTHER SYSTEMS VIA ABI CALLS*/
 // we need the Switcher
@@ -16,20 +17,26 @@ import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.s
 // then the system interface
 import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
 
+import { ICommandLookupSystem } from "../codegen/world/ICommandLookupSystem.sol";
+
 import { console } from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System, CommandLookups  {
+contract MeatPuppetSystem is System  {
 
     event debugLog(string msg, uint8 val);
 
+    ICommandLookupSystem luts;
+
     // we call this from the post deploy contract 
-    function initGES() public returns (uint32) {
+    function initGES(address tokeniser) public returns (uint32) {
         Output.set('initGES called...');
 
         // Not a fan of this init call here
-        // but we need to calol setup on the mappings
+        // but we need to call setup on the mappings
         // in CommandLookups
-        initCLS();
+        //ll = new CommandLookups();
+        //initCLS();
+        luts = ICommandLookupSystem(tokeniser); 
 
         // our empty test function from the GSS that just returns a uint32
         // for ref of how to call another systen, I think the system has to 
@@ -50,11 +57,12 @@ contract MeatPuppetSystem is System, CommandLookups  {
     function spawn(uint32 startId) public {
         console.log("spawn");
         // start on the mountain
-        _enterRoom(0); 
+        //_enterRoom(0); 
     }
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
+    /*
     function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
@@ -77,7 +85,9 @@ contract MeatPuppetSystem is System, CommandLookups  {
         }
         return msgStr;
     }
+    */
 
+    /*
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->CURR_RM:", rId);
         CurrentRoomId.set(rId);
@@ -89,25 +99,34 @@ contract MeatPuppetSystem is System, CommandLookups  {
                                    Output.set(pack);
                                    return 0;
     }
+    */
 
     // MOVE TO OWN SYSTEM -- MEATCOMMANDER
     /* handle NON MOVEMENT VERBS */
+    /*
     function _handleAction(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
-        console.log("---->HDL_ACT", tokens[1]);
+        console.log("---->HDL_ACT", tokens[0]);
+        string memory tok = tokens[0];
+        if (cmdLookup(tok) == ActionType.Look || cmdLookup(tok) == ActionType.Describe) {
+            ////(string memory d, uint8 e) = Look.look(tokens, address(this));
+            ////(string memory d, uint8 e) = Look.fishDirectionTok(tokens, address(this));
+        } else {}
         return 0;
     }
+    */
 
-
+    /*
     function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
         
-        if (dirLookup[tokens[0]] != DirectionType.None) {
+        if (dirLookup(tokens[0]) != DirectionType.None) {
             /* Direction form
             *
             * dir = n | e | s | w
             *
             */
+    /*
             tok = tokens[0];
-        } else if ( cmdLookup[tokens[0]] != ActionType.None ) {
+        } else if ( cmdLookup(tokens[0]) != ActionType.None ) {
             /* GO form
             * 
             * go_cmd = go, [(pp da)], dir | obj 
@@ -115,68 +134,39 @@ contract MeatPuppetSystem is System, CommandLookups  {
             * da = "the";
             * dir = n | e | s | w
             */
+    /*
             if ( tokens.length >= 4 ) {
-                /* long form */
-                /* go_cmd = go, ("to" "the"), dir|obj */
+                //[> long form <]
+                //[> go_cmd = go, ("to" "the"), dir|obj <]
                 tok = tokens[3]; // dir | obj
             } else if (tokens.length == 2) {
-                /* short form */
-                /* go_cmd = go, dir|obj */
+                //[> short form <]
+                //[> go_cmd = go, dir|obj <]
                 tok = tokens[1]; // dir | obj
-                //TODO: handle for obj we probably dont even need it tbh
-                // but anyway its here because I get carried away...
+                ////TODO: handle for obj we probably dont even need it tbh
+                //// but anyway its here because I get carried away...
             }
 
-            if ( dirLookup[tok] != DirectionType.None ) {
+            if ( dirLookup(tok) != DirectionType.None ) {
                 return (tok, 0); 
             } else {
                 return ("", ErrCodes.ER_DR_ND);
             }
         }
     }
+    */
 
     // MOVE TO ITS OWN SYTEM -- MEATMOVER
     /* handle MOVEMENT to DIRECTIONs or THINGs */
+    /*
     function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
         console.log("----->MV_PL to: ", tokens[0]);
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
-        //if (dirLookup[tok] != DirectionType.None) {
-            /* Direction form
-            *
-            * dir = n | e | s | w
-            *
-            */
-            //tok_err = 0;
-        //}else if ( cmdLookup[tok] == ActionType.Go ){
-            /* GO form
-            * 
-            * go_cmd = go, [(pp da)], dir | obj 
-            * pp = "to";
-            * da = "the";
-            * dir = n | e | s | w
-            */
-            //if ( tokens.length >= 4 ) {
-                //[> long form <]
-                //[> go_cmd = go, ("to" "the"), dir|obj <]
-                //tok = tokens[3]; // dir | obj
-                ////if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
-            //} else if (tokens.length == 2) {
-                //[> short form <]
-                //[> go_cmd = go, dir|obj <]
-                //tok = tokens[1]; // dir | obj
-                ////if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
-                ////TODO: handle for obj we probably dont even need it tbh
-                //// but anyway its here because I get carried away...
-                //tok_err = 0;  
-            //}
-
-            //if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }    
-
-        //}
-
         if (tok_err != 0) { return tok_err; }
+      
         /* do direction tests */
-        DirectionType DIR = dirLookup[tok]; 
+    /*
+        DirectionType DIR = dirLookup(tok); 
         (bool mv, uint32 dObjId) = _directionCheck(currRmId, DIR);
         if (mv) {
             console.log("->MP--->DOBJ:", dObjId);
@@ -194,9 +184,11 @@ contract MeatPuppetSystem is System, CommandLookups  {
             return ResCodes.GO_NO_EXIT;
         }
     }
+    */
 
     // currently just handles if the DIR matches an dirObjs dirType value
     // needs to also test lockedness/openability
+    /*
     function _directionCheck (uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
         console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
@@ -215,6 +207,7 @@ contract MeatPuppetSystem is System, CommandLookups  {
         // which is 0 is always false/None/Null
         return (false, 0x10000);
     }
+    */
 
     // intended soley to process tokens and then hand off to other systems
     // checks for first TOKEN which can be either a GO or another VERB.
@@ -222,8 +215,10 @@ contract MeatPuppetSystem is System, CommandLookups  {
     // passes the tail to either the movement system or the actions system
     // Actually we dont because actually doing that is an expensive op in Sol
     // and therefore the EVM (???) so we pass the whole thing 
+    /*
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
+    /*
         uint8 err; // guaranteed to init to 0 value
         if (tokens.length > GameConstants.MAX_TOK ) {
             err = ErrCodes.ER_PR_TK_CX;
@@ -231,12 +226,12 @@ contract MeatPuppetSystem is System, CommandLookups  {
 
         string memory tok1 = tokens[0];
         console.log("---->PR", tok1);
-        console.log("---->PR ---->TOK[0]", uint8(dirLookup[tok1]));
-        if (dirLookup[tok1] != DirectionType.None) {
+        console.log("---->PR ---->TOK[0]", uint8(dirLookup(tok1)));
+        if (dirLookup(tok1) != DirectionType.None) {
             err = _movePlayer(tokens, CurrentRoomId.get());
-        } else if (cmdLookup[tok1] != ActionType.None ) {
+        } else if (cmdLookup(tok1) != ActionType.None ) {
             if (tokens.length >= 2) {
-                if ( cmdLookup[tok1] == ActionType.Go ) {
+                if ( cmdLookup(tok1) == ActionType.Go ) {
                     err = _movePlayer(tokens, CurrentRoomId.get());
                 } else {
                     err = _handleAction(tokens, CurrentRoomId.get());
@@ -249,6 +244,7 @@ contract MeatPuppetSystem is System, CommandLookups  {
         }
 
         /* we have gone through the TOKENS, give err feedback if needed */
+    /*
         if (err != 0) {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
@@ -257,6 +253,7 @@ contract MeatPuppetSystem is System, CommandLookups  {
             return err;
         }
     }
+    */
 
     //MOVE TO ITS OWN SYTEM - MEATINSULTOR
     /* process errors and build up err output */

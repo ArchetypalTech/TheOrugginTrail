@@ -1,30 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { console } from "forge-std/console.sol";
 
-//import {System} from "@latticexyz/world/src/System.sol";
+import {System} from "@latticexyz/world/src/System.sol";
 import {Output} from "../codegen/index.sol";
 import {ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
 
-contract CommandLookups {
 
-    // some maps for lookups
+contract TokeniserSystem is System {
+    
     mapping (string => ActionType) public cmdLookup;
     mapping (string => DirectionType) public dirLookup;
     mapping (string => GrammarType) public grammarLookup;
     
-    function initCLS() public returns (uint32) {
-        Output.set('initCES called...');
+    function initTS() public returns (address) {
+        console.log("--->initTS");
         setupCmds();
         setupDirs();
         setupGrammar();
-        return 0;
+        return address(this);
     }
-
+    
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
-    function setupCmds() private returns (uint32) {
+    function setupCmds() private {
         cmdLookup["GO"]         = ActionType.Go;
         cmdLookup["MOVE"]       = ActionType.Move;
         cmdLookup["LOOT"]       = ActionType.Loot;
@@ -40,7 +41,7 @@ contract CommandLookups {
     // this could autogen because we just take set of "str"
     // iterate and gen a line for each str.
     // fooLookup["FOO"] = FoosType.foo;
-    function setupDirs () private returns (uint32) {
+    function setupDirs () private {
         dirLookup["NORTH"]  = DirectionType.North;
         dirLookup["SOUTH"]  = DirectionType.South;
         dirLookup["EAST"]   = DirectionType.East;
@@ -49,9 +50,9 @@ contract CommandLookups {
         dirLookup["DOWN"]   = DirectionType.Down;
     }
 
-    function setupGrammar () private returns (uint32) {
+    function setupGrammar () private {
        grammarLookup["The"] = GrammarType.DefiniteArticle; 
        grammarLookup["To"]  = GrammarType.Preposition;
     }
-    
+
 }
