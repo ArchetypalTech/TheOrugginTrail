@@ -17,7 +17,7 @@ import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.s
 // then the system interface
 import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
 
-import { ICommandLookupSystem } from "../codegen/world/ICommandLookupSystem.sol";
+import { ITokeniserSystem } from "../codegen/world/ITokeniserSystem.sol";
 
 import { console } from "forge-std/console.sol";
 
@@ -25,7 +25,7 @@ contract MeatPuppetSystem is System  {
 
     event debugLog(string msg, uint8 val);
 
-    ICommandLookupSystem luts;
+    ITokeniserSystem luts;
 
     // we call this from the post deploy contract 
     function initGES(address tokeniser) public returns (uint32) {
@@ -36,7 +36,7 @@ contract MeatPuppetSystem is System  {
         // in CommandLookups
         //ll = new CommandLookups();
         //initCLS();
-        luts = ICommandLookupSystem(tokeniser); 
+        luts = ITokeniserSystem(tokeniser); 
 
         // our empty test function from the GSS that just returns a uint32
         // for ref of how to call another systen, I think the system has to 
@@ -62,7 +62,6 @@ contract MeatPuppetSystem is System  {
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
-    /*
     function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
@@ -85,9 +84,8 @@ contract MeatPuppetSystem is System  {
         }
         return msgStr;
     }
-    */
 
-    /*
+    
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->CURR_RM:", rId);
         CurrentRoomId.set(rId);
@@ -99,7 +97,7 @@ contract MeatPuppetSystem is System  {
                                    Output.set(pack);
                                    return 0;
     }
-    */
+    
 
     // MOVE TO OWN SYSTEM -- MEATCOMMANDER
     /* handle NON MOVEMENT VERBS */

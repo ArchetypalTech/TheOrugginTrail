@@ -21,7 +21,19 @@ contract TokeniserSystem is System {
         setupGrammar();
         return address(this);
     }
-    
+
+    function getActionType(string calldata key) public view returns (ActionType) {
+        return cmdLookup[key];
+    }
+
+    function getGrammarType(string calldata key) public view returns (GrammarType) {
+        return grammarLookup[key];
+    }
+
+    function getDirectionType(string calldata key) public view returns (DirectionType) {
+        return dirLookup[key];
+    }
+
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
