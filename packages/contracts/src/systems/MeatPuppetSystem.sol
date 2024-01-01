@@ -30,7 +30,7 @@ contract MeatPuppetSystem is System  {
 
     // we call this from the post deploy contract 
     function initGES(address tokeniser, address directionFinder) public returns (address) {
-        Output.set('initGES called...');
+        console.log('--->initGES() tk:%s df:%s', tokeniser, directionFinder);
 
         luts = ITokeniserSystem(tokeniser); 
         df = IDirectionFinderSystem(directionFinder);
@@ -204,10 +204,6 @@ contract MeatPuppetSystem is System  {
 
     // intended soley to process tokens and then hand off to other systems
     // checks for first TOKEN which can be either a GO or another VERB.
-    // Assuming these look good then in an ideal world drops token[0] and 
-    // passes the tail to either the movement system or the actions system
-    // Actually we dont because actually doing that is an expensive op in Sol
-    // and therefore the EVM (???) so we pass the whole thing 
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
         uint8 err; // guaranteed to init to 0 value
@@ -219,7 +215,7 @@ contract MeatPuppetSystem is System  {
         console.log("---->PR", tok1);
         console.log("---->PR ---->TOK[0]", uint8(luts.getDirectionType(tok1)));
         if (luts.getDirectionType(tok1) != DirectionType.None) {
-            //err = _movePlayer(tokens, CurrentRoomId.get());
+            //(uint8 err, uint32 nxt) = df.getNextRoom(tokens, CurrentRoomId.get());
         } else if (luts.getActionType(tok1) != ActionType.None ) {
             if (tokens.length >= 2) {
                 if ( luts.getActionType(tok1) == ActionType.Go ) {

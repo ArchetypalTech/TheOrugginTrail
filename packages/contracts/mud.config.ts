@@ -60,7 +60,7 @@ export default mudConfig({
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
-            "Look"
+            "Look", "Close", "Break", "Throw"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
@@ -102,8 +102,8 @@ export default mudConfig({
                 // the next 2 are a pair really a door is a good example
                 // is it nESSy: ie. is it just a prop
                 // if it IS then CAN it be, like has it been unlocked
-                nESSy: "bool", // can it be used?
-                enabled: "bool" // is it useable if it CAN be used
+                nussy: "bool", // can it be used?
+                pBit: "bool" // is it done, LOCK->lockED, CLOSE -> closeED etc
             },
         },
         // attach to rooms/paths to set the exits

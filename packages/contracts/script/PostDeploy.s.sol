@@ -159,7 +159,7 @@ contract PostDeploy is Script {
 
         address meatPuppet = IWorld(worldAddress).initGES(tokeniser, directionFinder);
 
-        console.log("--->init systems complete");
+        console.log("--->TK:%s DF:%s MP:%s", tokeniser, directionFinder, meatPuppet);
 
         //setupData();
         //setupMapData();

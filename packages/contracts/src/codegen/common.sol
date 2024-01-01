@@ -70,7 +70,10 @@ enum ActionType {
   Lock,
   Unlock,
   Open,
-  Look
+  Look,
+  Close,
+  Break,
+  Throw
 }
 
 enum ObjectType {

@@ -35,8 +35,8 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 struct ActionStoreData {
   ActionType actionType;
   uint32 texDefId;
-  bool nESSy;
-  bool enabled;
+  bool nussy;
+  bool pBit;
 }
 
 library ActionStore {
@@ -90,8 +90,8 @@ library ActionStore {
     fieldNames = new string[](4);
     fieldNames[0] = "actionType";
     fieldNames[1] = "texDefId";
-    fieldNames[2] = "nESSy";
-    fieldNames[3] = "enabled";
+    fieldNames[2] = "nussy";
+    fieldNames[3] = "pBit";
   }
 
   /**
@@ -193,9 +193,9 @@ library ActionStore {
   }
 
   /**
-   * @notice Get nESSy.
+   * @notice Get nussy.
    */
-  function getNESSy(uint32 actionId) internal view returns (bool nESSy) {
+  function getNussy(uint32 actionId) internal view returns (bool nussy) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -204,9 +204,9 @@ library ActionStore {
   }
 
   /**
-   * @notice Get nESSy.
+   * @notice Get nussy.
    */
-  function _getNESSy(uint32 actionId) internal view returns (bool nESSy) {
+  function _getNussy(uint32 actionId) internal view returns (bool nussy) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -215,29 +215,29 @@ library ActionStore {
   }
 
   /**
-   * @notice Set nESSy.
+   * @notice Set nussy.
    */
-  function setNESSy(uint32 actionId, bool nESSy) internal {
+  function setNussy(uint32 actionId, bool nussy) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((nESSy)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((nussy)), _fieldLayout);
   }
 
   /**
-   * @notice Set nESSy.
+   * @notice Set nussy.
    */
-  function _setNESSy(uint32 actionId, bool nESSy) internal {
+  function _setNussy(uint32 actionId, bool nussy) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((nESSy)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((nussy)), _fieldLayout);
   }
 
   /**
-   * @notice Get enabled.
+   * @notice Get pBit.
    */
-  function getEnabled(uint32 actionId) internal view returns (bool enabled) {
+  function getPBit(uint32 actionId) internal view returns (bool pBit) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -246,9 +246,9 @@ library ActionStore {
   }
 
   /**
-   * @notice Get enabled.
+   * @notice Get pBit.
    */
-  function _getEnabled(uint32 actionId) internal view returns (bool enabled) {
+  function _getPBit(uint32 actionId) internal view returns (bool pBit) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -257,23 +257,23 @@ library ActionStore {
   }
 
   /**
-   * @notice Set enabled.
+   * @notice Set pBit.
    */
-  function setEnabled(uint32 actionId, bool enabled) internal {
+  function setPBit(uint32 actionId, bool pBit) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((enabled)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((pBit)), _fieldLayout);
   }
 
   /**
-   * @notice Set enabled.
+   * @notice Set pBit.
    */
-  function _setEnabled(uint32 actionId, bool enabled) internal {
+  function _setPBit(uint32 actionId, bool pBit) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((enabled)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((pBit)), _fieldLayout);
   }
 
   /**
@@ -309,8 +309,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
+  function set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nussy, bool pBit) internal {
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nussy, pBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -324,8 +324,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
+  function _set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nussy, bool pBit) internal {
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nussy, pBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -340,7 +340,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.enabled);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nussy, _table.pBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -355,7 +355,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nESSy, _table.enabled);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.nussy, _table.pBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -371,14 +371,14 @@ library ActionStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (ActionType actionType, uint32 texDefId, bool nESSy, bool enabled) {
+  ) internal pure returns (ActionType actionType, uint32 texDefId, bool nussy, bool pBit) {
     actionType = ActionType(uint8(Bytes.slice1(_blob, 0)));
 
     texDefId = (uint32(Bytes.slice4(_blob, 1)));
 
-    nESSy = (_toBool(uint8(Bytes.slice1(_blob, 5))));
+    nussy = (_toBool(uint8(Bytes.slice1(_blob, 5))));
 
-    enabled = (_toBool(uint8(Bytes.slice1(_blob, 6))));
+    pBit = (_toBool(uint8(Bytes.slice1(_blob, 6))));
   }
 
   /**
@@ -392,7 +392,7 @@ library ActionStore {
     PackedCounter,
     bytes memory
   ) internal pure returns (ActionStoreData memory _table) {
-    (_table.actionType, _table.texDefId, _table.nESSy, _table.enabled) = decodeStatic(_staticData);
+    (_table.actionType, _table.texDefId, _table.nussy, _table.pBit) = decodeStatic(_staticData);
   }
 
   /**
@@ -422,10 +422,10 @@ library ActionStore {
   function encodeStatic(
     ActionType actionType,
     uint32 texDefId,
-    bool nESSy,
-    bool enabled
+    bool nussy,
+    bool pBit
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(actionType, texDefId, nESSy, enabled);
+    return abi.encodePacked(actionType, texDefId, nussy, pBit);
   }
 
   /**
@@ -437,10 +437,10 @@ library ActionStore {
   function encode(
     ActionType actionType,
     uint32 texDefId,
-    bool nESSy,
-    bool enabled
+    bool nussy,
+    bool pBit
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, nESSy, enabled);
+    bytes memory _staticData = encodeStatic(actionType, texDefId, nussy, pBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
