@@ -15,7 +15,7 @@ import { Look } from './actions/Look.sol';
 // we need the Switcher
 import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
 // then the system interface
-import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
+import { IDirectionFinderSystem } from "../codegen/world/IDirectionFinderSystem.sol";
 
 import { ITokeniserSystem } from "../codegen/world/ITokeniserSystem.sol";
 
@@ -26,9 +26,10 @@ contract MeatPuppetSystem is System  {
     event debugLog(string msg, uint8 val);
 
     ITokeniserSystem luts;
+    IDirectionFinderSystem df;
 
     // we call this from the post deploy contract 
-    function initGES(address tokeniser) public returns (address) {
+    function initGES(address tokeniser, address directionFinder) public returns (address) {
         Output.set('initGES called...');
 
         // Not a fan of this init call here
@@ -37,18 +38,18 @@ contract MeatPuppetSystem is System  {
         //ll = new CommandLookups();
         //initCLS();
         luts = ITokeniserSystem(tokeniser); 
+        df = IDirectionFinderSystem(directionFinder);
 
         // our empty test function from the GSS that just returns a uint32
         // for ref of how to call another systen, I think the system has to 
         // be in the root namespace but it would be handy to figure out 
-        // how to actually use namespaces properly, its in the docs but not
-        // exactly clear
-        uint32 returnValue = abi.decode(
-            SystemSwitch.call(
-                abi.encodeCall(IGameSetupSystem.setupCmds, (22))
-        ),
-        (uint32)
-        );
+        // how to actually use namespaces properly
+        //uint32 returnValue = abi.decode(
+        //SystemSwitch.call(
+        //abi.encodeCall(IGameSetupSystem.setupCmds, (22))
+        //),
+        //(uint32)
+        //);
 
         spawn(0);
         return address(this);
