@@ -32,11 +32,6 @@ contract MeatPuppetSystem is System  {
     function initGES(address tokeniser, address directionFinder) public returns (address) {
         Output.set('initGES called...');
 
-        // Not a fan of this init call here
-        // but we need to call setup on the mappings
-        // in CommandLookups
-        //ll = new CommandLookups();
-        //initCLS();
         luts = ITokeniserSystem(tokeniser); 
         df = IDirectionFinderSystem(directionFinder);
 

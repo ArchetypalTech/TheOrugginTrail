@@ -24,6 +24,10 @@ contract DirectionFinderSystem is System {
     function getNextRoom(string[] calldata tokens, uint32 currRm) external view returns (uint8 e, uint32 nxtRm) {
         console.log("----->MV_PL to: ", tokens[0]);
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
+        if ( tok_err != 0 ) {
+            return (tok_err, 0x10000);
+        }
+        /* Test DIRECTION */
     }
 
     function _fishDirectionTok(string[] calldata tokens) private view returns (string memory tok, uint8 err)  {
@@ -44,12 +48,12 @@ contract DirectionFinderSystem is System {
             * dir = n | e | s | w
             */
             if ( tokens.length >= 4 ) {
-                //[> long form <]
-                //[> go_cmd = go, ("to" "the"), dir|obj <]
+                /* long form */
+                /* go_cmd = go, ("to" "the"), dir|obj */
                 tok = tokens[3]; // dir | obj
             } else if (tokens.length == 2) {
-                //[> short form <]
-                //[> go_cmd = go, dir|obj <]
+                /* short form */
+                /* go_cmd = go, dir|obj */
                 tok = tokens[1]; // dir | obj
                 ////TODO: handle for obj we probably dont even need it tbh
                 //// but anyway its here because I get carried away...
