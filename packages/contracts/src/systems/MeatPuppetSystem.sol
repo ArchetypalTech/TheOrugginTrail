@@ -128,6 +128,7 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
             if ( tokens.length >= 4 ) {
                 /* long form */
                 /* go_cmd = go, ("to" "the"), dir|obj */
+                tok = tokens[3];
             } else if (tokens.length == 2) {
                 /* short form */
                 /* go_cmd = go, dir|obj */
