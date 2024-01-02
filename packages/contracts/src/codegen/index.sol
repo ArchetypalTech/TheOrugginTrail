@@ -10,3 +10,4 @@ import { ObjectStore, ObjectStoreData, ObjectStoreTableId } from "./tables/Objec
 import { TextDef, TextDefTableId } from "./tables/TextDef.sol";
 import { CurrentRoomId, CurrentRoomIdTableId } from "./tables/CurrentRoomId.sol";
 import { Output, OutputTableId } from "./tables/Output.sol";
+import { Player, PlayerData, PlayerTableId } from "./tables/Player.sol";

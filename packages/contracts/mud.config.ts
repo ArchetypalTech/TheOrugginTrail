@@ -143,6 +143,10 @@ export default mudConfig({
             },
             valueSchema: "bytes",
         },
+
+
+
+
         CurrentRoomId: {
             keySchema: {},
             valueSchema: "uint32",
@@ -150,6 +154,16 @@ export default mudConfig({
         Output: {
             keySchema: {},
             valueSchema: "string",
+        },
+
+        Player: {
+            keySchema: {
+                playerId: "uint32",
+            },
+            valueSchema: {
+                roomId: "uint32",
+                objectIds: "uint32[]",
+            },
         },
     },
 });
