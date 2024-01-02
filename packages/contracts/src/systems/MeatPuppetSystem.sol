@@ -95,14 +95,16 @@ contract MeatPuppetSystem is System  {
         if (tokD != DirectionType.None) {
             /* DIR: form */
             move = true;
-            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, CurrentRoomId.get());
+            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
+                                                                        Player.getRoomId(CurrentPlayerId.get()));
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             if (tokens.length >= 2) {
                 console.log("-->tok.len %d", tokens.length);
                 if ( IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go ) {
                     /* GO: form */
                     move = true;
-                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, CurrentRoomId.get());
+                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, 
+                                                                                Player.getRoomId(CurrentPlayerId.get()));
                 } else {
                     /* VERB: form */
                     // TODO: handle actions

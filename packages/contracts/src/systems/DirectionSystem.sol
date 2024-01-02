@@ -13,7 +13,7 @@ import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
 
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
-import { CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore } from "../codegen/index.sol";
+import { RoomStore, RoomStoreData, ActionStore, DirObjStore } from "../codegen/index.sol";
 
 contract DirectionSystem is System {
 
