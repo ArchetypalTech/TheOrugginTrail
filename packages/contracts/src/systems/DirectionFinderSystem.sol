@@ -12,24 +12,32 @@ import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
 import { CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore } from "../codegen/index.sol";
+
+import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+// then the system interface
+import { ITokeniserSystem } from "../codegen/world/ITokeniserSystem.sol";
+
 contract DirectionFinderSystem is System {
 
-    ITokeniserSystem luts;
 
     function initDFS(address tokeniser) public returns (address) {
         console.log("--->initDFS");
-        luts = ITokeniserSystem(tokeniser);
         return address(this);
     }
 
-    function getNextRoom(string[] calldata tokens, uint32 currRm) external returns (uint8 e, uint32 nxtRm) {
+    function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxtRm) {
         console.log("----->DF_PL to: ", tokens[0]);
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
         if ( tok_err != 0 ) {
             return (tok_err, 0x10000);
         }
         /* Test DIRECTION */
-        DirectionType DIR = luts.getDirectionType(tok); 
+        DirectionType DIR = abi.decode(SystemSwitch.call(
+                abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))
+        ),
+        (DirectionType)
+        );
+        //DirectionType DIR = luts.getDirectionType(tok); 
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             console.log("->DF--->DOBJ:", dObjId);
@@ -54,7 +62,7 @@ contract DirectionFinderSystem is System {
 
 
     /* NB this is ONLY checking that an exit exists TODO add an openable check */
-    function _directionCheck (uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
+    function _directionCheck (uint32 rId, DirectionType d) private view returns (bool success, uint32 next) {
         console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
 
@@ -77,16 +85,18 @@ contract DirectionFinderSystem is System {
         return (false, 0x10000);
     }
 
-    function _fishDirectionTok(string[] calldata tokens) private view returns (string memory tok, uint8 err)  {
+    function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
         
-        if (luts.getDirectionType(tokens[0]) != DirectionType.None) {
+//abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))),(DirectionType));
+
+        if (abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tokens[0]))),(DirectionType)) != DirectionType.None) {
             /* Direction form
             *
             * dir = n | e | s | w
             *
             */
             tok = tokens[0];
-        } else if ( luts.getActionType(tokens[0]) != ActionType.None ) {
+        } else if ( abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getActionType, (tokens[0]))),(ActionType)) != ActionType.None ) {
             /* GO form
             * 
             * go_cmd = go, [(pp da)], dir | obj 
@@ -106,7 +116,7 @@ contract DirectionFinderSystem is System {
                 //// but anyway its here because I get carried away...
             }
 
-            if ( luts.getDirectionType(tok) != DirectionType.None ) {
+            if ( abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))),(DirectionType)) != DirectionType.None ) {
                 return (tok, 0); 
             } else {
                 return (tok, ErrCodes.ER_DR_ND);

@@ -12,9 +12,9 @@ import { ActionType, GrammarType, DirectionType } from "./../common.sol";
 interface ITokeniserSystem {
   function initTS() external returns (address);
 
-  function getActionType(string calldata key) external view returns (ActionType);
+  function getActionType(string memory key) external view returns (ActionType);
 
-  function getGrammarType(string calldata key) external view returns (GrammarType);
+  function getGrammarType(string memory key) external view returns (GrammarType);
 
-  function getDirectionType(string calldata key) external view returns (DirectionType);
+  function getDirectionType(string memory key) external view returns (DirectionType);
 }

@@ -6,6 +6,7 @@ import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
 import {Output} from "../codegen/index.sol";
 import {ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
+import {Dirs} from "../codegen/tables/Dirs.sol";
 
 
 contract TokeniserSystem is System {
@@ -16,22 +17,25 @@ contract TokeniserSystem is System {
     
     function initTS() public returns (address) {
         console.log("--->initTS");
-        setupCmds();
+        //setupCmds();
         setupDirs();
-        setupGrammar();
+        //setupGrammar();
         return address(this);
     }
 
-    function getActionType(string calldata key) public view returns (ActionType) {
+    function getActionType(string memory key) public view returns (ActionType) {
         return cmdLookup[key];
     }
 
-    function getGrammarType(string calldata key) public view returns (GrammarType) {
+    function getGrammarType(string memory key) public view returns (GrammarType) {
         return grammarLookup[key];
     }
 
-    function getDirectionType(string calldata key) public view returns (DirectionType) {
+    function getDirectionType(string memory key) public view returns (DirectionType) {
         return dirLookup[key];
+        //console.log("-->GDT");
+        //bytes32 lookup = keccak256(abi.encodePacked(key));
+        //return Dirs.getDir(lookup); 
     }
 
     // we need to somewhere somehow read in the possible verbs if we
@@ -54,6 +58,7 @@ contract TokeniserSystem is System {
     // iterate and gen a line for each str.
     // fooLookup["FOO"] = FoosType.foo;
     function setupDirs () private {
+        //Dirs.setDir(keccak256(abi.encodePacked("NORTH")), DirectionType.North);
         dirLookup["NORTH"]  = DirectionType.North;
         dirLookup["SOUTH"]  = DirectionType.South;
         dirLookup["EAST"]   = DirectionType.East;

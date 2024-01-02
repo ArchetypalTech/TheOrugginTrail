@@ -9,6 +9,8 @@ import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStor
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
+import { IWorld } from "../codegen/world/IWorld.sol";
+
 import { Look } from './actions/Look.sol';
 
 /* CALLING INTO OTHER SYSTEMS VIA ABI CALLS*/
@@ -27,13 +29,13 @@ contract MeatPuppetSystem is System  {
 
     ITokeniserSystem luts;
     IDirectionFinderSystem df;
+    address world;
 
     // we call this from the post deploy contract 
-    function initGES(address tokeniser, address directionFinder) public returns (address) {
-        console.log('--->initGES() tk:%s df:%s', tokeniser, directionFinder);
+    function initGES(address tokeniser, address directionFinder, address wrld) public returns (address) {
+        console.log('--->initGES() tk:%s df:%s wr:%s', tokeniser, directionFinder, wrld);
 
-        luts = ITokeniserSystem(tokeniser); 
-        df = IDirectionFinderSystem(directionFinder);
+        world = wrld;
 
         // our empty test function from the GSS that just returns a uint32
         // for ref of how to call another systen, I think the system has to 
@@ -51,9 +53,9 @@ contract MeatPuppetSystem is System  {
     }
 
     function spawn(uint32 startId) public {
-        console.log("spawn");
+        console.log("--->spawn");
         // start on the mountain
-        //_enterRoom(0); 
+        _enterRoom(0); 
     }
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
@@ -206,21 +208,46 @@ contract MeatPuppetSystem is System  {
     // checks for first TOKEN which can be either a GO or another VERB.
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
-        uint8 err; // guaranteed to init to 0 value
+        uint8 err; 
+        uint32 nxt; 
         if (tokens.length > GameConstants.MAX_TOK ) {
             err = ErrCodes.ER_PR_TK_CX;
         }
 
         string memory tok1 = tokens[0];
-        console.log("---->PR", tok1);
-        console.log("---->PR ---->TOK[0]", uint8(luts.getDirectionType(tok1)));
-        if (luts.getDirectionType(tok1) != DirectionType.None) {
-            //(uint8 err, uint32 nxt) = df.getNextRoom(tokens, CurrentRoomId.get());
-        } else if (luts.getActionType(tok1) != ActionType.None ) {
+        console.log("---->PR: %s", tok1);
+
+        DirectionType tokD = abi.decode(
+            SystemSwitch.call(
+                abi.encodeCall(ITokeniserSystem.getDirectionType, (tok1))
+        ),
+        (DirectionType)
+        );
+
+        if (tokD != DirectionType.None) {
+            /* DIR: form */
+            console.log("---->PR: %s", tok1);
+            (err, nxt) = abi.decode(
+                            SystemSwitch.call(
+                                abi.encodeCall(IDirectionFinderSystem.getNextRoom, (tokens, CurrentRoomId.get()))
+            ),
+            (uint8, uint32)
+            );
+            //(err, nxt) = df.getNextRoom(tokens, CurrentRoomId.get());
+        } else if (abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getActionType, (tok1))),(ActionType)) != ActionType.None ) {
             if (tokens.length >= 2) {
-                if ( luts.getActionType(tok1) == ActionType.Go ) {
-                    //err = _movePlayer(tokens, CurrentRoomId.get());
+                console.log("-->tok.len %d", tokens.length);
+                if ( abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getActionType, (tok1))),(ActionType)) == ActionType.Go ) {
+                    /* GO: form */
+                    (err, nxt) = abi.decode(
+                            SystemSwitch.call(
+                                abi.encodeCall(IDirectionFinderSystem.getNextRoom, (tokens, CurrentRoomId.get()))
+            ),
+            (uint8, uint32)
+            );
+
                 } else {
+                    /* VERB: form */
                     //err = _handleAction(tokens, CurrentRoomId.get());
                 }
             } else {
@@ -237,6 +264,9 @@ contract MeatPuppetSystem is System  {
             errMsg = _insultMeat(err, "");
             Output.set(errMsg);
             return err;
+        } else {
+            // either a do something or move rooms command
+            _enterRoom(nxt);
         }
     }
 

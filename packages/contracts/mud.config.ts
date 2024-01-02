@@ -74,6 +74,23 @@ export default mudConfig({
     tables: {
         // all rooms take a description and a set of Objects that themselves
         // have descriptions and Actions.
+        Dirs: {
+            keySchema: {
+                key: "bytes32",
+            },
+            valueSchema: {
+                dir: "DirectionType",
+                tok: "string",
+            },
+        },
+        Vrbs: {
+            keySchema: {
+                val: "ActionType",
+            },
+            valueSchema: {
+                dirType: "string",
+            },
+        },
         RoomStore: {
             keySchema: {
                 roomId: "uint32",

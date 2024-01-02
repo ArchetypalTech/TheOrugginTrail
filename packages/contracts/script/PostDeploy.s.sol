@@ -157,7 +157,7 @@ contract PostDeploy is Script {
         
         address directionFinder = IWorld(worldAddress).initDFS(tokeniser);
 
-        address meatPuppet = IWorld(worldAddress).initGES(tokeniser, directionFinder);
+        address meatPuppet = IWorld(worldAddress).initGES(tokeniser, directionFinder, worldAddress);
 
         console.log("--->TK:%s DF:%s MP:%s", tokeniser, directionFinder, meatPuppet);
 

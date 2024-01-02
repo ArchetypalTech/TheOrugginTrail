@@ -10,5 +10,5 @@ pragma solidity >=0.8.21;
 interface IDirectionFinderSystem {
   function initDFS(address tokeniser) external returns (address);
 
-  function getNextRoom(string[] calldata tokens, uint32 currRm) external returns (uint8 e, uint32 nxtRm);
+  function getNextRoom(string[] memory tokens, uint32 currRm) external returns (uint8 e, uint32 nxtRm);
 }
