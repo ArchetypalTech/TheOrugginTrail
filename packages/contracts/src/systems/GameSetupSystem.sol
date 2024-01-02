@@ -38,9 +38,7 @@ contract GameSetupSystem is System {
 
     function setupPlayer() private {
         // tim, whats the method to create a random int32????
-
         CurrentPlayerId.set(1);
-        Player.setRoomId(CurrentPlayerId.get(),0);
     }
 
     function setupRooms() private {

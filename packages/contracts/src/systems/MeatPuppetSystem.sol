@@ -2,23 +2,23 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import { console } from "forge-std/console.sol";
+import {console} from "forge-std/console.sol";
 
 import {System} from "@latticexyz/world/src/System.sol";
 import {Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData, TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
-import { CommandLookups } from "./CommandLookup.sol";
-import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
+import {CommandLookups} from "./CommandLookup.sol";
+import {GameConstants, ErrCodes, ResCodes} from "../constants/defines.sol";
 
 // an attempt at calling another system
 // we nneed the below
-import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+import {SystemSwitch} from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
 // then the system interface
-import { IGameSetupSystem } from "../codegen/world/IGameSetupSystem.sol";
+import {IGameSetupSystem} from "../codegen/world/IGameSetupSystem.sol";
 
-import { console } from "forge-std/console.sol";
+import {console} from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandLookups  {
+contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandLookups {
 
     // TODO:
     // * common parser should be the same for actions as for
@@ -46,8 +46,8 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
         uint32 returnValue = abi.decode(
             SystemSwitch.call(
                 abi.encodeCall(IGameSetupSystem.setupCmds, (22))
-        ),
-        (uint32)
+            ),
+            (uint32)
         );
 
         spawn(0);
@@ -60,26 +60,34 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
         _enterRoom(0);
     }
 
+    function _describeRoom(uint32 rId) private returns (string memory) {
+        console.log("--------->DescribeRoom:");
+        RoomStoreData memory currRoom = RoomStore.get(rId);
+        return string(abi.encodePacked(currRoom.description, "\n",
+            "You can go", _describeActions(rId))
+        );
+    }
+
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
     function _describeActions(uint32 rId) private returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
         string memory msgStr;
-        for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
+        for (uint8 i = 0; i < currRm.dirObjIds.length; i++) {
             DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
 
             if (dir.dirType == DirectionType.North) {
                 dirStrings[i] = " North";
-            }else if (dir.dirType == DirectionType.East) {
+            } else if (dir.dirType == DirectionType.East) {
                 dirStrings[i] = " East";
-            }else if (dir.dirType == DirectionType.South) {
+            } else if (dir.dirType == DirectionType.South) {
                 dirStrings[i] = " South";
-            }else if (dir.dirType == DirectionType.West) {
+            } else if (dir.dirType == DirectionType.West) {
                 dirStrings[i] = " West";
-            }else {dirStrings[i] = " to hell";}
+            } else {dirStrings[i] = " to hell";}
         }
-        for(uint16 i = 0; i < dirStrings.length; i++) {
+        for (uint16 i = 0; i < dirStrings.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
         return msgStr;
@@ -88,13 +96,8 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->CURR_RM:", rId);
         Player.setRoomId(CurrentPlayerId.get(), rId);
-        RoomStoreData memory currRoom = RoomStore.get(rId);
-        string memory actions = _describeActions(rId);
-        string memory pack = string(abi.encodePacked(currRoom.description, "\n",
-                                                     "You can go", _describeActions(rId))
-                                   );
-                                   Output.set(pack);
-                                   return 0;
+        Output.set(_describeRoom(rId));
+        return 0;
     }
 
     // MOVE TO OWN SYSTEM -- MEATCOMMANDER
@@ -109,7 +112,7 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
     function _movePlayer(string[] memory tokens, uint32 currRmId) private returns (uint8 err) {
         console.log("----->MV_PL to: ", tokens[0]);
         uint8 tok_err;
-        string memory  tok = tokens[0];
+        string memory tok = tokens[0];
         if (dirLookup[tok] != DirectionType.None) {
             /* Direction form
             *
@@ -117,7 +120,7 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
             *
             */
             tok_err = 0;
-        }else if ( cmdLookup[tok] == ActionType.Go ){
+        } else if (cmdLookup[tok] == ActionType.Go) {
             /* GO form
             *
             * go_cmd = go, [(pp da)], dir | obj
@@ -125,22 +128,23 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
             * da = "the";
             * dir = n | e | s | w
             */
-            if ( tokens.length >= 4 ) {
+            if (tokens.length >= 4) {
                 /* long form */
                 /* go_cmd = go, ("to" "the"), dir|obj */
                 tok = tokens[3];
             } else if (tokens.length == 2) {
                 /* short form */
                 /* go_cmd = go, dir|obj */
-                tok = tokens[1]; // dir | obj
-                if (dirLookup[tok] == DirectionType.None) { return ER_DR_ND; }
+                tok = tokens[1];
+                // dir | obj
+                if (dirLookup[tok] == DirectionType.None) {return ER_DR_ND;}
                 //TODO: handle for obj
                 tok_err = 0;
             }
 
         }
 
-        if (tok_err != 0) { return tok_err; }
+        if (tok_err != 0) {return tok_err;}
         /* do direction tests */
         DirectionType DIR = dirLookup[tok];
         (bool mv, uint32 dObjId) = _directionCheck(currRmId, DIR);
@@ -150,7 +154,7 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
             console.log("->MP --------->NXTRM:", nxtRm);
             _enterRoom(nxtRm);
             return 0;
-        }else {
+        } else {
             console.log("--->DC:0000");
             // check reason we didnt move this can currently only
             // be cannot actually move that way because no exit
@@ -163,18 +167,18 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
 
     // currently just handles if the DIR matches an dirObjs dirType value
     // needs to also test lockedness/openability
-    function _directionCheck (uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
+    function _directionCheck(uint32 rId, DirectionType d) private returns (bool success, uint32 next) {
         console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);
 
         console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
         for (uint8 i = 0; i < exitIds.length; i++) {
 
-            console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
+            console.log("-->i:", i, "-->[]", uint32(exitIds[i]));
             // just for debug output
             DirectionType dt = DirObjStore.getDirType(exitIds[i]);
-            console.log( "-->i:", i, "-->", uint8(dt) );
-            if ( DirObjStore.getDirType(exitIds[i]) == d) { return (true, exitIds[i]); }
+            console.log("-->i:", i, "-->", uint8(dt));
+            if (DirObjStore.getDirType(exitIds[i]) == d) {return (true, exitIds[i]);}
         }
         // bad idea but we use 0 as a roomId
         // need to fix, we should stick with Solidity idiom
@@ -194,8 +198,9 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
         uint32 rId = Player.getRoomId(CurrentPlayerId.get());
 
 
-        uint8 err; // guaranteed to init to 0 value
-        if (tokens.length > MAX_TOK ) {
+        uint8 err;
+        // guaranteed to init to 0 value
+        if (tokens.length > MAX_TOK) {
             err = ER_PR_TK_CX;
         }
 
@@ -204,14 +209,14 @@ contract MeatPuppetSystem is System, GameConstants, ErrCodes, ResCodes, CommandL
         console.log("---->PR ---->TOK[0]", uint8(dirLookup[tok1]));
         if (dirLookup[tok1] != DirectionType.None) {
             err = _movePlayer(tokens, rId);
-        } else if (cmdLookup[tok1] != ActionType.None ) {
+        } else if (cmdLookup[tok1] != ActionType.None) {
             if (tokens.length >= 2) {
-                if ( cmdLookup[tok1] == ActionType.Go ) {
+                if (cmdLookup[tok1] == ActionType.Go) {
                     err = _movePlayer(tokens, rId);
                 } else {
                     err = _handleAction(tokens, rId);
                 }
-            }else {
+            } else {
                 err = ER_PR_NO;
             }
         } else {
