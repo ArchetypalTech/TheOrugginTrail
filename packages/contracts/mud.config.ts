@@ -1,6 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
+    namespace: "meat",
     enums: {
         // all places on the 2d map grid are either Void or Place:
         // 0x00 | 0x01
@@ -59,21 +60,38 @@ export default mudConfig({
         //
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
-            "Take", "Kick", "Lock", "Unlock", "Open"
+            "Take", "Kick", "Lock", "Unlock", "Open",
+            "Look", "Close", "Break", "Throw"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
-            "None", "Ball", "Key", "Knife", "Bottle"
+            "None", "Football", "Key", "Knife", "Bottle"
         ],
-
+        GrammarType: ["None", "DefiniteArticle", "Preposition"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
-        // might be useful as sort of composition for descriptions might be dumnn
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
         CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],
     },
     tables: {
         // all rooms take a description and a set of Objects that themselves
         // have descriptions and Actions.
+        Dirs: {
+            keySchema: {
+                key: "bytes32",
+            },
+            valueSchema: {
+                dir: "DirectionType",
+                tok: "string",
+            },
+        },
+        Vrbs: {
+            keySchema: {
+                val: "ActionType",
+            },
+            valueSchema: {
+                dirType: "string",
+            },
+        },
         RoomStore: {
             keySchema: {
                 roomId: "uint32",
@@ -102,8 +120,8 @@ export default mudConfig({
                 // the next 2 are a pair really a door is a good example
                 // is it nESSy: ie. is it just a prop
                 // if it IS then CAN it be, like has it been unlocked
-                nESSy: "bool", // can it be used?
-                enabled: "bool" // is it useable if it CAN be used
+                nussy: "bool", // can it be used?
+                pBit: "bool" // is it done, LOCK->lockED, CLOSE -> closeED etc
             },
         },
         // attach to rooms/paths to set the exits
@@ -144,13 +162,22 @@ export default mudConfig({
             },
             valueSchema: "bytes",
         },
-        CurrentRoomId: {
-            keySchema: {},
-            valueSchema: "uint32",
-        },
         Output: {
             keySchema: {},
             valueSchema: "string",
+        },
+        CurrentPlayerId: {
+            keySchema: {},
+            valueSchema: "uint32",
+        },
+        Player: {
+            keySchema: {
+                playerId: "uint32",
+            },
+            valueSchema: {
+                roomId: "uint32",
+                objectIds: "uint32[]",
+            },
         },
     },
 });

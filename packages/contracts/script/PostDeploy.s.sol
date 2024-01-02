@@ -24,7 +24,7 @@ import { ActionStore } from "../src/codegen/index.sol";
 
 import { GameConstants } from "../src/constants/defines.sol";
 
-contract PostDeploy is Script, GameConstants {
+contract PostDeploy is Script {
 
     // make the basic data for initial work on dev around
     // maps and actions etc this is only for an intial stab
@@ -53,9 +53,9 @@ contract PostDeploy is Script, GameConstants {
         // Pack a bunch of bits into the uint32 using 4 blocks
         // | TERRAIN | ROOM | OBJECT | ACTION |
         uint32 O = uint32(TerrainType.None);
-        uint32 X = uint32(uint32(TerrainType.DirtPath) << TERRAIN_BITS);
-        uint32 P = uint32(uint32(TerrainType.Portal) << TERRAIN_BITS);
-        uint32 C = uint32(uint32(RoomType.WoodCabin) << ROOM_BITS);
+        uint32 X = uint32(uint32(TerrainType.DirtPath) << GameConstants.TERRAIN_BITS);
+        uint32 P = uint32(uint32(TerrainType.Portal) << GameConstants.TERRAIN_BITS);
+        uint32 C = uint32(uint32(RoomType.WoodCabin) << GameConstants.ROOM_BITS);
 
         // a DIRT PATH heads EAST then a DOOR
         // to a CABIN appears to the SOUTH
@@ -109,10 +109,10 @@ contract PostDeploy is Script, GameConstants {
                             S = map[++y][x];
                             if ( !(E & uint32(RoomType.None) == 0) ) {
                                 /* PATH EAST set dir bits on the current room */
-                                room | EAST_DIR;
+                                room | GameConstants.EAST_DIR;
                             }
                             if ( !(S & uint32(RoomType.None) == 0) ) {
-                                room | SOUTH_DIR;
+                                room | GameConstants.SOUTH_DIR;
                             }
                         } else if ( x == --w ) {
                             /* TOP RIGHT - NORTH EAST */
@@ -151,14 +151,19 @@ contract PostDeploy is Script, GameConstants {
         // Start broadcasting transactions from the deployer account
         vm.startBroadcast(deployerPrivateKey);
 
-        uint32 newValue = IWorld(worldAddress).init();
-        console.log("World initialised", newValue);
+        uint32 gameSetupSystem = IWorld(worldAddress).meat_GameSetupSystem_init();
 
-        uint32 worldLookups = IWorld(worldAddress).initGES();
-        console.log("Lookups initialised", worldLookups);
+        address tokeniser = IWorld(worldAddress).meat_TokeniserSystem_initTS();
+        
+        address directionFinder =
+            IWorld(worldAddress).meat_DirectionSystem_initDFS(tokeniser, worldAddress);
 
-        setupData();
-        setupMapData();
+        address meatPuppet = IWorld(worldAddress).meat_MeatPuppetSystem_initGES(worldAddress);
+
+        console.log("--->TK:%s DF:%s MP:%s", tokeniser, directionFinder, meatPuppet);
+
+        //setupData();
+        //setupMapData();
 
         vm.stopBroadcast();
     }

@@ -8,9 +8,9 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IMeatPuppetSystem {
-  function initGES() external returns (uint32);
+  function meat_MeatPuppetSystem_initGES(address wrld) external returns (address);
 
-  function spawn(uint32 startId) external;
+  function meat_MeatPuppetSystem_spawn(uint32 startId) external;
 
-  function processCommandTokens(string[] calldata tokens) external returns (uint8 err);
+  function meat_MeatPuppetSystem_processCommandTokens(string[] calldata tokens) external returns (uint8 err);
 }
