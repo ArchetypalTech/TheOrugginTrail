@@ -8,5 +8,6 @@ import { ActionStore, ActionStoreData, ActionStoreTableId } from "./tables/Actio
 import { DirObjStore, DirObjStoreData, DirObjStoreTableId } from "./tables/DirObjStore.sol";
 import { ObjectStore, ObjectStoreData, ObjectStoreTableId } from "./tables/ObjectStore.sol";
 import { TextDef, TextDefTableId } from "./tables/TextDef.sol";
-import { CurrentRoomId, CurrentRoomIdTableId } from "./tables/CurrentRoomId.sol";
 import { Output, OutputTableId } from "./tables/Output.sol";
+import { CurrentPlayerId, CurrentPlayerIdTableId } from "./tables/CurrentPlayerId.sol";
+import { Player, PlayerData, PlayerTableId } from "./tables/Player.sol";
