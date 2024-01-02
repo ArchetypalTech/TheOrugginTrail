@@ -143,19 +143,14 @@ export default mudConfig({
             },
             valueSchema: "bytes",
         },
-
-
-
-
-        CurrentRoomId: {
-            keySchema: {},
-            valueSchema: "uint32",
-        },
         Output: {
             keySchema: {},
             valueSchema: "string",
         },
-
+        CurrentPlayerId: {
+            keySchema: {},
+            valueSchema: "uint32",
+        },
         Player: {
             keySchema: {
                 playerId: "uint32",

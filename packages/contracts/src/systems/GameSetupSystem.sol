@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import {console} from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
-import {Player, Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, TextDef, DirObjStore} from "../codegen/index.sol";
+import {Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDef, DirObjStore} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -37,8 +37,10 @@ contract GameSetupSystem is System {
     }
 
     function setupPlayer() private {
-        // tim whats the method to create a random int32????
-        Player.setRoomId(1,1);
+        // tim, whats the method to create a random int32????
+
+        CurrentPlayerId.set(1);
+        Player.setRoomId(CurrentPlayerId.get(),0);
     }
 
     function setupRooms() private {
