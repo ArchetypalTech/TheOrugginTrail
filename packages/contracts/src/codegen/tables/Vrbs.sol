@@ -20,16 +20,19 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ActionType } from "./../common.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("Output")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("Vrbs")))
 );
-ResourceId constant OutputTableId = _tableId;
+ResourceId constant VrbsTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
 );
 
-library Output {
+library Vrbs {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -43,7 +46,8 @@ library Output {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.UINT8;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -64,7 +68,8 @@ library Output {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](0);
+    keyNames = new string[](1);
+    keyNames[0] = "val";
   }
 
   /**
@@ -73,7 +78,7 @@ library Output {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "value";
+    fieldNames[0] = "dirType";
   }
 
   /**
@@ -91,86 +96,95 @@ library Output {
   }
 
   /**
-   * @notice Get value.
+   * @notice Get dirType.
    */
-  function getValue() internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getDirType(ActionType val) internal view returns (string memory dirType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get dirType.
    */
-  function _getValue() internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getDirType(ActionType val) internal view returns (string memory dirType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get dirType.
    */
-  function get() internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function get(ActionType val) internal view returns (string memory dirType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get dirType.
    */
-  function _get() internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _get(ActionType val) internal view returns (string memory dirType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set dirType.
    */
-  function setValue(string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function setDirType(ActionType val, string memory dirType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((dirType)));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set dirType.
    */
-  function _setValue(string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _setDirType(ActionType val, string memory dirType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((dirType)));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set dirType.
    */
-  function set(string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function set(ActionType val, string memory dirType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((dirType)));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set dirType.
    */
-  function _set(string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _set(ActionType val, string memory dirType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((dirType)));
   }
 
   /**
-   * @notice Get the length of value.
+   * @notice Get the length of dirType.
    */
-  function lengthValue() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function lengthDirType(ActionType val) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -179,10 +193,11 @@ library Output {
   }
 
   /**
-   * @notice Get the length of value.
+   * @notice Get the length of dirType.
    */
-  function _lengthValue() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _lengthDirType(ActionType val) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -191,10 +206,11 @@ library Output {
   }
 
   /**
-   * @notice Get the length of value.
+   * @notice Get the length of dirType.
    */
-  function length() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function length(ActionType val) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -203,10 +219,11 @@ library Output {
   }
 
   /**
-   * @notice Get the length of value.
+   * @notice Get the length of dirType.
    */
-  function _length() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _length(ActionType val) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -215,11 +232,12 @@ library Output {
   }
 
   /**
-   * @notice Get an item of value.
+   * @notice Get an item of dirType.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function getItemValue(uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getItemDirType(ActionType val, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -228,11 +246,12 @@ library Output {
   }
 
   /**
-   * @notice Get an item of value.
+   * @notice Get an item of dirType.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function _getItemValue(uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getItemDirType(ActionType val, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -241,11 +260,12 @@ library Output {
   }
 
   /**
-   * @notice Get an item of value.
+   * @notice Get an item of dirType.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function getItem(uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getItem(ActionType val, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -254,11 +274,12 @@ library Output {
   }
 
   /**
-   * @notice Get an item of value.
+   * @notice Get an item of dirType.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function _getItem(uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getItem(ActionType val, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -267,82 +288,91 @@ library Output {
   }
 
   /**
-   * @notice Push a slice to value.
+   * @notice Push a slice to dirType.
    */
-  function pushValue(string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function pushDirType(ActionType val, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /**
-   * @notice Push a slice to value.
+   * @notice Push a slice to dirType.
    */
-  function _pushValue(string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _pushDirType(ActionType val, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /**
-   * @notice Push a slice to value.
+   * @notice Push a slice to dirType.
    */
-  function push(string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function push(ActionType val, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /**
-   * @notice Push a slice to value.
+   * @notice Push a slice to dirType.
    */
-  function _push(string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _push(ActionType val, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /**
-   * @notice Pop a slice from value.
+   * @notice Pop a slice from dirType.
    */
-  function popValue() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function popDirType(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /**
-   * @notice Pop a slice from value.
+   * @notice Pop a slice from dirType.
    */
-  function _popValue() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _popDirType(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /**
-   * @notice Pop a slice from value.
+   * @notice Pop a slice from dirType.
    */
-  function pop() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function pop(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /**
-   * @notice Pop a slice from value.
+   * @notice Pop a slice from dirType.
    */
-  function _pop() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _pop(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Update a slice of dirType at `_index`.
    */
-  function updateValue(uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function updateDirType(ActionType val, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -351,10 +381,11 @@ library Output {
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Update a slice of dirType at `_index`.
    */
-  function _updateValue(uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _updateDirType(ActionType val, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -363,10 +394,11 @@ library Output {
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Update a slice of dirType at `_index`.
    */
-  function update(uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function update(ActionType val, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -375,10 +407,11 @@ library Output {
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Update a slice of dirType at `_index`.
    */
-  function _update(uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _update(ActionType val, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -389,8 +422,9 @@ library Output {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function deleteRecord(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -398,8 +432,9 @@ library Output {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _deleteRecord(ActionType val) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -408,10 +443,10 @@ library Output {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(string memory value) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(string memory dirType) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(value).length);
+      _encodedLengths = PackedCounterLib.pack(bytes(dirType).length);
     }
   }
 
@@ -419,8 +454,8 @@ library Output {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(string memory value) internal pure returns (bytes memory) {
-    return abi.encodePacked(bytes((value)));
+  function encodeDynamic(string memory dirType) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((dirType)));
   }
 
   /**
@@ -429,10 +464,10 @@ library Output {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(string memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(string memory dirType) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(value);
-    bytes memory _dynamicData = encodeDynamic(value);
+    PackedCounter _encodedLengths = encodeLengths(dirType);
+    bytes memory _dynamicData = encodeDynamic(dirType);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
@@ -440,8 +475,9 @@ library Output {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function encodeKeyTuple(ActionType val) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint8(val)));
 
     return _keyTuple;
   }

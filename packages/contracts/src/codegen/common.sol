@@ -69,12 +69,16 @@ enum ActionType {
   Kick,
   Lock,
   Unlock,
-  Open
+  Open,
+  Look,
+  Close,
+  Break,
+  Throw
 }
 
 enum ObjectType {
   None,
-  Ball,
+  Football,
   Key,
   Knife,
   Bottle

@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("CurrentPlayerId")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("CurrentPlayerId")))
 );
 ResourceId constant CurrentPlayerIdTableId = _tableId;
 

@@ -8,7 +8,7 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IGameSetupSystem {
-  function init() external returns (uint32);
+  function meat_GameSetupSystem_init() external returns (uint32);
 
-  function setupCmds(uint32 cmds) external returns (uint32);
+  function meat_GameSetupSystem_setupCmds(uint32 cmds) external returns (uint32);
 }
