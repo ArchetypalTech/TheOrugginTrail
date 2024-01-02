@@ -77,7 +77,6 @@ contract MeatPuppetSystem is System  {
         return 0;
     }
     
-
     // intended soley to process tokens and then hand off to other systems
     // checks for first TOKEN which can be either a GO or another VERB.
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
