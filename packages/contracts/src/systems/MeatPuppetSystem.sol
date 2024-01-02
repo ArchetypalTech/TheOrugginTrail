@@ -2,10 +2,10 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import { console } from "forge-std/console.sol";
+import {console} from "forge-std/console.sol";
 
 import {System} from "@latticexyz/world/src/System.sol";
-import {Output, CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData} from "../codegen/index.sol";
+import {Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData, TextDef} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
@@ -34,7 +34,15 @@ contract MeatPuppetSystem is System  {
     function spawn(uint32 startId) public {
         console.log("--->spawn");
         // start on the mountain
-        _enterRoom(0); 
+        _enterRoom(0);
+    }
+
+    function _describeRoom(uint32 rId) private returns (string memory) {
+        console.log("--------->DescribeRoom:");
+        RoomStoreData memory currRoom = RoomStore.get(rId);
+        return string(abi.encodePacked(currRoom.description, "\n",
+            "You can go", _describeActions(rId))
+        );
     }
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
@@ -43,20 +51,20 @@ contract MeatPuppetSystem is System  {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
         string memory msgStr;
-        for(uint8 i = 0; i < currRm.dirObjIds.length; i++) {
+        for (uint8 i = 0; i < currRm.dirObjIds.length; i++) {
             DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
 
             if (dir.dirType == DirectionType.North) {
                 dirStrings[i] = " North";
-            }else if (dir.dirType == DirectionType.East) {
+            } else if (dir.dirType == DirectionType.East) {
                 dirStrings[i] = " East";
-            }else if (dir.dirType == DirectionType.South) {
+            } else if (dir.dirType == DirectionType.South) {
                 dirStrings[i] = " South";
-            }else if (dir.dirType == DirectionType.West) {
+            } else if (dir.dirType == DirectionType.West) {
                 dirStrings[i] = " West";
-            }else {dirStrings[i] = " to hell";}
+            } else {dirStrings[i] = " to hell";}
         }
-        for(uint16 i = 0; i < dirStrings.length; i++) {
+        for (uint16 i = 0; i < dirStrings.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
         return msgStr;
@@ -64,14 +72,9 @@ contract MeatPuppetSystem is System  {
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->CURR_RM:", rId);
-        CurrentRoomId.set(rId);
-        RoomStoreData memory currRoom = RoomStore.get(CurrentRoomId.get());
-        string memory actions = _describeActions(rId);
-        string memory pack = string(abi.encodePacked(currRoom.description, "\n", 
-                                                     "You can go", _describeActions(rId))
-                                   );
-                                   Output.set(pack);
-                                   return 0;
+        Player.setRoomId(CurrentPlayerId.get(), rId);
+        Output.set(_describeRoom(rId));
+        return 0;
     }
     
 
