@@ -1,6 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
+    namespace: "meat",
     enums: {
         // all places on the 2d map grid are either Void or Place:
         // 0x00 | 0x01

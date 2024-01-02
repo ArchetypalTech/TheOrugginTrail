@@ -151,13 +151,14 @@ contract PostDeploy is Script {
         // Start broadcasting transactions from the deployer account
         vm.startBroadcast(deployerPrivateKey);
 
-        uint32 gameSetupSystem = IWorld(worldAddress).init();
+        uint32 gameSetupSystem = IWorld(worldAddress).meat_GameSetupSystem_init();
 
-        address tokeniser = IWorld(worldAddress).initTS();
+        address tokeniser = IWorld(worldAddress).meat_TokeniserSystem_initTS();
         
-        address directionFinder = IWorld(worldAddress).initDFS(tokeniser);
+        address directionFinder =
+            IWorld(worldAddress).meat_DirectionSystem_initDFS(tokeniser, worldAddress);
 
-        address meatPuppet = IWorld(worldAddress).initGES(tokeniser, directionFinder, worldAddress);
+        address meatPuppet = IWorld(worldAddress).meat_MeatPuppetSystem_initGES(worldAddress);
 
         console.log("--->TK:%s DF:%s MP:%s", tokeniser, directionFinder, meatPuppet);
 

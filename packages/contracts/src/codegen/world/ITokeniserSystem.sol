@@ -10,11 +10,11 @@ import { ActionType, GrammarType, DirectionType } from "./../common.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface ITokeniserSystem {
-  function initTS() external returns (address);
+  function meat_TokeniserSystem_initTS() external returns (address);
 
-  function getActionType(string memory key) external view returns (ActionType);
+  function meat_TokeniserSystem_getActionType(string memory key) external view returns (ActionType);
 
-  function getGrammarType(string memory key) external view returns (GrammarType);
+  function meat_TokeniserSystem_getGrammarType(string memory key) external view returns (GrammarType);
 
-  function getDirectionType(string memory key) external view returns (DirectionType);
+  function meat_TokeniserSystem_getDirectionType(string memory key) external view returns (DirectionType);
 }

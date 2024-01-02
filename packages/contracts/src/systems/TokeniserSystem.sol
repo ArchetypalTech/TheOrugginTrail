@@ -2,24 +2,27 @@
 pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
-
 import {System} from "@latticexyz/world/src/System.sol";
-import {Output} from "../codegen/index.sol";
 import {ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
 import {Dirs} from "../codegen/tables/Dirs.sol";
 
 
 contract TokeniserSystem is System {
     
+    /*
+     * We use the maps below but it might be better to use tables
+     * be useful to make some kind of a test
+     *
+     */
     mapping (string => ActionType) public cmdLookup;
     mapping (string => DirectionType) public dirLookup;
     mapping (string => GrammarType) public grammarLookup;
     
     function initTS() public returns (address) {
         console.log("--->initTS");
-        //setupCmds();
+        setupCmds();
         setupDirs();
-        //setupGrammar();
+        setupGrammar();
         return address(this);
     }
 
@@ -33,9 +36,6 @@ contract TokeniserSystem is System {
 
     function getDirectionType(string memory key) public view returns (DirectionType) {
         return dirLookup[key];
-        //console.log("-->GDT");
-        //bytes32 lookup = keccak256(abi.encodePacked(key));
-        //return Dirs.getDir(lookup); 
     }
 
     // we need to somewhere somehow read in the possible verbs if we

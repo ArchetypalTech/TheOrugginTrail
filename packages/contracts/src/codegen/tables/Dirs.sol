@@ -23,7 +23,9 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 // Import user types
 import { DirectionType } from "./../common.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Dirs"))));
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("Dirs")))
+);
 ResourceId constant DirsTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

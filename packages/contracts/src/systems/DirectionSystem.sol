@@ -5,6 +5,8 @@ import { console } from "forge-std/console.sol";
 
 import {System} from "@latticexyz/world/src/System.sol";
 
+import { IWorld } from "../codegen/world/IWorld.sol";
+
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
@@ -13,31 +15,28 @@ import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../
 
 import { CurrentRoomId, RoomStore, RoomStoreData, ActionStore, DirObjStore } from "../codegen/index.sol";
 
-import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
-// then the system interface
-import { ITokeniserSystem } from "../codegen/world/ITokeniserSystem.sol";
+contract DirectionSystem is System {
 
-contract DirectionFinderSystem is System {
+    address world;
 
-
-    function initDFS(address tokeniser) public returns (address) {
-        console.log("--->initDFS");
+    function initDFS(address tokeniser, address wrld) public returns (address) {
+        console.log("--->initDFS: %s", wrld);
+        world = wrld;
         return address(this);
     }
 
     function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxtRm) {
-        console.log("----->DF_PL to: ", tokens[0]);
+        console.log("----->DF_NXT_RM tok: ", tokens[0]);
+
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
+
         if ( tok_err != 0 ) {
             return (tok_err, 0x10000);
         }
+
         /* Test DIRECTION */
-        DirectionType DIR = abi.decode(SystemSwitch.call(
-                abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))
-        ),
-        (DirectionType)
-        );
-        //DirectionType DIR = luts.getDirectionType(tok); 
+        DirectionType DIR = IWorld(world).meat_TokeniserSystem_getDirectionType(tok);
+ 
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             console.log("->DF--->DOBJ:", dObjId);
@@ -87,16 +86,16 @@ contract DirectionFinderSystem is System {
 
     function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
         
-//abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))),(DirectionType));
-
-        if (abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tokens[0]))),(DirectionType)) != DirectionType.None) {
+        if (IWorld(world).meat_TokeniserSystem_getDirectionType(tokens[0]) != DirectionType.None) {
+            console.log("--->DIR %s", tokens[0]);
             /* Direction form
             *
             * dir = n | e | s | w
             *
             */
             tok = tokens[0];
-        } else if ( abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getActionType, (tokens[0]))),(ActionType)) != ActionType.None ) {
+        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]) != ActionType.None ) {
+            console.log("--->GO %s", tok);
             /* GO form
             * 
             * go_cmd = go, [(pp da)], dir | obj 
@@ -105,18 +104,20 @@ contract DirectionFinderSystem is System {
             * dir = n | e | s | w
             */
             if ( tokens.length >= 4 ) {
+                console.log("--->GO_LNG %s", tokens[3]);
                 /* long form */
                 /* go_cmd = go, ("to" "the"), dir|obj */
                 tok = tokens[3]; // dir | obj
             } else if (tokens.length == 2) {
+                console.log("--->GO_SHRT %s", tokens[1]);
                 /* short form */
                 /* go_cmd = go, dir|obj */
                 tok = tokens[1]; // dir | obj
-                ////TODO: handle for obj we probably dont even need it tbh
-                //// but anyway its here because I get carried away...
+                //TODO: handle for obj we probably dont even need it tbh
+                // but anyway its here because I get carried away...
             }
 
-            if ( abi.decode(SystemSwitch.call(abi.encodeCall(ITokeniserSystem.getDirectionType, (tok))),(DirectionType)) != DirectionType.None ) {
+            if (IWorld(world).meat_TokeniserSystem_getDirectionType(tok) != DirectionType.None ) {
                 return (tok, 0); 
             } else {
                 return (tok, ErrCodes.ER_DR_ND);

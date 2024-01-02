@@ -24,7 +24,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { DirObjectType, DirectionType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("DirObjStore")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("DirObjStore")))
 );
 ResourceId constant DirObjStoreTableId = _tableId;
 
