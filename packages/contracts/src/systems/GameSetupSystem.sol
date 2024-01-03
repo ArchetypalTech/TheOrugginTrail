@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import {console} from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
-import {Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDef, DirObjStore} from "../codegen/index.sol";
+import {ObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDef, DirObjStore} from "../codegen/index.sol";
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -13,6 +13,7 @@ import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../
 contract GameSetupSystem is System {
 
     uint32 dirId = 0;
+    uint32 objId = 0;
 
     function init() public returns (uint32) {
 
@@ -50,6 +51,8 @@ contract GameSetupSystem is System {
         RoomStore.pushDirObjIds(KPlain,  createDir(DirectionType.North, KBarn));
         RoomStore.pushDirObjIds(KPlain,  createDir(DirectionType.East, KMountainPath));
         RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
+        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football));
+
 
         // barn has one exit, back to the plain
         RoomStore.pushDirObjIds(KBarn,  createDir(DirectionType.South, KPlain));
@@ -67,6 +70,11 @@ contract GameSetupSystem is System {
         DirObjStore.setDirType(dirId, directionType);
         DirObjStore.setDestId(dirId, roomId);
         return dirId++;
+    }
+
+    function createObject(ObjectType objectType) private returns (uint32){
+        ObjectStore.setObjectType(objId, objectType);
+        return objId++;
     }
 }
 

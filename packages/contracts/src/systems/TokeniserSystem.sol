@@ -3,12 +3,12 @@ pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
-import {ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
+import {ObjectType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
 import {Dirs} from "../codegen/tables/Dirs.sol";
 
 
 contract TokeniserSystem is System {
-    
+
     /*
      * We use the maps below but it might be better to use tables
      * be useful to make some kind of a test
@@ -17,13 +17,25 @@ contract TokeniserSystem is System {
     mapping (string => ActionType) public cmdLookup;
     mapping (string => DirectionType) public dirLookup;
     mapping (string => GrammarType) public grammarLookup;
-    
+    mapping(string => ObjectType) public objLookup;
+    mapping(ObjectType => string) public reverseObjLookup;
+
     function initTS() public returns (address) {
         console.log("--->initTS");
         setupCmds();
+        setupObjects();
         setupDirs();
         setupGrammar();
         return address(this);
+    }
+
+
+    function getObjectType(string memory key) public view returns (ObjectType) {
+        return objLookup[key];
+    }
+
+    function getObjectNameOfObjectType(ObjectType key) public view returns (string memory) {
+        return reverseObjLookup[key];
     }
 
     function getActionType(string memory key) public view returns (ActionType) {
@@ -68,8 +80,20 @@ contract TokeniserSystem is System {
     }
 
     function setupGrammar () private {
-       grammarLookup["The"] = GrammarType.DefiniteArticle; 
+       grammarLookup["The"] = GrammarType.DefiniteArticle;
        grammarLookup["To"]  = GrammarType.Preposition;
+    }
+
+    function setupObjects() private returns (uint32) {
+        objLookup["FOOTBALL"] = ObjectType.Football;
+        objLookup["KEY"] = ObjectType.Key;
+        objLookup["KNIFE"] = ObjectType.Knife;
+        objLookup["BOTTLE"] = ObjectType.Bottle;
+
+        reverseObjLookup[ObjectType.Football] = "Football";
+        reverseObjLookup[ObjectType.Key] = "Key";
+        reverseObjLookup[ObjectType.Knife] = "Knife";
+        reverseObjLookup[ObjectType.Bottle] = "Bottle";
     }
 
 }
