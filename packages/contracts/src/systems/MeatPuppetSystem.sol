@@ -52,12 +52,21 @@ contract MeatPuppetSystem is System  {
 
     function _describeObjectsInInventory() private returns (string memory) {
         console.log("--------->DescribeObjectsInInventory:");
-        return _describeObjects(Player.getObjectIds(CurrentPlayerId.get()), "\nYour Aldi carrier bag contains  ");
+        return _describeObjects(Player.getObjectIds(CurrentPlayerId.get()), "\nYour Aldi carrier bag contains ");
     }
 
     function _describeObjects(uint32[] memory objectIds, string memory preText) private returns (string memory) {
         console.log("--------->DescribeObjects:");
-        if (objectIds.length == 0) return "";
+
+        bool foundValidObject = false;
+        for(uint8 i = 0 ; i < objectIds.length ; i++) {
+            if(objectIds[i] != 0 ) {
+                foundValidObject = true;
+                break;
+            }
+        }
+
+        if (foundValidObject == false) return "";
         string memory msgStr = preText;
         for (uint8 i = 0; i < objectIds.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.get(objectIds[i]).objectType)));
@@ -78,7 +87,7 @@ contract MeatPuppetSystem is System  {
                 if(testType == objType) {
                     Output.set("You picked it up");
                     Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
-                    delete objIds[i];
+                    objIds[i] = 0;
                     RoomStore.setObjectIds(rId, objIds);
                     break;
                 }
@@ -89,22 +98,32 @@ contract MeatPuppetSystem is System  {
     }
 
     function _drop(string[] memory tokens, uint32 rId) private returns (uint8 err) {
-        console.log("----->TAKE :", tokens[1]);
+        console.log("----->DROP :", tokens[1]);
         uint8 tok_err;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
+            console.log("1");
             uint32[] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
             for(uint8 i = 0 ; i < objIds.length ; i++) {
+                console.log("2");
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);
                 if(testType == objType) {
+                    Output.set("You took the item from your faded Aldi bag and placed it on the floor");
+                    console.log("3");
                     RoomStore.pushObjectIds(rId, objIds[i]);
-                    delete objIds[i];
+                    objIds[i] = 0;
                     Player.setObjectIds(CurrentPlayerId.get(), objIds);
-                    break;
+                    return 0;
                 }
             }
+            Output.set("That item is not in the Aldi carrer bag");
+
+
         }
+
+        Output.set("I'm not sure what one of those is");
+
         return 0;
     }
 

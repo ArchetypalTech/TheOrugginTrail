@@ -64,6 +64,7 @@ contract TokeniserSystem is System {
         cmdLookup["UNLOCK"]     = ActionType.Unlock;
         cmdLookup["OPEN"]       = ActionType.Open;
         cmdLookup["LOOK"]       = ActionType.Look;
+        cmdLookup["DROP"]       = ActionType.Drop;
     }
 
     // this could autogen because we just take set of "str"

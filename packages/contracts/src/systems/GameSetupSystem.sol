@@ -12,8 +12,8 @@ import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../
 // dev tooling
 contract GameSetupSystem is System {
 
-    uint32 dirId = 0;
-    uint32 objId = 0;
+    uint32 dirId = 1;
+    uint32 objId = 1;
 
     function init() public returns (uint32) {
 
