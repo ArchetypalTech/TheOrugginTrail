@@ -11,13 +11,14 @@ import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import { IWorld } from "../codegen/world/IWorld.sol";
 
-import { Look } from './actions/Look.sol';
+import { LookAt } from '../libs/LookLib.sol';
 
 import { console } from "forge-std/console.sol";
 
 contract MeatPuppetSystem is System  {
 
     event debugLog(string msg, uint8 val);
+     using LookAt for *;
 
     address world;
 
@@ -43,6 +44,17 @@ contract MeatPuppetSystem is System  {
         return string(abi.encodePacked(currRoom.description, "\n",
             "You can go", _describeActions(rId))
         );
+    }
+
+    function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
+        ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
+        uint8 e; 
+
+        if (vrb == ActionType.Look || vrb == ActionType.Describe) {
+            e = LookAt.stuff(world, tokens, curRm);
+        }
+        return e;
+
     }
 
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
@@ -71,7 +83,7 @@ contract MeatPuppetSystem is System  {
     }
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
-        console.log("--------->CURR_RM:", rId);
+        console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(CurrentPlayerId.get(), rId);
         Output.set(_describeRoom(rId));
         return 0;
@@ -98,7 +110,7 @@ contract MeatPuppetSystem is System  {
                                                                         Player.getRoomId(CurrentPlayerId.get()));
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             if (tokens.length >= 2) {
-                console.log("-->tok.len %d", tokens.length);
+                //console.log("-->tok.len %d", tokens.length);
                 if ( IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go ) {
                     /* GO: form */
                     move = true;
@@ -106,9 +118,8 @@ contract MeatPuppetSystem is System  {
                                                                                 Player.getRoomId(CurrentPlayerId.get()));
                 } else {
                     /* VERB: form */
-                    // TODO: handle actions
-                    //err = _handleAction(tokens, CurrentRoomId.get());
-                    move = false;
+                    err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                    err == 0 ? move = true : move = false; 
                 }
             } else {
                 err = ErrCodes.ER_PR_NO;
@@ -128,6 +139,8 @@ contract MeatPuppetSystem is System  {
             // either a do something or move rooms command
             if ( move ) {
                 _enterRoom(nxt);
+            } else {
+                // hit look libs_
             }
         }
     }

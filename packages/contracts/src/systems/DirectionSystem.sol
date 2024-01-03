@@ -20,13 +20,13 @@ contract DirectionSystem is System {
     address world;
 
     function initDFS(address tokeniser, address wrld) public returns (address) {
-        console.log("--->initDFS: %s", wrld);
+        //console.log("--->initDFS: %s", wrld);
         world = wrld;
         return address(this);
     }
 
     function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxtRm) {
-        console.log("----->DF_NXT_RM tok: ", tokens[0]);
+        //console.log("----->DF_NXT_RM tok: ", tokens[0]);
 
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
 
@@ -39,12 +39,12 @@ contract DirectionSystem is System {
  
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
-            console.log("->DF--->DOBJ:", dObjId);
+            //console.log("->DF--->DOBJ:", dObjId);
             uint32 nxtRm = DirObjStore.getDestId(dObjId);
-            console.log("->DF --------->NXTRM:", nxtRm);
+            //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
         }else { 
-            console.log("--->DF:0000"); 
+            //console.log("--->DF:0000"); 
             // check reason we didnt move this can currently only 
             // be cannot actually move that way because no exit
             //string memory errMsg;
@@ -62,16 +62,16 @@ contract DirectionSystem is System {
 
     /* NB this is ONLY checking that an exit exists TODO add an openable check */
     function _directionCheck (uint32 rId, DirectionType d) private view returns (bool success, uint32 next) {
-        console.log("---->DC room:", rId, "---> DR:", uint8(d));
+        //console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
 
-        console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
+        //console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
         for (uint8 i = 0; i < exitIds.length; i++) {
 
-            console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
+            //console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
             // just for debug output
             DirectionType dt = DirObjStore.getDirType(exitIds[i]);
-            console.log( "-->i:", i, "-->", uint8(dt) );
+            //console.log( "-->i:", i, "-->", uint8(dt) );
             if ( DirObjStore.getDirType(exitIds[i]) == d) { 
                 if (_canMove() == true){
                     return (true, exitIds[i]); 
@@ -87,7 +87,7 @@ contract DirectionSystem is System {
     function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
         
         if (IWorld(world).meat_TokeniserSystem_getDirectionType(tokens[0]) != DirectionType.None) {
-            console.log("--->DIR %s", tokens[0]);
+            //console.log("--->DIR %s", tokens[0]);
             /* Direction form
             *
             * dir = n | e | s | w
@@ -95,7 +95,7 @@ contract DirectionSystem is System {
             */
             tok = tokens[0];
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]) != ActionType.None ) {
-            console.log("--->GO %s", tok);
+            //console.log("--->GO %s", tok);
             /* GO form
             * 
             * go_cmd = go, [(pp da)], dir | obj 
@@ -104,12 +104,12 @@ contract DirectionSystem is System {
             * dir = n | e | s | w
             */
             if ( tokens.length >= 4 ) {
-                console.log("--->GO_LNG %s", tokens[3]);
+                //console.log("--->GO_LNG %s", tokens[3]);
                 /* long form */
                 /* go_cmd = go, ("to" "the"), dir|obj */
                 tok = tokens[3]; // dir | obj
             } else if (tokens.length == 2) {
-                console.log("--->GO_SHRT %s", tokens[1]);
+                //console.log("--->GO_SHRT %s", tokens[1]);
                 /* short form */
                 /* go_cmd = go, dir|obj */
                 tok = tokens[1]; // dir | obj
