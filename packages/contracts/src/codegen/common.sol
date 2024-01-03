@@ -73,7 +73,8 @@ enum ActionType {
   Look,
   Close,
   Break,
-  Throw
+  Throw,
+  Drop
 }
 
 enum ObjectType {
