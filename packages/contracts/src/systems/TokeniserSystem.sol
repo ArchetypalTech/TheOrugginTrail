@@ -81,8 +81,9 @@ contract TokeniserSystem is System {
     }
 
     function setupGrammar () private {
-       grammarLookup["The"] = GrammarType.DefiniteArticle;
-       grammarLookup["To"]  = GrammarType.Preposition;
+       grammarLookup["The"]     = GrammarType.DefiniteArticle;
+       grammarLookup["To"]      = GrammarType.Preposition;
+       grammarLookup["Around"]  = GrammarType.Adverb;
     }
 
     function setupObjects() private returns (uint32) {

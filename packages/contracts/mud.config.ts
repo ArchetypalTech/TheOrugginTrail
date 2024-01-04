@@ -54,7 +54,8 @@ export default mudConfig({
         // add a direction action to these to connect rooms
         // then add them to a room
         DirObjectType: [
-            "None", "Door", "Window", "Stairs", "Ladder"
+            "None", "Door", "Window", "Stairs", "Ladder",
+            "Path"
         ],
         // use these in the parser, they are VERBS
         //
@@ -67,7 +68,7 @@ export default mudConfig({
         ObjectType: [
             "None", "Football", "Key", "Knife", "Bottle"
         ],
-        GrammarType: ["None", "DefiniteArticle", "Preposition"],
+        GrammarType: ["None", "DefiniteArticle", "Preposition", "Adverb"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh"],
         TexDefType: ["None", "Door", "WoodCabin", "DirtPath"],
         CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],

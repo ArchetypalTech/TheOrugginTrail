@@ -56,7 +56,8 @@ enum DirObjectType {
   Door,
   Window,
   Stairs,
-  Ladder
+  Ladder,
+  Path
 }
 
 enum ActionType {
@@ -88,7 +89,8 @@ enum ObjectType {
 enum GrammarType {
   None,
   DefiniteArticle,
-  Preposition
+  Preposition,
+  Adverb
 }
 
 enum MaterialType {
