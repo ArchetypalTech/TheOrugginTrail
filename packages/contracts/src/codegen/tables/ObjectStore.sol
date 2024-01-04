@@ -29,13 +29,13 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant ObjectStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0006030101010400000000000000000000000000000000000000000000000000
+  0x0022030101012000000000000000000000000000000000000000000000000000
 );
 
 struct ObjectStoreData {
   ObjectType objectType;
   MaterialType materialType;
-  uint32 texDefId;
+  bytes32 texDefId;
   uint32[] objectActionIds;
 }
 
@@ -67,7 +67,7 @@ library ObjectStore {
     SchemaType[] memory _valueSchema = new SchemaType[](4);
     _valueSchema[0] = SchemaType.UINT8;
     _valueSchema[1] = SchemaType.UINT8;
-    _valueSchema[2] = SchemaType.UINT32;
+    _valueSchema[2] = SchemaType.BYTES32;
     _valueSchema[3] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
@@ -195,29 +195,29 @@ library ObjectStore {
   /**
    * @notice Get texDefId.
    */
-  function getTexDefId(uint32 objectId) internal view returns (uint32 texDefId) {
+  function getTexDefId(uint32 objectId) internal view returns (bytes32 texDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (bytes32(_blob));
   }
 
   /**
    * @notice Get texDefId.
    */
-  function _getTexDefId(uint32 objectId) internal view returns (uint32 texDefId) {
+  function _getTexDefId(uint32 objectId) internal view returns (bytes32 texDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (bytes32(_blob));
   }
 
   /**
    * @notice Set texDefId.
    */
-  function setTexDefId(uint32 objectId, uint32 texDefId) internal {
+  function setTexDefId(uint32 objectId, bytes32 texDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
@@ -227,7 +227,7 @@ library ObjectStore {
   /**
    * @notice Set texDefId.
    */
-  function _setTexDefId(uint32 objectId, uint32 texDefId) internal {
+  function _setTexDefId(uint32 objectId, bytes32 texDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(objectId));
 
@@ -433,7 +433,7 @@ library ObjectStore {
     uint32 objectId,
     ObjectType objectType,
     MaterialType materialType,
-    uint32 texDefId,
+    bytes32 texDefId,
     uint32[] memory objectActionIds
   ) internal {
     bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);
@@ -454,7 +454,7 @@ library ObjectStore {
     uint32 objectId,
     ObjectType objectType,
     MaterialType materialType,
-    uint32 texDefId,
+    bytes32 texDefId,
     uint32[] memory objectActionIds
   ) internal {
     bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);
@@ -503,12 +503,12 @@ library ObjectStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (ObjectType objectType, MaterialType materialType, uint32 texDefId) {
+  ) internal pure returns (ObjectType objectType, MaterialType materialType, bytes32 texDefId) {
     objectType = ObjectType(uint8(Bytes.slice1(_blob, 0)));
 
     materialType = MaterialType(uint8(Bytes.slice1(_blob, 1)));
 
-    texDefId = (uint32(Bytes.slice4(_blob, 2)));
+    texDefId = (Bytes.slice32(_blob, 2));
   }
 
   /**
@@ -569,7 +569,7 @@ library ObjectStore {
   function encodeStatic(
     ObjectType objectType,
     MaterialType materialType,
-    uint32 texDefId
+    bytes32 texDefId
   ) internal pure returns (bytes memory) {
     return abi.encodePacked(objectType, materialType, texDefId);
   }
@@ -602,7 +602,7 @@ library ObjectStore {
   function encode(
     ObjectType objectType,
     MaterialType materialType,
-    uint32 texDefId,
+    bytes32 texDefId,
     uint32[] memory objectActionIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(objectType, materialType, texDefId);

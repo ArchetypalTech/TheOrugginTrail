@@ -13,7 +13,7 @@ import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
 
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
-import { RoomStore, RoomStoreData, ActionStore, DirObjStore } from "../codegen/index.sol";
+import { RoomStore, RoomStoreData, ActionStore, DirObjectStore } from "../codegen/index.sol";
 
 contract DirectionSystem is System {
 
@@ -40,7 +40,7 @@ contract DirectionSystem is System {
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             //console.log("->DF--->DOBJ:", dObjId);
-            uint32 nxtRm = DirObjStore.getDestId(dObjId);
+            uint32 nxtRm = DirObjectStore.getDestId(dObjId);
             //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
         }else { 
@@ -70,9 +70,9 @@ contract DirectionSystem is System {
 
             //console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
             // just for debug output
-            DirectionType dt = DirObjStore.getDirType(exitIds[i]);
+            DirectionType dt = DirObjectStore.getDirType(exitIds[i]);
             //console.log( "-->i:", i, "-->", uint8(dt) );
-            if ( DirObjStore.getDirType(exitIds[i]) == d) { 
+            if ( DirObjectStore.getDirType(exitIds[i]) == d) { 
                 if (_canMove() == true){
                     return (true, exitIds[i]); 
                 }

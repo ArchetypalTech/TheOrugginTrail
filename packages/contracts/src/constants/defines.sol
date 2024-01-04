@@ -26,6 +26,7 @@ library GameConstants {
 // some result codes (from game commands)
 library ResCodes {
     uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
+    uint8 public constant LK_OK = 8; // Error DirectionRoutine DR
 }
 
 library ErrCodes {

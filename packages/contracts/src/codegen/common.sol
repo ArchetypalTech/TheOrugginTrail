@@ -100,14 +100,17 @@ enum MaterialType {
   Iron,
   Shit,
   IKEA,
-  Flesh
+  Flesh,
+  Dirt,
+  Mud
 }
 
-enum TexDefType {
+enum TxtDefType {
   None,
-  Door,
-  WoodCabin,
-  DirtPath
+  DirObject,
+  Dir,
+  Place,
+  Object
 }
 
 enum CommandError {

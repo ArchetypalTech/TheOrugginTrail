@@ -24,22 +24,22 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { DirObjectType, DirectionType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("DirObjStore")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("DirObjectStore")))
 );
-ResourceId constant DirObjStoreTableId = _tableId;
+ResourceId constant DirObjectStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0006030101010400000000000000000000000000000000000000000000000000
 );
 
-struct DirObjStoreData {
+struct DirObjectStoreData {
   DirObjectType objType;
   DirectionType dirType;
   uint32 destId;
   uint32[] objectActionIds;
 }
 
-library DirObjStore {
+library DirObjectStore {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -399,7 +399,7 @@ library DirObjStore {
   /**
    * @notice Get the full data.
    */
-  function get(uint32 dirObjId) internal view returns (DirObjStoreData memory _table) {
+  function get(uint32 dirObjId) internal view returns (DirObjectStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
@@ -414,7 +414,7 @@ library DirObjStore {
   /**
    * @notice Get the full data.
    */
-  function _get(uint32 dirObjId) internal view returns (DirObjStoreData memory _table) {
+  function _get(uint32 dirObjId) internal view returns (DirObjectStoreData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
@@ -471,7 +471,7 @@ library DirObjStore {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(uint32 dirObjId, DirObjStoreData memory _table) internal {
+  function set(uint32 dirObjId, DirObjectStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
@@ -486,7 +486,7 @@ library DirObjStore {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(uint32 dirObjId, DirObjStoreData memory _table) internal {
+  function _set(uint32 dirObjId, DirObjectStoreData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId);
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
@@ -536,7 +536,7 @@ library DirObjStore {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (DirObjStoreData memory _table) {
+  ) internal pure returns (DirObjectStoreData memory _table) {
     (_table.objType, _table.dirType, _table.destId) = decodeStatic(_staticData);
 
     (_table.objectActionIds) = decodeDynamic(_encodedLengths, _dynamicData);
