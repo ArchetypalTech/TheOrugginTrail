@@ -49,7 +49,7 @@ contract MeatPuppetSystem is System  {
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e; 
-
+        console.log("---->HDL_VRB");
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
         }
@@ -104,11 +104,13 @@ contract MeatPuppetSystem is System  {
         DirectionType tokD = IWorld(world).meat_TokeniserSystem_getDirectionType(tok1);
 
         if (tokD != DirectionType.None) {
+            //console.log("---->DIR:");
             /* DIR: form */
             move = true;
             (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
                                                                         Player.getRoomId(CurrentPlayerId.get()));
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
+            //console.log("---->VRB:");
             if (tokens.length >= 2) {
                 //console.log("-->tok.len %d", tokens.length);
                 if ( IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go ) {
