@@ -2,10 +2,10 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import {console} from "forge-std/console.sol";
-import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDef, DirObjStore} from "../codegen/index.sol";
-import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
+import { console } from "forge-std/console.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { Description, ObjectStore, DirObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDefStore } from "../codegen/index.sol";
+import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
 // are later used in the logs of the game provided by the MUD
@@ -48,32 +48,72 @@ contract GameSetupSystem is System {
         uint32 KMountainPath = 0;
 
         // plain has two exits, the mountain path and the barn
-        RoomStore.pushDirObjIds(KPlain,  createDir(DirectionType.North, KBarn));
-        RoomStore.pushDirObjIds(KPlain,  createDir(DirectionType.East, KMountainPath));
+        // PATH, MUD, NORTH
+        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.North, KBarn, 
+                                                      DirObjectType.Path, MaterialType.Dirt,
+                                                        "a path heading north to a barn"));
+        // PATH, MOUNTAIN, EAST
+        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.East, KMountainPath, 
+                                                      DirObjectType.Path, MaterialType.Mud,
+                                                        "a path east heading into the mountains"));
+        
+        // TODO: move this into a textDef
         RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
-        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football));
+
+        // this is probably correct, adding the description at build time 
+        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football, 
+                                                     MaterialType.Flesh,
+                                                     "A slightly deflated knock off uefa football,"
+                                                     "not quite speherical, it's "
+                                                     "kickable though"
+                                                    ));
 
 
         // barn has one exit, back to the plain
-        RoomStore.pushDirObjIds(KBarn,  createDir(DirectionType.South, KPlain));
+        // Im adding a description to the dirObj but this is probably wrong
+        // we should add a type, i.e. a DOOR, of WOOD, SOUTH then compose the description
+        RoomStore.pushDirObjIds(KBarn,  createDirObj(DirectionType.South, KPlain, 
+                                                     DirObjectType.Door, MaterialType.Wood,  
+                                                     "a door to the south"));
+        
+        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, " 
+                                                    "something died in here")),
+                                                    TxtDefType.Place,
+                                                    MaterialType.None,
+                                                    "The place is dusty and full of spiderwebs,"
+                                                    "something died in here");
+
         RoomStore.setDescription(KBarn, 'You are in the barn');
 
         // mountain path has only one exit now, back to the plain
-        RoomStore.pushDirObjIds(KMountainPath,  createDir(DirectionType.West, KPlain));
-        RoomStore.setDescription(KMountainPath,  'You are on the mountain path, you cant go any further though');
+        // as above but a PATH, of MUD, WEST
+        RoomStore.pushDirObjIds(KMountainPath,  createDirObj(DirectionType.West, KPlain,
+                                                             DirObjectType.Path, MaterialType.Dirt,
+                                                             "a path leads to the west heading down "
+                                                             "to the plains below"));
+        
+        // TODO: move this into a textDef
+        RoomStore.setDescription(KMountainPath,  "You are on the mountain path, "
+                                                    "you cant go any further though");
 
     }
 
-    // this is where the bug was, we should get rid of this and create a UID or something
-    // this is the case for all the id's really... well perhaps?
-    function createDir(DirectionType directionType, uint32 roomId) private returns (uint32){
-        DirObjStore.setDirType(dirId, directionType);
-        DirObjStore.setDestId(dirId, roomId);
+    function createDirObj(DirectionType directionType, uint32 destId, DirObjectType dType,
+                          MaterialType mType,
+                          string memory desc) 
+                          private returns (uint32) {
+        DirObjectStore.setDirType(dirId, directionType);
+        DirObjectStore.setDestId(dirId, destId);
+        TextDefStore.set(keccak256(abi.encodePacked(desc)), TxtDefType.DirObject, mType, desc);
+        DirObjectStore.setTxtDefId(dirId, keccak256(abi.encodePacked(desc)));
         return dirId++;
     }
 
-    function createObject(ObjectType objectType) private returns (uint32){
+    function createObject(ObjectType objectType, MaterialType mType, string memory desc) private returns (uint32){
         ObjectStore.setObjectType(objId, objectType);
+        ObjectStore.setMaterialType(objId, mType);
+        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, mType, desc); 
+        ObjectStore.setTexDefId(objId, keccak256(abi.encodePacked(desc)));
         return objId++;
     }
 }

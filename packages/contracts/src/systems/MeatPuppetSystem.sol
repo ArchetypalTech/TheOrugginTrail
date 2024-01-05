@@ -2,11 +2,12 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import {console} from "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 
-import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjStore, DirObjStoreData, TextDef} from "../codegen/index.sol";
-import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
+    DirObjectStoreData, TextDefStore } from "../codegen/index.sol";
+import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import { IWorld } from "../codegen/world/IWorld.sol";
@@ -170,7 +171,7 @@ contract MeatPuppetSystem is System  {
         string[8] memory dirStrings;
         string memory msgStr;
         for (uint8 i = 0; i < currRm.dirObjIds.length; i++) {
-            DirObjStoreData memory dir = DirObjStore.get(currRm.dirObjIds[i]);
+            DirObjectStoreData memory dir = DirObjectStore.get(currRm.dirObjIds[i]);
 
             if (dir.dirType == DirectionType.North) {
                 dirStrings[i] = " North";
@@ -231,6 +232,7 @@ contract MeatPuppetSystem is System  {
                 } else {
                     /* VERB: form */
                     err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                    console.log("->ERR: %s", err);
                     err == 0 ? move = true : move = false; 
                 }
             } else {
