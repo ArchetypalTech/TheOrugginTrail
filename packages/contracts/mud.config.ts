@@ -140,6 +140,7 @@ export default mudConfig({
                 objType: "DirObjectType", // Door/Window/CaveMouth etc
                 dirType: "DirectionType", // North, South, Up etc
                 destId: "uint32",
+                txtDefId: "bytes32",
                 objectActionIds: "uint32[]" // Open/Lock/Break etc
             },
         },

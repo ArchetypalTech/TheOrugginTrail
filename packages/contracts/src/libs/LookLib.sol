@@ -6,7 +6,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType } from '../codegen/common.sol';
 
-import { RoomStore, RoomStoreData, ObjectStore, Description, Output } from '../codegen/index.sol';
+import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output } from '../codegen/index.sol';
 
 library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
@@ -40,16 +40,33 @@ library LookAt {
         return err;
     }
 
+    function _fetchObjects(uint32[] memory objs) internal returns (uint8 er) {
+        //Objects:
+        for(uint8 i =0; i < objs.length; i++) {
+            console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
+            bytes32 tId =  ObjectStore.getTexDefId(objs[i]); 
+            Description.pushTxtIds(tId);
+        }
+
+    }
+
+    function _fetchDObjects(uint32[] memory objs) internal returns (uint8 er) {
+        //DirObjects:
+        for(uint8 i =0; i < objs.length; i++) {
+            console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
+            bytes32 tId = DirObjectStore.getTxtDefId(objs[i]); 
+            Description.pushTxtIds(tId);
+        }
+    }
+
     function _lookAround(uint32 rId) internal returns (uint8 er) {
         uint32[] memory objIds = RoomStore.get(rId).objectIds;
         uint32[] memory dObjects = RoomStore.get(rId).dirObjIds;
 
-        //objects:
-        for(uint8 i =0; i < objIds.length; i++) {
-            console.log("--->LK_AR: %d OBJ_ID:%d", i, objIds[i]);
-            bytes32 tId =  ObjectStore.getTexDefId(objIds[i]); 
-            Description.pushTxtIds(tId);
-        }
+       _fetchObjects(objIds); 
+       _fetchDObjects(dObjects);
+
+
         return uint8(Description.getTxtIds().length);
     }
 }

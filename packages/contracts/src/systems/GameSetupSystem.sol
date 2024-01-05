@@ -57,6 +57,7 @@ contract GameSetupSystem is System {
                                                       DirObjectType.Path, MaterialType.Mud,
                                                         "a path east heading into the mountains"));
         
+        // TODO: move this into a textDef
         RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
 
         // this is probably correct, adding the description at build time 
@@ -75,6 +76,13 @@ contract GameSetupSystem is System {
                                                      DirObjectType.Door, MaterialType.Wood,  
                                                      "a door to the south"));
         
+        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, " 
+                                                    "something died in here")),
+                                                    TxtDefType.Place,
+                                                    MaterialType.None,
+                                                    "The place is dusty and full of spiderwebs,"
+                                                    "something died in here");
+
         RoomStore.setDescription(KBarn, 'You are in the barn');
 
         // mountain path has only one exit now, back to the plain
@@ -84,13 +92,12 @@ contract GameSetupSystem is System {
                                                              "a path leads to the west heading down "
                                                              "to the plains below"));
         
+        // TODO: move this into a textDef
         RoomStore.setDescription(KMountainPath,  "You are on the mountain path, "
                                                     "you cant go any further though");
 
     }
 
-    // this is where the bug was, we should get rid of this and create a UID or something
-    // this is the case for all the id's really... well perhaps?
     function createDirObj(DirectionType directionType, uint32 destId, DirObjectType dType,
                           MaterialType mType,
                           string memory desc) 
@@ -98,6 +105,7 @@ contract GameSetupSystem is System {
         DirObjectStore.setDirType(dirId, directionType);
         DirObjectStore.setDestId(dirId, destId);
         TextDefStore.set(keccak256(abi.encodePacked(desc)), TxtDefType.DirObject, mType, desc);
+        DirObjectStore.setTxtDefId(dirId, keccak256(abi.encodePacked(desc)));
         return dirId++;
     }
 
