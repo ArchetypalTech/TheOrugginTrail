@@ -4,12 +4,15 @@ pragma solidity >=0.8.21;
 import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
+
 import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType } from '../codegen/common.sol';
 
 import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output } from '../codegen/index.sol';
 
+
 library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
+
 
     function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 er) {
         // Composes the descriptions for stuff Players can see
@@ -17,10 +20,8 @@ library LookAt {
         console.log("---->SEE T:%s, R:%d", tokens[0], curRmId);
         uint8 err;
         ActionType vrb = IWorld(wrld).meat_TokeniserSystem_getActionType(tokens[0]);
-        DirectionType dir;
-        ObjectType obj;
-        DirObjectType dirObj;
         GrammarType gObj;
+
 
         // we know it is an action because the commandProcessors has pre-parsed for us
         // so we dont need to test for a garbage vrb token
@@ -47,7 +48,6 @@ library LookAt {
             bytes32 tId =  ObjectStore.getTexDefId(objs[i]); 
             Description.pushTxtIds(tId);
         }
-
     }
 
     function _fetchDObjects(uint32[] memory objs) internal returns (uint8 er) {
@@ -65,7 +65,6 @@ library LookAt {
 
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
-
 
         return uint8(Description.getTxtIds().length);
     }

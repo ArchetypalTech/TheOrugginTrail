@@ -40,6 +40,7 @@ contract DirectionSystem is System {
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             //console.log("->DF--->DOBJ:", dObjId);
+
             uint32 nxtRm = DirObjectStore.getDestId(dObjId);
             //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
@@ -73,6 +74,7 @@ contract DirectionSystem is System {
             DirectionType dt = DirObjectStore.getDirType(exitIds[i]);
             //console.log( "-->i:", i, "-->", uint8(dt) );
             if ( DirObjectStore.getDirType(exitIds[i]) == d) { 
+
                 if (_canMove() == true){
                     return (true, exitIds[i]); 
                 }
