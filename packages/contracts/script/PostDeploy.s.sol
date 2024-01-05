@@ -14,7 +14,7 @@ import { TerrainType } from "../src/codegen/common.sol";
 import { RoomType } from "../src/codegen/common.sol";
 import { ActionType } from "../src/codegen/common.sol";
 import { ObjectType } from "../src/codegen/common.sol";
-import { TexDefType } from "../src/codegen/common.sol";
+import { TxtDefType } from "../src/codegen/common.sol";
 import { MaterialType } from "../src/codegen/common.sol";
 
 

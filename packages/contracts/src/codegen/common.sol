@@ -56,7 +56,8 @@ enum DirObjectType {
   Door,
   Window,
   Stairs,
-  Ladder
+  Ladder,
+  Path
 }
 
 enum ActionType {
@@ -73,7 +74,8 @@ enum ActionType {
   Look,
   Close,
   Break,
-  Throw
+  Throw,
+  Drop
 }
 
 enum ObjectType {
@@ -87,7 +89,8 @@ enum ObjectType {
 enum GrammarType {
   None,
   DefiniteArticle,
-  Preposition
+  Preposition,
+  Adverb
 }
 
 enum MaterialType {
@@ -97,14 +100,17 @@ enum MaterialType {
   Iron,
   Shit,
   IKEA,
-  Flesh
+  Flesh,
+  Dirt,
+  Mud
 }
 
-enum TexDefType {
+enum TxtDefType {
   None,
-  Door,
-  WoodCabin,
-  DirtPath
+  DirObject,
+  Dir,
+  Place,
+  Object
 }
 
 enum CommandError {
