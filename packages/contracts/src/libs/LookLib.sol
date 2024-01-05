@@ -72,8 +72,6 @@ library LookAt {
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
 
-       // we always return 1 from this function so that we dont accidentaly move rooms
-       // this isn't ideal but anyway
        return 0 ;
     }
 }
