@@ -26,6 +26,9 @@ library GameConstants {
 // some result codes (from game commands)
 library ResCodes {
     uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
+    // We use a custom return type for LOOK's
+    // becaseu we cant retutn a 0 for no err unlike the rest of our commands
+    uint8 public constant LK_RT = 8; 
 }
 
 library ErrCodes {
