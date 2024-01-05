@@ -233,7 +233,7 @@ contract MeatPuppetSystem is System  {
                     /* VERB: form */
                     err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
                     console.log("->ERR: %s", err);
-                    err == 0 ? move = true : move = false; 
+                    move = false; 
                 }
             } else {
                 err = ErrCodes.ER_PR_NO;
