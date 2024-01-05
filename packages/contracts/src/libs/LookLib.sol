@@ -14,7 +14,7 @@ library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
 
 
-    function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 er) {
+    function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
         // Composes the descriptions for stuff Players can see
         // right now that's from string's stored in object meta data
         console.log("---->SEE T:%s, R:%d", tokens[0], curRmId);
@@ -48,6 +48,7 @@ library LookAt {
             bytes32 tId =  ObjectStore.getTexDefId(objs[i]); 
             Description.pushTxtIds(tId);
         }
+        return 0;
     }
 
     function _fetchDObjects(uint32[] memory objs) internal returns (uint8 er) {
@@ -57,6 +58,11 @@ library LookAt {
             bytes32 tId = DirObjectStore.getTxtDefId(objs[i]); 
             Description.pushTxtIds(tId);
         }
+        return 0;
+    }
+
+    function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
+        return 0;
     }
 
     function _lookAround(uint32 rId) internal returns (uint8 er) {
@@ -66,7 +72,9 @@ library LookAt {
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
 
-        return uint8(Description.getTxtIds().length);
+       // we always return 1 from this function so that we dont accidentaly move rooms
+       // this isn't ideal but anyway
+       return 0 ;
     }
 }
 
