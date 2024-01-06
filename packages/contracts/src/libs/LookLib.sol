@@ -41,6 +41,10 @@ library LookAt {
         return err;
     }
 
+    function genText() internal returns (string memory) {
+
+    }
+
     function _fetchObjects(uint32[] memory objs) internal returns (uint8 er) {
         //Objects:
         for(uint8 i =0; i < objs.length; i++) {
@@ -62,6 +66,8 @@ library LookAt {
     }
 
     function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
+        bytes32 tId = RoomStore.getTxtDefId(rmId);
+        Description.pushTxtIds(tId);
         return 0;
     }
 
@@ -71,6 +77,7 @@ library LookAt {
 
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
+       _fetchRoomDesc(rId);
 
        return 0 ;
     }

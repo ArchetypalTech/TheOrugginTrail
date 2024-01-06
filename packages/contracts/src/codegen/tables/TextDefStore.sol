@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
-import { TxtDefType, MaterialType } from "./../common.sol";
+import { TxtDefType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("TextDefStore")))
@@ -29,8 +29,13 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant TextDefStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000100000000000000000000000000000000000000000000000000000000
+  0x0004010104000000000000000000000000000000000000000000000000000000
 );
+
+struct TextDefStoreData {
+  uint32 owner;
+  string value;
+}
 
 library TextDefStore {
   /**
@@ -46,10 +51,9 @@ library TextDefStore {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](3);
+    SchemaType[] memory _keySchema = new SchemaType[](2);
     _keySchema[0] = SchemaType.BYTES32;
     _keySchema[1] = SchemaType.UINT8;
-    _keySchema[2] = SchemaType.UINT8;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -59,8 +63,9 @@ library TextDefStore {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.STRING;
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.UINT32;
+    _valueSchema[1] = SchemaType.STRING;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -70,10 +75,9 @@ library TextDefStore {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](3);
+    keyNames = new string[](2);
     keyNames[0] = "texDefId";
     keyNames[1] = "texDefType";
-    keyNames[2] = "materialType";
   }
 
   /**
@@ -81,8 +85,9 @@ library TextDefStore {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](1);
-    fieldNames[0] = "value";
+    fieldNames = new string[](2);
+    fieldNames[0] = "owner";
+    fieldNames[1] = "value";
   }
 
   /**
@@ -100,17 +105,58 @@ library TextDefStore {
   }
 
   /**
-   * @notice Get value.
+   * @notice Get owner.
    */
-  function getValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function getOwner(bytes32 texDefId, TxtDefType texDefType) internal view returns (uint32 owner) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
+  function _getOwner(bytes32 texDefId, TxtDefType texDefType) internal view returns (uint32 owner) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function setOwner(bytes32 texDefId, TxtDefType texDefType, uint32 owner) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function _setOwner(bytes32 texDefId, TxtDefType texDefType, uint32 owner) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function getValue(bytes32 texDefId, TxtDefType texDefType) internal view returns (string memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
@@ -119,49 +165,10 @@ library TextDefStore {
   /**
    * @notice Get value.
    */
-  function _getValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _getValue(bytes32 texDefId, TxtDefType texDefType) internal view returns (string memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return (string(_blob));
-  }
-
-  /**
-   * @notice Get value.
-   */
-  function get(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return (string(_blob));
-  }
-
-  /**
-   * @notice Get value.
-   */
-  function _get(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (string memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
@@ -170,11 +177,10 @@ library TextDefStore {
   /**
    * @notice Set value.
    */
-  function setValue(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function setValue(bytes32 texDefId, TxtDefType texDefType, string memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
   }
@@ -182,35 +188,10 @@ library TextDefStore {
   /**
    * @notice Set value.
    */
-  function _setValue(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _setValue(bytes32 texDefId, TxtDefType texDefType, string memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
-  }
-
-  /**
-   * @notice Set value.
-   */
-  function set(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
-  }
-
-  /**
-   * @notice Set value.
-   */
-  function _set(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((value)));
   }
@@ -218,15 +199,10 @@ library TextDefStore {
   /**
    * @notice Get the length of value.
    */
-  function lengthValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function lengthValue(bytes32 texDefId, TxtDefType texDefType) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -237,45 +213,10 @@ library TextDefStore {
   /**
    * @notice Get the length of value.
    */
-  function _lengthValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _lengthValue(bytes32 texDefId, TxtDefType texDefType) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 1;
-    }
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function length(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 1;
-    }
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function _length(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -287,16 +228,10 @@ library TextDefStore {
    * @notice Get an item of value.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
-  function getItemValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index
-  ) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function getItemValue(bytes32 texDefId, TxtDefType texDefType, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -311,55 +246,11 @@ library TextDefStore {
   function _getItemValue(
     bytes32 texDefId,
     TxtDefType texDefType,
-    MaterialType materialType,
     uint256 _index
   ) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
-      return (string(_blob));
-    }
-  }
-
-  /**
-   * @notice Get an item of value.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItem(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index
-  ) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
-      return (string(_blob));
-    }
-  }
-
-  /**
-   * @notice Get an item of value.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function _getItem(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index
-  ) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
@@ -370,16 +261,10 @@ library TextDefStore {
   /**
    * @notice Push a slice to value.
    */
-  function pushValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function pushValue(bytes32 texDefId, TxtDefType texDefType, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
@@ -387,40 +272,10 @@ library TextDefStore {
   /**
    * @notice Push a slice to value.
    */
-  function _pushValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _pushValue(bytes32 texDefId, TxtDefType texDefType, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
-  }
-
-  /**
-   * @notice Push a slice to value.
-   */
-  function push(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
-  }
-
-  /**
-   * @notice Push a slice to value.
-   */
-  function _push(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
@@ -428,11 +283,10 @@ library TextDefStore {
   /**
    * @notice Pop a slice from value.
    */
-  function popValue(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function popValue(bytes32 texDefId, TxtDefType texDefType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
@@ -440,35 +294,10 @@ library TextDefStore {
   /**
    * @notice Pop a slice from value.
    */
-  function _popValue(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _popValue(bytes32 texDefId, TxtDefType texDefType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
-  }
-
-  /**
-   * @notice Pop a slice from value.
-   */
-  function pop(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
-  }
-
-  /**
-   * @notice Pop a slice from value.
-   */
-  function _pop(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = texDefId;
-    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
@@ -476,17 +305,10 @@ library TextDefStore {
   /**
    * @notice Update a slice of value at `_index`.
    */
-  function updateValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function updateValue(bytes32 texDefId, TxtDefType texDefType, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -497,17 +319,10 @@ library TextDefStore {
   /**
    * @notice Update a slice of value at `_index`.
    */
-  function _updateValue(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _updateValue(bytes32 texDefId, TxtDefType texDefType, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     unchecked {
       bytes memory _encoded = bytes((_slice));
@@ -516,55 +331,146 @@ library TextDefStore {
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Get the full data.
    */
-  function update(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function get(bytes32 texDefId, TxtDefType texDefType) internal view returns (TextDefStoreData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
-    unchecked {
-      bytes memory _encoded = bytes((_slice));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
-    }
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /**
-   * @notice Update a slice of value at `_index`.
+   * @notice Get the full data.
    */
-  function _update(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType,
-    uint256 _index,
-    string memory _slice
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _get(bytes32 texDefId, TxtDefType texDefType) internal view returns (TextDefStoreData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function set(bytes32 texDefId, TxtDefType texDefType, uint32 owner, string memory value) internal {
+    bytes memory _staticData = encodeStatic(owner);
+
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(bytes32 texDefId, TxtDefType texDefType, uint32 owner, string memory value) internal {
+    bytes memory _staticData = encodeStatic(owner);
+
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function set(bytes32 texDefId, TxtDefType texDefType, TextDefStoreData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.owner);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.value);
+    bytes memory _dynamicData = encodeDynamic(_table.value);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32 texDefId, TxtDefType texDefType, TextDefStoreData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.owner);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.value);
+    bytes memory _dynamicData = encodeDynamic(_table.value);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = texDefId;
+    _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Decode the tightly packed blob of static data using this table's field layout.
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 owner) {
+    owner = (uint32(Bytes.slice4(_blob, 0)));
+  }
+
+  /**
+   * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (string memory value) {
+    uint256 _start;
+    uint256 _end;
     unchecked {
-      bytes memory _encoded = bytes((_slice));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+      _end = _encodedLengths.atIndex(0);
     }
+    value = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
+   * @notice Decode the tightly packed blobs using this table's field layout.
+   * @param _staticData Tightly packed static fields.
+   * @param _encodedLengths Encoded lengths of dynamic fields.
+   * @param _dynamicData Tightly packed dynamic fields.
+   */
+  function decode(
+    bytes memory _staticData,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (TextDefStoreData memory _table) {
+    (_table.owner) = decodeStatic(_staticData);
+
+    (_table.value) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function deleteRecord(bytes32 texDefId, TxtDefType texDefType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -572,13 +478,20 @@ library TextDefStore {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes32 texDefId, TxtDefType texDefType, MaterialType materialType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function _deleteRecord(bytes32 texDefId, TxtDefType texDefType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
+   */
+  function encodeStatic(uint32 owner) internal pure returns (bytes memory) {
+    return abi.encodePacked(owner);
   }
 
   /**
@@ -606,8 +519,9 @@ library TextDefStore {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(string memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData;
+  function encode(uint32 owner, string memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(owner);
+
     PackedCounter _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
@@ -617,15 +531,10 @@ library TextDefStore {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(
-    bytes32 texDefId,
-    TxtDefType texDefType,
-    MaterialType materialType
-  ) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+  function encodeKeyTuple(bytes32 texDefId, TxtDefType texDefType) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = texDefId;
     _keyTuple[1] = bytes32(uint256(uint8(texDefType)));
-    _keyTuple[2] = bytes32(uint256(uint8(materialType)));
 
     return _keyTuple;
   }

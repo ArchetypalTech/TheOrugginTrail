@@ -9,7 +9,7 @@ import { RoomStore, RoomStoreData, RoomStoreTableId } from "./tables/RoomStore.s
 import { ActionStore, ActionStoreData, ActionStoreTableId } from "./tables/ActionStore.sol";
 import { DirObjectStore, DirObjectStoreData, DirObjectStoreTableId } from "./tables/DirObjectStore.sol";
 import { ObjectStore, ObjectStoreData, ObjectStoreTableId } from "./tables/ObjectStore.sol";
-import { TextDefStore, TextDefStoreTableId } from "./tables/TextDefStore.sol";
+import { TextDefStore, TextDefStoreData, TextDefStoreTableId } from "./tables/TextDefStore.sol";
 import { Output, OutputTableId } from "./tables/Output.sol";
 import { CurrentPlayerId, CurrentPlayerIdTableId } from "./tables/CurrentPlayerId.sol";
 import { Description, DescriptionTableId } from "./tables/Description.sol";

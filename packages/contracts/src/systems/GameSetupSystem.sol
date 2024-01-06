@@ -57,8 +57,11 @@ contract GameSetupSystem is System {
                                                       DirObjectType.Path, MaterialType.Mud,
                                                         "a path east heading into the mountains"));
         
-        // TODO: move this into a textDef
         RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
+
+
+        bytes32 tid_plain = keccak256(abi.encodePacked('You are on a plain with the wind blowing'));
+        TextDefStore.set(tid_plain, TxtDefType.Place, KPlain, 'You are on a plain with the wind blowing'); 
 
         // this is probably correct, adding the description at build time 
         RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football, 
@@ -75,15 +78,18 @@ contract GameSetupSystem is System {
         RoomStore.pushDirObjIds(KBarn,  createDirObj(DirectionType.South, KPlain, 
                                                      DirObjectType.Door, MaterialType.Wood,  
                                                      "a door to the south"));
-        
-        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, " 
-                                                    "something died in here")),
-                                                    TxtDefType.Place,
-                                                    MaterialType.None,
+
+        // get the hash use as identifier
+        bytes32 tid_barn = keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, " 
+                                                        "something died in here"));  
+
+    
+        TextDefStore.set(tid_barn, TxtDefType.Place, KBarn,
                                                     "The place is dusty and full of spiderwebs,"
                                                     "something died in here");
 
-        RoomStore.setDescription(KBarn, 'You are in the barn');
+        RoomStore.setDescription(KBarn, 'You are in the barn');// this should be auto gen
+        RoomStore.setTxtDefId(KBarn, tid_barn);
 
         // mountain path has only one exit now, back to the plain
         // as above but a PATH, of MUD, WEST
@@ -99,12 +105,13 @@ contract GameSetupSystem is System {
     }
 
     function createDirObj(DirectionType directionType, uint32 destId, DirObjectType dType,
-                          MaterialType mType,
-                          string memory desc) 
-                          private returns (uint32) {
+                                                    MaterialType mType,string memory desc) 
+                                                                    private returns (uint32) {
         DirObjectStore.setDirType(dirId, directionType);
         DirObjectStore.setDestId(dirId, destId);
-        TextDefStore.set(keccak256(abi.encodePacked(desc)), TxtDefType.DirObject, mType, desc);
+        DirObjectStore.setMatType(dirId, MaterialType.IKEA);
+        DirObjectStore.setObjType(dirId, dType);
+        TextDefStore.set(keccak256(abi.encodePacked(desc)), TxtDefType.DirObject, dirId, desc);
         DirObjectStore.setTxtDefId(dirId, keccak256(abi.encodePacked(desc)));
         return dirId++;
     }
@@ -112,9 +119,12 @@ contract GameSetupSystem is System {
     function createObject(ObjectType objectType, MaterialType mType, string memory desc) private returns (uint32){
         ObjectStore.setObjectType(objId, objectType);
         ObjectStore.setMaterialType(objId, mType);
-        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, mType, desc); 
+        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, objId, desc); 
         ObjectStore.setTexDefId(objId, keccak256(abi.encodePacked(desc)));
         return objId++;
     }
+
+    //function createPlace(uint32 id, RoomType rType, ) private returns (uint32) {
+    //}
 }
 
