@@ -164,9 +164,10 @@ contract MeatPuppetSystem is System  {
     }
 
 
+    // this is about to be redundant so dont do anymore work omn it
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
-    function _describeActions(uint32 rId) private returns (string memory) {
+    function _describeActions(uint32 rId) private view returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
         string memory msgStr;
@@ -181,7 +182,7 @@ contract MeatPuppetSystem is System  {
                 dirStrings[i] = " South";
             } else if (dir.dirType == DirectionType.West) {
                 dirStrings[i] = " West";
-            } else {dirStrings[i] = " to hell";}
+            }
         }
         for (uint16 i = 0; i < dirStrings.length; i++) {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));

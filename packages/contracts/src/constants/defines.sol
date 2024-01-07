@@ -42,5 +42,6 @@ library ErrCodes {
     uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
     uint8 public constant ER_PR_NO = 129; // Error No DirectObject
     uint8 public constant ER_LK_NOP = 130; // Error No DirectObject
+    uint8 public constant ER_AR_BNDS = 131; // Error No DirectObject
 
 }
