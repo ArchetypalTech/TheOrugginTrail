@@ -152,7 +152,7 @@ export default mudConfig({
             valueSchema: {
                 objectType: "ObjectType",
                 materialType: "MaterialType",
-                texDefId: "bytes32",
+                txtDefId: "bytes32",
                 objectActionIds: "uint32[]",
             },
         },
@@ -163,13 +163,13 @@ export default mudConfig({
         // we keep a link to the owning thing so that we can
         // fetch a material type. Probably a bad idea. The bool
         // is to control a processing flag. 
-        TextDefStore: {
+        TxtDefStore: {
             keySchema: {
-                texDefId: "bytes32",
-                texDefType: "TxtDefType",
+                txtDefId: "bytes32",
             },
             valueSchema: {
                 owner: "uint32", // get material type
+                txtDefType: "TxtDefType",
                 value: "string",
             },
         },

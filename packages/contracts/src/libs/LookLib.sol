@@ -42,14 +42,18 @@ library LookAt {
     }
 
     function genText() internal returns (string memory) {
-
+        bytes32[] memory ids = Description.getTxtIds();
+        for (uint8 i =0; i < ids.length; i++) {
+            //if (TxtDefStore.getTxtDefType())
+        
+        }
     }
 
     function _fetchObjects(uint32[] memory objs) internal returns (uint8 er) {
         //Objects:
         for(uint8 i =0; i < objs.length; i++) {
             console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
-            bytes32 tId =  ObjectStore.getTexDefId(objs[i]); 
+            bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
             Description.pushTxtIds(tId);
         }
         return 0;

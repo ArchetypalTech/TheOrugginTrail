@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
-import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDefStore } from "../codegen/index.sol";
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -100,7 +100,7 @@ contract GameSetupSystem is System {
         RoomStore.setDescription(KPlain,  'A Plain');
         
         bytes32 tid_plain = keccak256(abi.encodePacked('You are on a plain'));
-        TextDefStore.set(tid_plain, TxtDefType.Place, KPlain, "You are on a plain with the wind blowing"
+        TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "You are on a plain with the wind blowing"
                                                                 " bison skulls in piles taller than houses"
                                                                 " cover the plains as far as your eye can see"
                                                                 " the air tastes of burnt grease and bensons.");
@@ -118,7 +118,7 @@ contract GameSetupSystem is System {
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("The Barn"));
-        TextDefStore.set(tid_barn, TxtDefType.Place, KBarn,
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
                                                     "The place is dusty and full of spiderwebs,"
                                                     " something died in here, possibly your own self"
                                                     " plenty of corners and dark shadows");
@@ -135,7 +135,7 @@ contract GameSetupSystem is System {
                                "A PaTh");
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("Mountain Track"));
-        TextDefStore.set(tid_mpath, TxtDefType.Place, KMountainPath,
+        TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
                          "A high pass through the mountains, the path is treacheorus"
                          " trees cover the perilous valley sides below you, toilet papered"
                          " on closer inspection it might be the remains of a criket team"
@@ -151,7 +151,7 @@ contract GameSetupSystem is System {
                                                     MaterialType mType,string memory desc) 
                                                                     private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
-        TextDefStore.set(txtId, TxtDefType.DirObject, dirObjId, desc);
+        TxtDefStore.set(txtId, dirObjId, TxtDefType.DirObject, desc);
         uint32[] memory actions = new uint32[](0);
         DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actions); 
         DirObjectStore.set(dirObjId, dirObjData);
@@ -161,7 +161,7 @@ contract GameSetupSystem is System {
 
     function createObject(ObjectType objType, MaterialType mType, string memory desc) private returns (uint32){
         bytes32 txtId = keccak256(abi.encodePacked(desc));
-        TextDefStore.set(txtId, TxtDefType.Object, objId, desc); 
+        TxtDefStore.set(txtId, objId, TxtDefType.Object, desc); 
         uint32[] memory actions = new uint32[](0);
         ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions); 
         ObjectStore.set(objId, objData);
