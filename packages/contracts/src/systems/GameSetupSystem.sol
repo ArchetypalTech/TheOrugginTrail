@@ -142,7 +142,7 @@ contract GameSetupSystem is System {
                          "toilet papered trees cover the steep \nvalley sides below you.\n"
                          "On closer inspection the TP might \nbe the remains of a cricket team\n"
                          "or pehaps a lost and very dead KKK picnic group.\n"
-                         "\nIt's brass monkeys.");
+                         "It's brass monkeys.");
         
         RoomStore.setDescription(KMountainPath,  "a high mountain pass");
         RoomStore.setRoomType(KMountainPath,  RoomType.Plain);

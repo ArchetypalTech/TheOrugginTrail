@@ -44,19 +44,14 @@ library LookAt {
     function _genDescText(uint32 id) internal returns (string memory) {
         bytes32[] memory ids = Description.getTxtIds();
         string memory desc = "Looking around you see that\nyou are standing ";
-        string memory storedDesc;
+        string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
-        for (uint8 i =0; i < ids.length; i++) {
-            TxtDefType t = TxtDefStore.getTxtDefType(ids[i]);
-            if ( t == TxtDefType.Place ) {
-                if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
-                    desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
-                } else {
-                    desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
-                }
-            }
+        if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+            desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
+        } else {
+            desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
         }
-        storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
+        
         desc = string(abi.encodePacked(desc, storedDesc));
         Output.set(desc);
     }
@@ -91,9 +86,6 @@ library LookAt {
         uint32[] memory objIds = RoomStore.get(rId).objectIds;
         uint32[] memory dObjects = RoomStore.get(rId).dirObjIds;
 
-       _fetchObjects(objIds); 
-       _fetchDObjects(dObjects);
-       _fetchRoomDesc(rId);
        _genDescText(rId);
 
        return 0 ;
