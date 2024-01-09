@@ -72,6 +72,7 @@ library LookAt {
             }
             return objsDesc;
         }
+        return 0;
     }
 
     function _genExitsDesc(uint32[] memory objs) internal returns (uint8 er) {
@@ -85,8 +86,10 @@ library LookAt {
     }
 
     function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
+
         bytes32 tId = RoomStore.getTxtDefId(rmId);
         Description.pushTxtIds(tId);
+
         return 0;
     }
 
