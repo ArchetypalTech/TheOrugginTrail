@@ -41,7 +41,7 @@ library LookAt {
         return err;
     }
 
-    function genRoomText(uint32 id) internal returns (string memory) {
+    function _genDescText(uint32 id) internal returns (string memory) {
         bytes32[] memory ids = Description.getTxtIds();
         string memory desc = "You are standing ";
 
@@ -55,6 +55,7 @@ library LookAt {
                 }
             }
         }
+        Output.set(desc);
     }
 
     function _fetchObjects(uint32[] memory objs) internal returns (uint8 er) {
@@ -90,7 +91,7 @@ library LookAt {
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
        _fetchRoomDesc(rId);
-       //_genRoomText();
+       _genDescText(rId);
 
        return 0 ;
     }
