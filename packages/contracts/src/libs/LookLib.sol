@@ -5,9 +5,9 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
 
-import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType } from '../codegen/common.sol';
+import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
 
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output } from '../codegen/index.sol';
+import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output, TxtDefStore } from '../codegen/index.sol';
 
 
 library LookAt {
@@ -41,11 +41,19 @@ library LookAt {
         return err;
     }
 
-    function genText() internal returns (string memory) {
+    function genRoomText(uint32 id) internal returns (string memory) {
         bytes32[] memory ids = Description.getTxtIds();
+        string memory desc = "You are standing ";
+
         for (uint8 i =0; i < ids.length; i++) {
-            //if (TxtDefStore.getTxtDefType())
-        
+            TxtDefType t = TxtDefStore.getTxtDefType(ids[i]);
+            if ( t == TxtDefType.Place ) {
+                if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+                    desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id)));
+                } else {
+                    desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id)));
+                }
+            }
         }
     }
 
@@ -82,6 +90,7 @@ library LookAt {
        _fetchObjects(objIds); 
        _fetchDObjects(dObjects);
        _fetchRoomDesc(rId);
+       //_genRoomText();
 
        return 0 ;
     }

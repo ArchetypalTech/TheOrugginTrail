@@ -43,7 +43,8 @@ export default mudConfig({
         // Rooms have doors/exits
         RoomType: [
             "None", "WoodCabin", "Store",
-            "Cavern", "StoneCabin", "Fort"
+            "Cavern", "StoneCabin", "Fort", "Room",
+            "Plain"
         ],
         // use these to set direction bits on a DirectionObject
         // such as a door

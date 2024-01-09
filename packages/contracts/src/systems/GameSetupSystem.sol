@@ -97,9 +97,10 @@ contract GameSetupSystem is System {
                                 "not quite speherical, it's "
                                 "kickable though");
 
-        RoomStore.setDescription(KPlain,  'A Plain');
+        RoomStore.setDescription(KPlain,  'a windswept plain');
+        RoomStore.setRoomType(KPlain,  RoomType.Plain);
         
-        bytes32 tid_plain = keccak256(abi.encodePacked('You are on a plain'));
+        bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
         TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "You are on a plain with the wind blowing"
                                                                 " bison skulls in piles taller than houses"
                                                                 " cover the plains as far as your eye can see"
@@ -114,16 +115,17 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "A Door"
+                                "a door"
                                ); 
 
-        bytes32 tid_barn = keccak256(abi.encodePacked("The Barn"));
+        bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
                                                     "The place is dusty and full of spiderwebs,"
                                                     " something died in here, possibly your own self"
                                                     " plenty of corners and dark shadows");
 
-        RoomStore.setDescription(KBarn, 'A Barn');// this should be auto gen
+        RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
+        RoomStore.setRoomType(KBarn, RoomType.Room);
 
         createPlace(KBarn, dids, oids, tid_barn);
 
@@ -134,14 +136,15 @@ contract GameSetupSystem is System {
                                DirObjectType.Path, MaterialType.Dirt,
                                "A PaTh");
 
-        bytes32 tid_mpath = keccak256(abi.encodePacked("Mountain Track"));
+        bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
                          "A high pass through the mountains, the path is treacheorus"
                          " trees cover the perilous valley sides below you, toilet papered"
                          " on closer inspection it might be the remains of a criket team"
                          " it's brass monkeys.");
         
-        RoomStore.setDescription(KMountainPath,  "A Mountain Track");
+        RoomStore.setDescription(KMountainPath,  "a high mountain pass");
+        RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
