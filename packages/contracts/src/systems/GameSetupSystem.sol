@@ -65,10 +65,10 @@ contract GameSetupSystem is System {
 
     function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public { 
         for (uint8 i = 0; i < dirObjects.length; i++) {
-            RoomStore.pushDirObjIds(id, dirObjects[i]);
+                RoomStore.pushDirObjIds(id, dirObjects[i]);
         }
         for (uint8 i = 0; i < objects.length ; i++) {
-            RoomStore.pushObjectIds(id, objects[i]);
+                RoomStore.pushObjectIds(id, objects[i]);
         }
         RoomStore.setTxtDefId(id,txtId);
     }
@@ -86,16 +86,18 @@ contract GameSetupSystem is System {
         // KPLAIN
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
-                              "A Path");
+                              "path");
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath, 
                               DirObjectType.Path, MaterialType.Mud,
-                              "A path");
+                              "path");
         
+        // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "a football");
+                                "kickable though", "football");
+
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -109,20 +111,23 @@ contract GameSetupSystem is System {
         createPlace(KPlain, dids, oids, tid_plain); 
 
 
-        //KBARN
+        // KBARN
+        // TODO add a smash action to the window
         clearArr(dids);
         clearArr(oids);
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "a door"
+                                "door"
+
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
-                                                    "The place is dusty and full of spiderwebs,"
-                                                    " something died in here, possibly your own self"
-                                                    " plenty of corners and dark shadows");
+                                                    "The place is dusty and full of spiderwebs,\n"
+                                                    "something died in here, possibly your own self\n"
+                                                    "plenty of corners and dark shadows");
+
 
         RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
         RoomStore.setRoomType(KBarn, RoomType.Room);
@@ -133,8 +138,9 @@ contract GameSetupSystem is System {
         clearArr(dids);
         clearArr(oids);
         dids[0] = createDirObj(DirectionType.West, KPlain,
-                               DirObjectType.Path, MaterialType.Dirt,
-                               "A PaTh");
+                               DirObjectType.Path, MaterialType.Stone,
+                               "path");
+
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,

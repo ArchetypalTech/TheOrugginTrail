@@ -50,7 +50,7 @@ enum DirectionType {
   Up,
   Down,
   Forward,
-  Backwards
+  Backward
 }
 
 enum DirObjectType {
@@ -59,7 +59,8 @@ enum DirObjectType {
   Window,
   Stairs,
   Ladder,
-  Path
+  Path,
+  Trail
 }
 
 enum ActionType {

@@ -50,13 +50,13 @@ export default mudConfig({
         // such as a door
         DirectionType: [
             "None", "North", "South", "East", "West",
-            "Up", "Down", "Forward", "Backwards"
+            "Up", "Down", "Forward", "Backward"
         ],
         // add a direction action to these to connect rooms
         // then add them to a room
         DirObjectType: [
             "None", "Door", "Window", "Stairs", "Ladder",
-            "Path"
+            "Path", "Trail"
         ],
         // use these in the parser, they are VERBS
         //
@@ -95,7 +95,7 @@ export default mudConfig({
                 dirType: "string",
             },
         },
-        RoomStore: {
+        RoomStore: { // add
             keySchema: {
                 roomId: "uint32",
             },
