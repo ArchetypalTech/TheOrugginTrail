@@ -115,13 +115,13 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "a door"
+                                "door"
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
-                                                    "The place is dusty and full of spiderwebs,"
-                                                    " something died in here, possibly your own self"
+                                                    "The place is dusty and full of spiderwebs,\n"
+                                                    "something died in here, possibly your own self\n"
                                                     " plenty of corners and dark shadows");
 
         RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
@@ -134,7 +134,7 @@ contract GameSetupSystem is System {
         clearArr(oids);
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "a path");
+                               "path");
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,

@@ -42,7 +42,7 @@ library LookAt {
     }
 
     function _genDescText(uint32 id, address wrld) internal returns (string memory) {
-        string memory desc = "Looking around you see that\nyou are standing ";
+        string memory desc = "Looking around you see that\nYou are standing ";
         string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
         if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
@@ -80,7 +80,7 @@ library LookAt {
         if (dt == DirObjectType.Path || dt == DirObjectType.Trail) {
             dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " "));
         } else {
-
+            dsc = string(abi.encodePacked(IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " ", value, " "));
         }
         return dsc;
     }
@@ -99,8 +99,7 @@ library LookAt {
                                                                                    IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
                    } else { // we got more exits
                        exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
-                                                                                                      objData.objType,
-                                                                                                      TxtDefStore.getValue(objData.txtDefId), wrld), 
+                                                                                                      objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld), 
                                                                                                       "to the ",IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
                                                                                                       "\n"));
                    } 
