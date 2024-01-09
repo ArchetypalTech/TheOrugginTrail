@@ -63,7 +63,7 @@ library LookAt {
 
     function _genObjDesc(uint32[] memory objs) internal returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
-            string memory objsDesc = "You can alse see ";
+            string memory objsDesc = "\nYou can alse see a ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
@@ -75,33 +75,39 @@ library LookAt {
         }
     }
 
-    function _genMaterial(MaterialType t, DirObjectType dt) internal returns (string memory) {
+    function _genMaterial(MaterialType mt, DirObjectType dt, string memory value, address wrld) internal returns (string memory) {
         string memory dsc; 
         if (dt == DirObjectType.Path || dt == DirObjectType.Trail) {
-            
+            dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " "));
         } else {
 
         }
+        return dsc;
     }
-
+    
+    // there is a PATH made os mud to the DIR | there is a wood door to the 
     function _genExitDesc(uint32[] memory objs, address wrld) internal returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
-            string memory exitsDesc = "There is ";
+            string memory exitsDesc = "\nThere is a ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
-                    DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);
-                    exitsDesc = string(abi.encodePacked(exitsDesc, TxtDefStore.getValue(objData.txtDefId), "to the ",
-                                                        IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
+                    DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);// there is a fleshy path to the | there
+                   if (i == 0) { 
+                       exitsDesc = string(abi.encodePacked(exitsDesc, _genMaterial(objData.matType,
+                                                                                   objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld), 
+                                                                                   "to the ",
+                                                                                   IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
+                   } else { // we got more exits
+                       exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
+                                                                                                      objData.objType,
+                                                                                                      TxtDefStore.getValue(objData.txtDefId), wrld), 
+                                                                                                      "to the ",IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
+                                                                                                      "\n"));
+                   } 
                 }
             }
             return exitsDesc;
         }
-    }
-
-    function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
-        bytes32 tId = RoomStore.getTxtDefId(rmId);
-        Description.pushTxtIds(tId);
-        return 0;
     }
 
     function _lookAround(uint32 rId, address w) internal returns (uint8 er) {

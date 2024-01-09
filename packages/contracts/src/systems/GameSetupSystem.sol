@@ -65,10 +65,10 @@ contract GameSetupSystem is System {
 
     function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public { 
         for (uint8 i = 0; i < dirObjects.length; i++) {
-            RoomStore.pushDirObjIds(id, dirObjects[i]);
+                RoomStore.pushDirObjIds(id, dirObjects[i]);
         }
         for (uint8 i = 0; i < objects.length ; i++) {
-            RoomStore.pushObjectIds(id, objects[i]);
+                RoomStore.pushObjectIds(id, objects[i]);
         }
         RoomStore.setTxtDefId(id,txtId);
     }

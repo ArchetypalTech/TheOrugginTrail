@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
+import {ObjectType, MaterialType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
 import {Dirs} from "../codegen/tables/Dirs.sol";
 
 
@@ -20,6 +20,7 @@ contract TokeniserSystem is System {
     mapping(string => ObjectType) public objLookup;
     mapping(ObjectType => string) public reverseObjLookup;
     mapping(DirectionType => string) public revDirLookup;
+    mapping(MaterialType => string) public revMat;
 
     function initTS() public returns (address) {
         console.log("--->initTS");
@@ -32,6 +33,10 @@ contract TokeniserSystem is System {
 
     function reverseDirType(DirectionType key) public view returns (string memory) {
         return revDirLookup[key];
+    }
+
+    function revMatType(MaterialType key) public view returns (string memory) {
+        return revMat[key];
     }
 
     function getObjectType(string memory key) public view returns (ObjectType) {
@@ -111,6 +116,12 @@ contract TokeniserSystem is System {
         reverseObjLookup[ObjectType.Key]        = "Key";
         reverseObjLookup[ObjectType.Knife]      = "Knife";
         reverseObjLookup[ObjectType.Bottle]     = "Bottle";
+
+        revMat[MaterialType.Mud]    = "mud";
+        revMat[MaterialType.Dirt]   = "dirt";
+        revMat[MaterialType.Stone]  = "stone";
+        revMat[MaterialType.Flesh]  = "fleah";
+        revMat[MaterialType.Wood]   = "wood";
     }
 
 }
