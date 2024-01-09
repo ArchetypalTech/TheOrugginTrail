@@ -57,6 +57,7 @@ library LookAt {
         desc = string(abi.encodePacked(desc, _genObjDesc(RoomStore.getObjectIds(id))));
 
         // handle the rooms exits
+        desc = string(abi.encodePacked(desc, _genExitDesc(RoomStore.getDirObjIds(id))));
         return desc;
     }
 
@@ -64,7 +65,7 @@ library LookAt {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
             string memory objsDesc = "You can alse see ";
             for(uint8 i = 0; i < objs.length; i++) {
-                if (objs[i] != 0) { // agein and id of 0 means no value
+                if (objs[i] != 0) { // again, an id of 0 means no value
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
                     bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
                     objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId)));
@@ -74,14 +75,8 @@ library LookAt {
         }
     }
 
-    function _genExitsDesc(uint32[] memory objs) internal returns (uint8 er) {
-        //DirObjects:
-        for(uint8 i =0; i < objs.length; i++) {
-            console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
-            bytes32 tId = DirObjectStore.getTxtDefId(objs[i]); 
-            Description.pushTxtIds(tId);
-        }
-        return 0;
+    function _genExitDesc(uint32[] memory objs) internal returns (string memory) {
+        
     }
 
     function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
