@@ -30,6 +30,9 @@ contract TokeniserSystem is System {
         return address(this);
     }
 
+    function reverseDirType(DirectionType key) public view returns (string memory) {
+        return revDirLookup[key];
+    }
 
     function getObjectType(string memory key) public view returns (ObjectType) {
         return objLookup[key];

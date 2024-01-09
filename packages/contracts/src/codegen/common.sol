@@ -59,7 +59,8 @@ enum DirObjectType {
   Window,
   Stairs,
   Ladder,
-  Path
+  Path,
+  Trail
 }
 
 enum ActionType {

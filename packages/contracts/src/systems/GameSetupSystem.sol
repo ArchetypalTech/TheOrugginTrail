@@ -86,16 +86,16 @@ contract GameSetupSystem is System {
         // KPLAIN
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
-                              "A path");
+                              "path");
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath, 
                               DirObjectType.Path, MaterialType.Mud,
-                              "A path");
+                              "path");
         
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "a football");
+                                "kickable though", "football");
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -133,7 +133,7 @@ contract GameSetupSystem is System {
         clearArr(dids);
         clearArr(oids);
         dids[0] = createDirObj(DirectionType.West, KPlain,
-                               DirObjectType.Path, MaterialType.Dirt,
+                               DirObjectType.Path, MaterialType.Stone,
                                "a path");
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));

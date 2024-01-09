@@ -5,9 +5,9 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
 
-import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
+import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
 
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output, TxtDefStore } from '../codegen/index.sol';
+import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
 
 
 library LookAt {
@@ -31,7 +31,7 @@ library LookAt {
             if (tokens.length > 1) {
                gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
                if (gObj != GrammarType.Adverb) {
-                  err = _lookAround(curRmId); 
+                  err = _lookAround(curRmId, wrld); 
                   console.log("->_LA:%s", err);
                }
             }
@@ -41,7 +41,7 @@ library LookAt {
         return err;
     }
 
-    function _genDescText(uint32 id) internal returns (string memory) {
+    function _genDescText(uint32 id, address wrld) internal returns (string memory) {
         string memory desc = "Looking around you see that\nyou are standing ";
         string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
@@ -57,7 +57,7 @@ library LookAt {
         desc = string(abi.encodePacked(desc, _genObjDesc(RoomStore.getObjectIds(id))));
 
         // handle the rooms exits
-        desc = string(abi.encodePacked(desc, _genExitDesc(RoomStore.getDirObjIds(id))));
+        desc = string(abi.encodePacked(desc, _genExitDesc(RoomStore.getDirObjIds(id), wrld)));
         return desc;
     }
 
@@ -75,11 +75,23 @@ library LookAt {
         }
     }
 
-    function _genExitDesc(uint32[] memory objs) internal returns (string memory) {
+    function _genMaterial(MaterialType t, DirObjectType dt) internal returns (string memory) {
+        string memory dsc; 
+        if (dt == DirObjectType.Path || dt == DirObjectType.Trail) {
+            
+        } else {
+
+        }
+    }
+
+    function _genExitDesc(uint32[] memory objs, address wrld) internal returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
-            string memory exitsDesc = "There is a ";
+            string memory exitsDesc = "There is ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
+                    DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);
+                    exitsDesc = string(abi.encodePacked(exitsDesc, TxtDefStore.getValue(objData.txtDefId), "to the ",
+                                                        IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
                 }
             }
             return exitsDesc;
@@ -92,9 +104,9 @@ library LookAt {
         return 0;
     }
 
-    function _lookAround(uint32 rId) internal returns (uint8 er) {
+    function _lookAround(uint32 rId, address w) internal returns (uint8 er) {
 
-       Output.set(_genDescText(rId));
+       Output.set(_genDescText(rId, w));
 
        return 0 ;
     }
