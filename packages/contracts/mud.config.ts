@@ -155,6 +155,7 @@ export default mudConfig({
                 materialType: "MaterialType",
                 txtDefId: "bytes32",
                 objectActionIds: "uint32[]",
+                description: "string"
             },
         },
         // we are going to store a hash over the actual description

@@ -93,18 +93,18 @@ contract GameSetupSystem is System {
                               "A path");
         
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
-                                "A slightly deflated knock off uefa football,"
-                                "not quite speherical, it's "
-                                "kickable though");
+                                "A slightly deflated knock off uefa football,\n"
+                                "not quite spherical, it's "
+                                "kickable though", "a football");
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
         
         bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
-        TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "You are on a plain with the wind blowing"
-                                                                " bison skulls in piles taller than houses"
-                                                                " cover the plains as far as your eye can see"
-                                                                " the air tastes of burnt grease and bensons.");
+        TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "the wind blowing is cold and\n"
+                                                                "bison skulls in piles taller than houses\n"
+                                                                "cover the plains as far as your eye can see\n"
+                                                                "the air tastes of burnt grease and bensons.");
                                                                 
         createPlace(KPlain, dids, oids, tid_plain); 
 
@@ -163,11 +163,11 @@ contract GameSetupSystem is System {
         return dirObjId++;
     }
 
-    function createObject(ObjectType objType, MaterialType mType, string memory desc) private returns (uint32){
+    function createObject(ObjectType objType, MaterialType mType, string memory desc, string memory name) private returns (uint32){
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, objId, TxtDefType.Object, desc); 
         uint32[] memory actions = new uint32[](0);
-        ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions); 
+        ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions, name); 
         ObjectStore.set(objId, objData);
         return objId++;
     }
