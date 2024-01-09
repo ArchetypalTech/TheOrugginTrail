@@ -5,9 +5,11 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
 
+
 import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
 
 import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
+
 
 
 library LookAt {
@@ -41,8 +43,10 @@ library LookAt {
         return err;
     }
 
+
     function _genDescText(uint32 id, address wrld) internal returns (string memory) {
         string memory desc = "Looking around you see that\nYou are standing ";
+
         string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
         if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
@@ -57,23 +61,28 @@ library LookAt {
         desc = string(abi.encodePacked(desc, _genObjDesc(RoomStore.getObjectIds(id))));
 
         // handle the rooms exits
+
         desc = string(abi.encodePacked(desc, _genExitDesc(RoomStore.getDirObjIds(id), wrld)));
+
         return desc;
     }
 
     function _genObjDesc(uint32[] memory objs) internal returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
+
             string memory objsDesc = "\nYou can alse see a ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
                     bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
                     objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
+
                 }
             }
             return objsDesc;
         }
     }
+
 
     function _genMaterial(MaterialType mt, DirObjectType dt, string memory value, address wrld) internal returns (string memory) {
         string memory dsc; 
@@ -81,9 +90,11 @@ library LookAt {
             dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " "));
         } else {
             dsc = string(abi.encodePacked(IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " ", value, " "));
+
         }
         return dsc;
     }
+
     
     // there is a PATH made os mud to the DIR | there is a wood door to the 
     function _genExitDesc(uint32[] memory objs, address wrld) internal returns (string memory) {
@@ -112,6 +123,7 @@ library LookAt {
     function _lookAround(uint32 rId, address w) internal returns (uint8 er) {
 
        Output.set(_genDescText(rId, w));
+
 
        return 0 ;
     }

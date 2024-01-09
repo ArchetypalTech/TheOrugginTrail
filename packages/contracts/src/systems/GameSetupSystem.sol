@@ -98,6 +98,7 @@ contract GameSetupSystem is System {
                                 "not quite spherical, it's "
                                 "kickable though", "football");
 
+
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
         
@@ -118,6 +119,7 @@ contract GameSetupSystem is System {
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
                                 "door"
+
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
@@ -125,6 +127,7 @@ contract GameSetupSystem is System {
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
+
 
         RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
         RoomStore.setRoomType(KBarn, RoomType.Room);
@@ -137,6 +140,7 @@ contract GameSetupSystem is System {
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
                                "path");
+
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
