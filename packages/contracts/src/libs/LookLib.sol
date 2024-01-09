@@ -5,9 +5,9 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
 
-import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType } from '../codegen/common.sol';
+import { ActionType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
 
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output } from '../codegen/index.sol';
+import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, Description, Output, TxtDefStore } from '../codegen/index.sol';
 
 
 library LookAt {
@@ -41,17 +41,41 @@ library LookAt {
         return err;
     }
 
-    function _fetchObjects(uint32[] memory objs) internal returns (uint8 er) {
-        //Objects:
-        for(uint8 i =0; i < objs.length; i++) {
-            console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
-            bytes32 tId =  ObjectStore.getTexDefId(objs[i]); 
-            Description.pushTxtIds(tId);
+    function _genDescText(uint32 id) internal returns (string memory) {
+        string memory desc = "Looking around you see that\nyou are standing ";
+        string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
+
+        if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+            desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
+        } else {
+            desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
+        }
+        // concat the general description
+        desc = string(abi.encodePacked(desc, storedDesc, "\n"));
+
+        // handle the rooms objects
+        desc = string(abi.encodePacked(desc, _genObjDesc(RoomStore.getObjectIds(id))));
+
+        // handle the rooms exits
+        return desc;
+    }
+
+    function _genObjDesc(uint32[] memory objs) internal returns (string memory) {
+        if (objs[0] != 0) {// if the first item is 0 then there are no objects
+            string memory objsDesc = "You can alse see ";
+            for(uint8 i = 0; i < objs.length; i++) {
+                if (objs[i] != 0) { // agein and id of 0 means no value
+                    objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
+                    bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
+                    objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId)));
+                }
+            }
+            return objsDesc;
         }
         return 0;
     }
 
-    function _fetchDObjects(uint32[] memory objs) internal returns (uint8 er) {
+    function _genExitsDesc(uint32[] memory objs) internal returns (uint8 er) {
         //DirObjects:
         for(uint8 i =0; i < objs.length; i++) {
             console.log("--->LK_AR: %d OBJ_ID:%d", i, objs[i]);
@@ -62,15 +86,16 @@ library LookAt {
     }
 
     function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {
+
+        bytes32 tId = RoomStore.getTxtDefId(rmId);
+        Description.pushTxtIds(tId);
+
         return 0;
     }
 
     function _lookAround(uint32 rId) internal returns (uint8 er) {
-        uint32[] memory objIds = RoomStore.get(rId).objectIds;
-        uint32[] memory dObjects = RoomStore.get(rId).dirObjIds;
 
-       _fetchObjects(objIds); 
-       _fetchDObjects(dObjects);
+       Output.set(_genDescText(rId));
 
        return 0 ;
     }

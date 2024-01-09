@@ -29,12 +29,12 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant ActionStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0007040001040101000000000000000000000000000000000000000000000000
+  0x0023040001200101000000000000000000000000000000000000000000000000
 );
 
 struct ActionStoreData {
   ActionType actionType;
-  uint32 texDefId;
+  bytes32 texDefId;
   bool nussy;
   bool pBit;
 }
@@ -66,7 +66,7 @@ library ActionStore {
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](4);
     _valueSchema[0] = SchemaType.UINT8;
-    _valueSchema[1] = SchemaType.UINT32;
+    _valueSchema[1] = SchemaType.BYTES32;
     _valueSchema[2] = SchemaType.BOOL;
     _valueSchema[3] = SchemaType.BOOL;
 
@@ -153,29 +153,29 @@ library ActionStore {
   /**
    * @notice Get texDefId.
    */
-  function getTexDefId(uint32 actionId) internal view returns (uint32 texDefId) {
+  function getTexDefId(uint32 actionId) internal view returns (bytes32 texDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (bytes32(_blob));
   }
 
   /**
    * @notice Get texDefId.
    */
-  function _getTexDefId(uint32 actionId) internal view returns (uint32 texDefId) {
+  function _getTexDefId(uint32 actionId) internal view returns (bytes32 texDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (bytes32(_blob));
   }
 
   /**
    * @notice Set texDefId.
    */
-  function setTexDefId(uint32 actionId, uint32 texDefId) internal {
+  function setTexDefId(uint32 actionId, bytes32 texDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -185,7 +185,7 @@ library ActionStore {
   /**
    * @notice Set texDefId.
    */
-  function _setTexDefId(uint32 actionId, uint32 texDefId) internal {
+  function _setTexDefId(uint32 actionId, bytes32 texDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -309,7 +309,7 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nussy, bool pBit) internal {
+  function set(uint32 actionId, ActionType actionType, bytes32 texDefId, bool nussy, bool pBit) internal {
     bytes memory _staticData = encodeStatic(actionType, texDefId, nussy, pBit);
 
     PackedCounter _encodedLengths;
@@ -324,7 +324,7 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 actionId, ActionType actionType, uint32 texDefId, bool nussy, bool pBit) internal {
+  function _set(uint32 actionId, ActionType actionType, bytes32 texDefId, bool nussy, bool pBit) internal {
     bytes memory _staticData = encodeStatic(actionType, texDefId, nussy, pBit);
 
     PackedCounter _encodedLengths;
@@ -371,14 +371,14 @@ library ActionStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (ActionType actionType, uint32 texDefId, bool nussy, bool pBit) {
+  ) internal pure returns (ActionType actionType, bytes32 texDefId, bool nussy, bool pBit) {
     actionType = ActionType(uint8(Bytes.slice1(_blob, 0)));
 
-    texDefId = (uint32(Bytes.slice4(_blob, 1)));
+    texDefId = (Bytes.slice32(_blob, 1));
 
-    nussy = (_toBool(uint8(Bytes.slice1(_blob, 5))));
+    nussy = (_toBool(uint8(Bytes.slice1(_blob, 33))));
 
-    pBit = (_toBool(uint8(Bytes.slice1(_blob, 6))));
+    pBit = (_toBool(uint8(Bytes.slice1(_blob, 34))));
   }
 
   /**
@@ -421,7 +421,7 @@ library ActionStore {
    */
   function encodeStatic(
     ActionType actionType,
-    uint32 texDefId,
+    bytes32 texDefId,
     bool nussy,
     bool pBit
   ) internal pure returns (bytes memory) {
@@ -436,7 +436,7 @@ library ActionStore {
    */
   function encode(
     ActionType actionType,
-    uint32 texDefId,
+    bytes32 texDefId,
     bool nussy,
     bool pBit
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
