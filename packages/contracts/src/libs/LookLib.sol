@@ -68,7 +68,7 @@ library LookAt {
                 if (objs[i] != 0) { // again, an id of 0 means no value
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
                     bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
-                    objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId)));
+                    objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
                 }
             }
             return objsDesc;
@@ -76,7 +76,14 @@ library LookAt {
     }
 
     function _genExitDesc(uint32[] memory objs) internal returns (string memory) {
-        
+        if (objs[0] != 0) {// if the first item is 0 then there are no objects
+            string memory exitsDesc = "There is a ";
+            for(uint8 i = 0; i < objs.length; i++) {
+                if (objs[i] != 0) { // again, an id of 0 means no value
+                }
+            }
+            return exitsDesc;
+        }
     }
 
     function _fetchRoomDesc(uint32 rmId) internal returns (uint8 er) {

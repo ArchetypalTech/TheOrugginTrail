@@ -86,7 +86,7 @@ contract GameSetupSystem is System {
         // KPLAIN
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
-                              "A Path");
+                              "A path");
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath, 
                               DirObjectType.Path, MaterialType.Mud,
@@ -134,7 +134,7 @@ contract GameSetupSystem is System {
         clearArr(oids);
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Dirt,
-                               "A PaTh");
+                               "a path");
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,

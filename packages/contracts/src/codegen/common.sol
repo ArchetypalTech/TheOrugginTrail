@@ -50,7 +50,7 @@ enum DirectionType {
   Up,
   Down,
   Forward,
-  Backwards
+  Backward
 }
 
 enum DirObjectType {

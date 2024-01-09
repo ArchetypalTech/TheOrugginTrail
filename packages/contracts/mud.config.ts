@@ -50,7 +50,7 @@ export default mudConfig({
         // such as a door
         DirectionType: [
             "None", "North", "South", "East", "West",
-            "Up", "Down", "Forward", "Backwards"
+            "Up", "Down", "Forward", "Backward"
         ],
         // add a direction action to these to connect rooms
         // then add them to a room
