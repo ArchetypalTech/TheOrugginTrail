@@ -92,6 +92,7 @@ contract GameSetupSystem is System {
                               DirObjectType.Path, MaterialType.Mud,
                               "path");
         
+        // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
@@ -109,7 +110,8 @@ contract GameSetupSystem is System {
         createPlace(KPlain, dids, oids, tid_plain); 
 
 
-        //KBARN
+        // KBARN
+        // TODO add a smash action to the window
         clearArr(dids);
         clearArr(oids);
 
@@ -122,7 +124,7 @@ contract GameSetupSystem is System {
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
-                                                    " plenty of corners and dark shadows");
+                                                    "plenty of corners and dark shadows");
 
         RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
         RoomStore.setRoomType(KBarn, RoomType.Room);
