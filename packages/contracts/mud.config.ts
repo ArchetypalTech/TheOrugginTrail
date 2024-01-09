@@ -43,7 +43,8 @@ export default mudConfig({
         // Rooms have doors/exits
         RoomType: [
             "None", "WoodCabin", "Store",
-            "Cavern", "StoneCabin", "Fort"
+            "Cavern", "StoneCabin", "Fort", "Room",
+            "Plain"
         ],
         // use these to set direction bits on a DirectionObject
         // such as a door
@@ -152,8 +153,9 @@ export default mudConfig({
             valueSchema: {
                 objectType: "ObjectType",
                 materialType: "MaterialType",
-                texDefId: "bytes32",
+                txtDefId: "bytes32",
                 objectActionIds: "uint32[]",
+                description: "string"
             },
         },
         // we are going to store a hash over the actual description
@@ -163,13 +165,13 @@ export default mudConfig({
         // we keep a link to the owning thing so that we can
         // fetch a material type. Probably a bad idea. The bool
         // is to control a processing flag. 
-        TextDefStore: {
+        TxtDefStore: {
             keySchema: {
-                texDefId: "bytes32",
-                texDefType: "TxtDefType",
+                txtDefId: "bytes32",
             },
             valueSchema: {
                 owner: "uint32", // get material type
+                txtDefType: "TxtDefType",
                 value: "string",
             },
         },

@@ -36,7 +36,9 @@ enum RoomType {
   Store,
   Cavern,
   StoneCabin,
-  Fort
+  Fort,
+  Room,
+  Plain
 }
 
 enum DirectionType {
