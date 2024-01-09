@@ -138,10 +138,11 @@ contract GameSetupSystem is System {
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
-                         "it winds through the mountains, the path is treacheorus\n"
-                         "toilet papered trees cover the perilous \nvalley sides below you\n"
-                         "on closer inspection it might \nbe the remains of a cricket team"
-                         "\nit's brass monkeys.");
+                         "it winds through the mountains, the path is treacherous\n"
+                         "toilet papered trees cover the steep \nvalley sides below you.\n"
+                         "On closer inspection the TP might \nbe the remains of a cricket team\n"
+                         "or pehaps a lost and very dead KKK picnic group.\n"
+                         "\nIt's brass monkeys.");
         
         RoomStore.setDescription(KMountainPath,  "a high mountain pass");
         RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
