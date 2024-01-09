@@ -43,18 +43,21 @@ library LookAt {
 
     function _genDescText(uint32 id) internal returns (string memory) {
         bytes32[] memory ids = Description.getTxtIds();
-        string memory desc = "You are standing ";
+        string memory desc = "Looking around you see that\nyou are standing ";
+        string memory storedDesc;
 
         for (uint8 i =0; i < ids.length; i++) {
             TxtDefType t = TxtDefStore.getTxtDefType(ids[i]);
             if ( t == TxtDefType.Place ) {
                 if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
-                    desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id)));
+                    desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
                 } else {
-                    desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id)));
+                    desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
                 }
             }
         }
+        storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
+        desc = string(abi.encodePacked(desc, storedDesc));
         Output.set(desc);
     }
 
