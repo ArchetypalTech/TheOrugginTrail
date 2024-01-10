@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
-import { DirObjectType, DirectionType } from "./../common.sol";
+import { DirObjectType, DirectionType, MaterialType } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("meat"), bytes16("DirObjectStore")))
@@ -29,12 +29,13 @@ ResourceId constant _tableId = ResourceId.wrap(
 ResourceId constant DirObjectStoreTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0026040101010420000000000000000000000000000000000000000000000000
+  0x0027050101010104200000000000000000000000000000000000000000000000
 );
 
 struct DirObjectStoreData {
   DirObjectType objType;
   DirectionType dirType;
+  MaterialType matType;
   uint32 destId;
   bytes32 txtDefId;
   uint32[] objectActionIds;
@@ -65,12 +66,13 @@ library DirObjectStore {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](5);
+    SchemaType[] memory _valueSchema = new SchemaType[](6);
     _valueSchema[0] = SchemaType.UINT8;
     _valueSchema[1] = SchemaType.UINT8;
-    _valueSchema[2] = SchemaType.UINT32;
-    _valueSchema[3] = SchemaType.BYTES32;
-    _valueSchema[4] = SchemaType.UINT32_ARRAY;
+    _valueSchema[2] = SchemaType.UINT8;
+    _valueSchema[3] = SchemaType.UINT32;
+    _valueSchema[4] = SchemaType.BYTES32;
+    _valueSchema[5] = SchemaType.UINT32_ARRAY;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -89,12 +91,13 @@ library DirObjectStore {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](5);
+    fieldNames = new string[](6);
     fieldNames[0] = "objType";
     fieldNames[1] = "dirType";
-    fieldNames[2] = "destId";
-    fieldNames[3] = "txtDefId";
-    fieldNames[4] = "objectActionIds";
+    fieldNames[2] = "matType";
+    fieldNames[3] = "destId";
+    fieldNames[4] = "txtDefId";
+    fieldNames[5] = "objectActionIds";
   }
 
   /**
@@ -196,13 +199,55 @@ library DirObjectStore {
   }
 
   /**
+   * @notice Get matType.
+   */
+  function getMatType(uint32 dirObjId) internal view returns (MaterialType matType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(dirObjId));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return MaterialType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Get matType.
+   */
+  function _getMatType(uint32 dirObjId) internal view returns (MaterialType matType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(dirObjId));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return MaterialType(uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Set matType.
+   */
+  function setMatType(uint32 dirObjId, MaterialType matType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(dirObjId));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(uint8(matType)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set matType.
+   */
+  function _setMatType(uint32 dirObjId, MaterialType matType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(dirObjId));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(uint8(matType)), _fieldLayout);
+  }
+
+  /**
    * @notice Get destId.
    */
   function getDestId(uint32 dirObjId) internal view returns (uint32 destId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
 
@@ -213,7 +258,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
 
@@ -224,7 +269,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((destId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((destId)), _fieldLayout);
   }
 
   /**
@@ -234,7 +279,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((destId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((destId)), _fieldLayout);
   }
 
   /**
@@ -244,7 +289,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return (bytes32(_blob));
   }
 
@@ -255,7 +300,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return (bytes32(_blob));
   }
 
@@ -266,7 +311,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((txtDefId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((txtDefId)), _fieldLayout);
   }
 
   /**
@@ -276,7 +321,7 @@ library DirObjectStore {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((txtDefId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((txtDefId)), _fieldLayout);
   }
 
   /**
@@ -478,11 +523,12 @@ library DirObjectStore {
     uint32 dirObjId,
     DirObjectType objType,
     DirectionType dirType,
+    MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
     uint32[] memory objectActionIds
   ) internal {
-    bytes memory _staticData = encodeStatic(objType, dirType, destId, txtDefId);
+    bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);
@@ -500,11 +546,12 @@ library DirObjectStore {
     uint32 dirObjId,
     DirObjectType objType,
     DirectionType dirType,
+    MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
     uint32[] memory objectActionIds
   ) internal {
-    bytes memory _staticData = encodeStatic(objType, dirType, destId, txtDefId);
+    bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);
@@ -519,7 +566,13 @@ library DirObjectStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 dirObjId, DirObjectStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId, _table.txtDefId);
+    bytes memory _staticData = encodeStatic(
+      _table.objType,
+      _table.dirType,
+      _table.matType,
+      _table.destId,
+      _table.txtDefId
+    );
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
     bytes memory _dynamicData = encodeDynamic(_table.objectActionIds);
@@ -534,7 +587,13 @@ library DirObjectStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 dirObjId, DirObjectStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.objType, _table.dirType, _table.destId, _table.txtDefId);
+    bytes memory _staticData = encodeStatic(
+      _table.objType,
+      _table.dirType,
+      _table.matType,
+      _table.destId,
+      _table.txtDefId
+    );
 
     PackedCounter _encodedLengths = encodeLengths(_table.objectActionIds);
     bytes memory _dynamicData = encodeDynamic(_table.objectActionIds);
@@ -550,14 +609,20 @@ library DirObjectStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (DirObjectType objType, DirectionType dirType, uint32 destId, bytes32 txtDefId) {
+  )
+    internal
+    pure
+    returns (DirObjectType objType, DirectionType dirType, MaterialType matType, uint32 destId, bytes32 txtDefId)
+  {
     objType = DirObjectType(uint8(Bytes.slice1(_blob, 0)));
 
     dirType = DirectionType(uint8(Bytes.slice1(_blob, 1)));
 
-    destId = (uint32(Bytes.slice4(_blob, 2)));
+    matType = MaterialType(uint8(Bytes.slice1(_blob, 2)));
 
-    txtDefId = (Bytes.slice32(_blob, 6));
+    destId = (uint32(Bytes.slice4(_blob, 3)));
+
+    txtDefId = (Bytes.slice32(_blob, 7));
   }
 
   /**
@@ -586,7 +651,7 @@ library DirObjectStore {
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (DirObjectStoreData memory _table) {
-    (_table.objType, _table.dirType, _table.destId, _table.txtDefId) = decodeStatic(_staticData);
+    (_table.objType, _table.dirType, _table.matType, _table.destId, _table.txtDefId) = decodeStatic(_staticData);
 
     (_table.objectActionIds) = decodeDynamic(_encodedLengths, _dynamicData);
   }
@@ -618,10 +683,11 @@ library DirObjectStore {
   function encodeStatic(
     DirObjectType objType,
     DirectionType dirType,
+    MaterialType matType,
     uint32 destId,
     bytes32 txtDefId
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(objType, dirType, destId, txtDefId);
+    return abi.encodePacked(objType, dirType, matType, destId, txtDefId);
   }
 
   /**
@@ -652,11 +718,12 @@ library DirObjectStore {
   function encode(
     DirObjectType objType,
     DirectionType dirType,
+    MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
     uint32[] memory objectActionIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(objType, dirType, destId, txtDefId);
+    bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
     PackedCounter _encodedLengths = encodeLengths(objectActionIds);
     bytes memory _dynamicData = encodeDynamic(objectActionIds);

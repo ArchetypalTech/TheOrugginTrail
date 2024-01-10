@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
+import {ObjectType, MaterialType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
 import {Dirs} from "../codegen/tables/Dirs.sol";
 
 
@@ -19,6 +19,8 @@ contract TokeniserSystem is System {
     mapping (string => GrammarType) public grammarLookup;
     mapping(string => ObjectType) public objLookup;
     mapping(ObjectType => string) public reverseObjLookup;
+    mapping(DirectionType => string) public revDirLookup;
+    mapping(MaterialType => string) public revMat;
 
     function initTS() public returns (address) {
         console.log("--->initTS");
@@ -29,6 +31,13 @@ contract TokeniserSystem is System {
         return address(this);
     }
 
+    function reverseDirType(DirectionType key) public view returns (string memory) {
+        return revDirLookup[key];
+    }
+
+    function revMatType(MaterialType key) public view returns (string memory) {
+        return revMat[key];
+    }
 
     function getObjectType(string memory key) public view returns (ObjectType) {
         return objLookup[key];
@@ -72,12 +81,23 @@ contract TokeniserSystem is System {
     // fooLookup["FOO"] = FoosType.foo;
     function setupDirs () private {
         //Dirs.setDir(keccak256(abi.encodePacked("NORTH")), DirectionType.North);
-        dirLookup["NORTH"]  = DirectionType.North;
-        dirLookup["SOUTH"]  = DirectionType.South;
-        dirLookup["EAST"]   = DirectionType.East;
-        dirLookup["WEST"]   = DirectionType.West;
-        dirLookup["UP"]     = DirectionType.Up;
-        dirLookup["DOWN"]   = DirectionType.Down;
+        dirLookup["NORTH"]      = DirectionType.North;
+        dirLookup["SOUTH"]      = DirectionType.South;
+        dirLookup["EAST"]       = DirectionType.East;
+        dirLookup["WEST"]       = DirectionType.West;
+        dirLookup["UP"]         = DirectionType.Up;
+        dirLookup["DOWN"]       = DirectionType.Down;
+        dirLookup["FORWARD"]    = DirectionType.Forward;
+        dirLookup["BACKWARD"]   = DirectionType.Backward;
+
+        revDirLookup[DirectionType.North]   = "north";
+        revDirLookup[DirectionType.South]   = "south";
+        revDirLookup[DirectionType.East]    = "east";
+        revDirLookup[DirectionType.West]    = "west";
+        revDirLookup[DirectionType.Up]      = "up";
+        revDirLookup[DirectionType.Down]    = "down";
+        revDirLookup[DirectionType.Forward]  = "forward";
+        revDirLookup[DirectionType.Backward] = "backward";
     }
 
     function setupGrammar () private {
@@ -87,15 +107,21 @@ contract TokeniserSystem is System {
     }
 
     function setupObjects() private returns (uint32) {
-        objLookup["FOOTBALL"] = ObjectType.Football;
-        objLookup["KEY"] = ObjectType.Key;
-        objLookup["KNIFE"] = ObjectType.Knife;
-        objLookup["BOTTLE"] = ObjectType.Bottle;
+        objLookup["FOOTBALL"]   = ObjectType.Football;
+        objLookup["KEY"]        = ObjectType.Key;
+        objLookup["KNIFE"]      = ObjectType.Knife;
+        objLookup["BOTTLE"]     = ObjectType.Bottle;
 
-        reverseObjLookup[ObjectType.Football] = "Football";
-        reverseObjLookup[ObjectType.Key] = "Key";
-        reverseObjLookup[ObjectType.Knife] = "Knife";
-        reverseObjLookup[ObjectType.Bottle] = "Bottle";
+        reverseObjLookup[ObjectType.Football]   = "Football";
+        reverseObjLookup[ObjectType.Key]        = "Key";
+        reverseObjLookup[ObjectType.Knife]      = "Knife";
+        reverseObjLookup[ObjectType.Bottle]     = "Bottle";
+
+        revMat[MaterialType.Mud]    = "mud";
+        revMat[MaterialType.Dirt]   = "dirt";
+        revMat[MaterialType.Stone]  = "stone";
+        revMat[MaterialType.Flesh]  = "fleah";
+        revMat[MaterialType.Wood]   = "wood";
     }
 
 }

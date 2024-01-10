@@ -4,7 +4,8 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { Description, ObjectStore, DirObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TextDefStore } from "../codegen/index.sol";
+import { ErrCodes } from '../constants/defines.sol';
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -12,9 +13,11 @@ import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjec
 // dev tooling
 contract GameSetupSystem is System {
 
-    uint32 dirId = 1;
+    uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
+
+    uint32[256] private map;
 
     function init() public returns (uint32) {
 
@@ -25,12 +28,11 @@ contract GameSetupSystem is System {
         return 0;
     }
 
-    // left in here as an example for how to call systems via the world
-    // see MeatPuppetSystem for call
-    function setupCmds(uint32 cmds) public returns (uint32) {
-       // maybe populate the unused VERB tables etc? for now we just use
-       // the mapping thats in the GE.
-       return 23;
+    function getArrayValue(uint8 index) public view returns (uint32, uint8 er) {
+        if (index > 255) {
+            return (0, ErrCodes.ER_AR_BNDS);
+        }
+        return (map[index], 0);
     }
 
     function setupWorld() private {
@@ -38,9 +40,39 @@ contract GameSetupSystem is System {
         setupPlayer();
     }
 
+    function guid() private view returns (uint32) {
+        bytes32 hash = keccak256(
+            abi.encodePacked(
+                block.timestamp,
+                block.prevrandao,
+                blockhash(block.number - 1),
+                msg.sender
+            )
+        );
+        return uint32(uint256(hash));
+    }
+
     function setupPlayer() private {
         // tim, whats the method to create a random int32????
-        CurrentPlayerId.set(1);
+        // Daren, there is no pseudo random number gen but there
+        // is some semi entropic stuff we can hash see guid()
+        CurrentPlayerId.set(guid());
+    }
+
+    function clearArr(uint32[] memory arr) private pure {
+        for (uint8 i = 0; i < 32; i++) {
+            arr[i] = 0;
+        }
+    }
+
+    function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public {
+        for (uint8 i = 0; i < dirObjects.length; i++) {
+                RoomStore.pushDirObjIds(id, dirObjects[i]);
+        }
+        for (uint8 i = 0; i < objects.length ; i++) {
+                RoomStore.pushObjectIds(id, objects[i]);
+        }
+        RoomStore.setTxtDefId(id,txtId);
     }
 
     function setupRooms() private {
@@ -48,76 +80,105 @@ contract GameSetupSystem is System {
         uint32 KBarn = 1;
         uint32 KMountainPath = 0;
 
-        // plain has two exits, the mountain path and the barn
-        // PATH, MUD, NORTH
-        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.North, KBarn,
-                                                      DirObjectType.Path, MaterialType.Dirt,
-                                                        "a path heading north to a barn"));
-        // PATH, MOUNTAIN, EAST
-        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.East, KMountainPath,
-                                                      DirObjectType.Path, MaterialType.Mud,
-                                                        "a path east heading into the mountains"));
+        // much bigger than this and it seems to blow up the stack?
+        // panic capicty error hence I assume blown stack
+        uint32[] memory dids = new uint32[](32);
+        uint32[] memory oids = new uint32[](32);
 
-        // TODO: move this into a textDef
-        RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
+        // KPLAIN
+        dids[0] = createDirObj(DirectionType.North, KBarn,
+                              DirObjectType.Path, MaterialType.Dirt,
+                              "path");
 
-        // this is probably correct, adding the description at build time
-        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football,
-                                                     MaterialType.Flesh,
-                                                     "A slightly deflated knock off uefa football,"
-                                                     "not quite speherical, it's "
-                                                     "kickable though"
-                                                    ));
+        dids[1] = createDirObj(DirectionType.East, KMountainPath,
+                              DirObjectType.Path, MaterialType.Mud,
+                              "path");
+
+        // TODO creat a kick action and add to the football
+        oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
+                                "A slightly deflated knock off uefa football,\n"
+                                "not quite spherical, it's "
+                                "kickable though", "football");
 
 
-        // barn has one exit, back to the plain
-        // Im adding a description to the dirObj but this is probably wrong
-        // we should add a type, i.e. a DOOR, of WOOD, SOUTH then compose the description
-        RoomStore.pushDirObjIds(KBarn,  createDirObj(DirectionType.South, KPlain,
-                                                     DirObjectType.Door, MaterialType.Wood,
-                                                     "a door to the south"));
+        RoomStore.setDescription(KPlain,  'a windswept plain');
+        RoomStore.setRoomType(KPlain,  RoomType.Plain);
 
-        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, "
-                                                    "something died in here")),
-                                                    TxtDefType.Place,
-                                                    MaterialType.None,
-                                                    "The place is dusty and full of spiderwebs,"
-                                                    "something died in here");
+        bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
+        TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "the wind blowing is cold and\n"
+                                                                "bison skulls in piles taller than houses\n"
+                                                                "cover the plains as far as your eye can see\n"
+                                                                "the air tastes of burnt grease and bensons.");
 
-        RoomStore.setDescription(KBarn, 'You are in the barn');
+        createPlace(KPlain, dids, oids, tid_plain);
 
-        // mountain path has only one exit now, back to the plain
-        // as above but a PATH, of MUD, WEST
-        RoomStore.pushDirObjIds(KMountainPath,  createDirObj(DirectionType.West, KPlain,
-                                                             DirObjectType.Path, MaterialType.Dirt,
-                                                             "a path leads to the west heading down "
-                                                             "to the plains below"));
 
-        // TODO: move this into a textDef
-        RoomStore.setDescription(KMountainPath,  "You are on the mountain path, "
-                                                    "you cant go any further though");
+        // KBARN
+        // TODO add a smash action to the window
+        clearArr(dids);
+        clearArr(oids);
 
+        dids[0] = createDirObj(DirectionType.South, KPlain,
+                                DirObjectType.Door, MaterialType.Wood,
+                                "door"
+
+                               );
+
+        bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
+                                                    "The place is dusty and full of spiderwebs,\n"
+                                                    "something died in here, possibly your own self\n"
+                                                    "plenty of corners and dark shadows");
+
+
+        RoomStore.setDescription(KBarn, 'a barn');// this should be auto gen
+        RoomStore.setRoomType(KBarn, RoomType.Room);
+
+        createPlace(KBarn, dids, oids, tid_barn);
+
+        // KPATH
+        clearArr(dids);
+        clearArr(oids);
+        dids[0] = createDirObj(DirectionType.West, KPlain,
+                               DirObjectType.Path, MaterialType.Stone,
+                               "path");
+
+
+        bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
+        TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
+                         "it winds through the mountains, the path is treacherous\n"
+                         "toilet papered trees cover the steep \nvalley sides below you.\n"
+                         "On closer inspection the TP might \nbe the remains of a cricket team\n"
+                         "or pehaps a lost and very dead KKK picnic group.\n"
+                         "It's brass monkeys.");
+
+        RoomStore.setDescription(KMountainPath,  "a high mountain pass");
+        RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
+        createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
-    function createDirObj(DirectionType directionType, uint32 destId, DirObjectType dType,
-                          MaterialType mType,
-                          string memory desc)
-                          private returns (uint32) {
-        DirObjectStore.setDirType(dirId, directionType);
-        DirObjectStore.setDestId(dirId, destId);
-        TextDefStore.set(keccak256(abi.encodePacked(desc)), TxtDefType.DirObject, mType, desc);
-        DirObjectStore.setTxtDefId(dirId, keccak256(abi.encodePacked(desc)));
-        return dirId++;
+
+
+    function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
+                                                    MaterialType mType,string memory desc)
+                                                                    private returns (uint32) {
+        bytes32 txtId = keccak256(abi.encodePacked(desc));
+        TxtDefStore.set(txtId, dirObjId, TxtDefType.DirObject, desc);
+        uint32[] memory actions = new uint32[](0);
+        DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actions);
+        DirObjectStore.set(dirObjId, dirObjData);
+
+        return dirObjId++;
     }
 
-    function createObject(ObjectType objectType, MaterialType mType, string memory desc) private returns (uint32){
-        ObjectStore.setObjectType(objId, objectType);
-        ObjectStore.setMaterialType(objId, mType);
-        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, mType, desc);
-        ObjectStore.setTexDefId(objId, keccak256(abi.encodePacked(desc)));
+    function createObject(ObjectType objType, MaterialType mType, string memory desc, string memory name) private returns (uint32){
+        bytes32 txtId = keccak256(abi.encodePacked(desc));
+        TxtDefStore.set(txtId, objId, TxtDefType.Object, desc);
+        uint32[] memory actions = new uint32[](0);
+        ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions, name);
+        ObjectStore.set(objId, objData);
         return objId++;
     }
-
 
     function createAction(ActionType actionType, string memory desc) private returns (uint32){
         ActionStore.setActionType(actionId, actionType);
@@ -125,7 +186,5 @@ contract GameSetupSystem is System {
         ActionStore.setTexDefId(actionId, keccak256(abi.encodePacked(desc)));
         return actionId++;
     }
-
-
 }
 
