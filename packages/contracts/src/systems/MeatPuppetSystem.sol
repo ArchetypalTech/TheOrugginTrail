@@ -2,24 +2,24 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import { console } from "forge-std/console.sol";
+import {console} from "forge-std/console.sol";
 
-import { System } from "@latticexyz/world/src/System.sol";
-import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
-    DirObjectStoreData, TextDefStore } from "../codegen/index.sol";
-import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
-import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
+import {System} from "@latticexyz/world/src/System.sol";
+import {ObjectStoreData, ObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
+DirObjectStoreData, TextDefStore} from "../codegen/index.sol";
+import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
+import {GameConstants, ErrCodes, ResCodes} from "../constants/defines.sol";
 
-import { IWorld } from "../codegen/world/IWorld.sol";
+import {IWorld} from "../codegen/world/IWorld.sol";
 
-import { LookAt } from '../libs/LookLib.sol';
+import {LookAt} from '../libs/LookLib.sol';
 
-import { console } from "forge-std/console.sol";
+import {console} from "forge-std/console.sol";
 
-contract MeatPuppetSystem is System  {
+contract MeatPuppetSystem is System {
 
     event debugLog(string msg, uint8 val);
-     using LookAt for *;
+    using LookAt for *;
 
     address world;
 
@@ -49,13 +49,13 @@ contract MeatPuppetSystem is System  {
 
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
-        uint8 e; 
+        uint8 e;
         console.log("---->HDL_VRB");
-        if ( vrb == ActionType.Look || vrb == ActionType.Describe ) {
+        if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
-        } else if( vrb == ActionType.Take || vrb == ActionType.Drop ) {
-           e =_handleAction( tokens, curRm) ; 
-         } 
+        } else if (vrb == ActionType.Take || vrb == ActionType.Drop || vrb == ActionType.Kick) {
+            e = _handleAction(tokens, curRm);
+        }
         return e;
 
     }
@@ -74,8 +74,8 @@ contract MeatPuppetSystem is System  {
         console.log("--------->DescribeObjects:");
 
         bool foundValidObject = false;
-        for(uint8 i = 0 ; i < objectIds.length ; i++) {
-            if(objectIds[i] != 0 ) {
+        for (uint8 i = 0; i < objectIds.length; i++) {
+            if (objectIds[i] != 0) {
                 foundValidObject = true;
                 break;
             }
@@ -84,11 +84,35 @@ contract MeatPuppetSystem is System  {
         if (foundValidObject == false) return "";
         string memory msgStr = preText;
         for (uint8 i = 0; i < objectIds.length; i++) {
-            msgStr = string(abi.encodePacked(msgStr, 
-                                             IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(
-                                                 ObjectStore.get(objectIds[i]).objectType)));
+            msgStr = string(abi.encodePacked(msgStr,
+                IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(
+                    ObjectStore.get(objectIds[i]).objectType)));
         }
         return msgStr;
+    }
+
+    function _kick(string[] memory tokens, uint32 rId) private returns (uint8 err) {
+        console.log("----->KICK :", tokens[1]);
+        uint8 tok_err;
+        string memory tok = tokens[1];
+        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
+        if (objType != ObjectType.None) {
+            uint32[] memory objIds = RoomStore.getObjectIds(rId);
+            for (uint8 i = 0; i < objIds.length; i++) {
+                ObjectType testType = ObjectStore.getObjectType(objIds[i]);
+                if (testType == objType) {
+                    Output.set("You kick the ball and experience moderate fun");
+                    //    Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
+                    //    objIds[i] = 0;
+                    //    RoomStore.setObjectIds(rId, objIds);
+                   return 0;
+                }
+            }
+        }
+
+        Output.set("Kick what?");
+
+        return 0;
     }
 
 
@@ -99,9 +123,9 @@ contract MeatPuppetSystem is System  {
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             uint32[] memory objIds = RoomStore.getObjectIds(rId);
-            for(uint8 i = 0 ; i < objIds.length ; i++) {
+            for (uint8 i = 0; i < objIds.length; i++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);
-                if(testType == objType) {
+                if (testType == objType) {
                     Output.set("You picked it up");
                     Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
                     objIds[i] = 0;
@@ -122,10 +146,10 @@ contract MeatPuppetSystem is System  {
         if (objType != ObjectType.None) {
             console.log("1");
             uint32[] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
-            for(uint8 i = 0 ; i < objIds.length ; i++) {
+            for (uint8 i = 0; i < objIds.length; i++) {
                 console.log("2");
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);
-                if(testType == objType) {
+                if (testType == objType) {
                     Output.set("You took the item from your faded Aldi bag and placed it on the floor");
                     console.log("3");
                     RoomStore.pushObjectIds(rId, objIds[i]);
@@ -135,10 +159,7 @@ contract MeatPuppetSystem is System  {
                 }
             }
             Output.set("That item is not in the Aldi carrer bag");
-
-
         }
-
         Output.set("I'm not sure what one of those is");
 
         return 0;
@@ -157,7 +178,8 @@ contract MeatPuppetSystem is System  {
             return _take(tokens, rId);
         } else if (actionType == ActionType.Drop) {
             return _drop(tokens, rId);
-
+        } else if (actionType == ActionType.Kick) {
+            return _kick(tokens, rId);
         }
 
         return 0;
@@ -195,7 +217,7 @@ contract MeatPuppetSystem is System  {
         Output.set(_describeRoom(rId));
         return 0;
     }
-    
+
 
     // intended soley to process tokens and then hand off to other systems
     // checks for first TOKEN which can be either a GO or another VERB.
@@ -207,7 +229,7 @@ contract MeatPuppetSystem is System  {
 
         uint32 rId = Player.getRoomId(CurrentPlayerId.get());
 
-        if (tokens.length > GameConstants.MAX_TOK ) {
+        if (tokens.length > GameConstants.MAX_TOK) {
             err = ErrCodes.ER_PR_TK_CX;
         }
         string memory tok1 = tokens[0];
@@ -220,11 +242,11 @@ contract MeatPuppetSystem is System  {
             move = true;
             (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
                 rId);
-        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
+        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
                 //console.log("-->tok.len %d", tokens.length);
-                if ( IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go ) {
+                if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
                     /* GO: form */
                     move = true;
                     (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
@@ -233,7 +255,7 @@ contract MeatPuppetSystem is System  {
                     /* VERB: form */
                     err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
                     console.log("->ERR: %s", err);
-                    err == 0 ? move = true : move = false; 
+                    err == 0 ? move = true : move = false;
                 }
             } else {
                 err = ErrCodes.ER_PR_NO;
@@ -251,7 +273,7 @@ contract MeatPuppetSystem is System  {
             return err;
         } else {
             // either a do something or move rooms command
-            if ( move ) {
+            if (move) {
                 _enterRoom(nxt);
             } else {
                 // hit look libs_

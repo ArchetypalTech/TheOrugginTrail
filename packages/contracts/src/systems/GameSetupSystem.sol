@@ -14,6 +14,7 @@ contract GameSetupSystem is System {
 
     uint32 dirId = 1;
     uint32 objId = 1;
+    uint32 actionId = 1;
 
     function init() public returns (uint32) {
 
@@ -49,19 +50,19 @@ contract GameSetupSystem is System {
 
         // plain has two exits, the mountain path and the barn
         // PATH, MUD, NORTH
-        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.North, KBarn, 
+        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.North, KBarn,
                                                       DirObjectType.Path, MaterialType.Dirt,
                                                         "a path heading north to a barn"));
         // PATH, MOUNTAIN, EAST
-        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.East, KMountainPath, 
+        RoomStore.pushDirObjIds(KPlain,  createDirObj(DirectionType.East, KMountainPath,
                                                       DirObjectType.Path, MaterialType.Mud,
                                                         "a path east heading into the mountains"));
-        
+
         // TODO: move this into a textDef
         RoomStore.setDescription(KPlain,  'You are on a plain with the wind blowing');
 
-        // this is probably correct, adding the description at build time 
-        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football, 
+        // this is probably correct, adding the description at build time
+        RoomStore.pushObjectIds(KPlain, createObject(ObjectType.Football,
                                                      MaterialType.Flesh,
                                                      "A slightly deflated knock off uefa football,"
                                                      "not quite speherical, it's "
@@ -72,11 +73,11 @@ contract GameSetupSystem is System {
         // barn has one exit, back to the plain
         // Im adding a description to the dirObj but this is probably wrong
         // we should add a type, i.e. a DOOR, of WOOD, SOUTH then compose the description
-        RoomStore.pushDirObjIds(KBarn,  createDirObj(DirectionType.South, KPlain, 
-                                                     DirObjectType.Door, MaterialType.Wood,  
+        RoomStore.pushDirObjIds(KBarn,  createDirObj(DirectionType.South, KPlain,
+                                                     DirObjectType.Door, MaterialType.Wood,
                                                      "a door to the south"));
-        
-        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, " 
+
+        TextDefStore.set(keccak256(abi.encodePacked("The place is dusty and full of spiderwebs, "
                                                     "something died in here")),
                                                     TxtDefType.Place,
                                                     MaterialType.None,
@@ -91,7 +92,7 @@ contract GameSetupSystem is System {
                                                              DirObjectType.Path, MaterialType.Dirt,
                                                              "a path leads to the west heading down "
                                                              "to the plains below"));
-        
+
         // TODO: move this into a textDef
         RoomStore.setDescription(KMountainPath,  "You are on the mountain path, "
                                                     "you cant go any further though");
@@ -100,7 +101,7 @@ contract GameSetupSystem is System {
 
     function createDirObj(DirectionType directionType, uint32 destId, DirObjectType dType,
                           MaterialType mType,
-                          string memory desc) 
+                          string memory desc)
                           private returns (uint32) {
         DirObjectStore.setDirType(dirId, directionType);
         DirObjectStore.setDestId(dirId, destId);
@@ -112,9 +113,19 @@ contract GameSetupSystem is System {
     function createObject(ObjectType objectType, MaterialType mType, string memory desc) private returns (uint32){
         ObjectStore.setObjectType(objId, objectType);
         ObjectStore.setMaterialType(objId, mType);
-        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, mType, desc); 
+        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Object, mType, desc);
         ObjectStore.setTexDefId(objId, keccak256(abi.encodePacked(desc)));
         return objId++;
     }
+
+
+    function createAction(ActionType actionType, string memory desc) private returns (uint32){
+        ActionStore.setActionType(actionId, actionType);
+        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Action, mType, desc);
+        ActionStore.setTexDefId(actionId, keccak256(abi.encodePacked(desc)));
+        return actionId++;
+    }
+
+
 }
 
