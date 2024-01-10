@@ -32,3 +32,5 @@ of this repo because we aren't checking in the node_modules folder.
 cruft....
 
 **Really**. Run `pnpm install` at the project root. Or be dead. Pfft.
+
+**BTW** this is under active development, the branch with the latest working code (for a given value) of working is on develop.
