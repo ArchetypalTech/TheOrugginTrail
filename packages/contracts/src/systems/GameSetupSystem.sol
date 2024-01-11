@@ -94,6 +94,18 @@ contract GameSetupSystem is System {
                               DirObjectType.Path, MaterialType.Mud,
                               "path");
 
+
+
+
+        uint32 kickActionId = createAction(ActionType.Kick, "ball kick placeholder", false );
+
+
+        // -------
+        dids[2] = createDirObj(DirectionType.South, KMountainPath,
+            DirObjectType.Path, MaterialType.Glass,
+            "Window");
+        // ----
+
         // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
@@ -180,10 +192,10 @@ contract GameSetupSystem is System {
         return objId++;
     }
 
-    function createAction(ActionType actionType, string memory desc) private returns (uint32){
+    function createAction(ActionType actionType, string memory desc, bool pBit) private returns (uint32){
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, actionId, TxtDefType.Action, desc);
-        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,true);
+        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,pBit);
         ActionStore.set(actionId, actionData);
         return actionId++;
     }

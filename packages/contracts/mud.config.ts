@@ -71,7 +71,7 @@ export default mudConfig({
         ],
         GrammarType: ["None", "DefiniteArticle", "Preposition", "Adverb"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh",
-                        "Dirt", "Mud"],
+                        "Dirt", "Mud", "Glass"],
         TxtDefType: ["None", "DirObject", "Dir", "Place", "Object", "Action"],
         CommandError: ["NONE", "LEN", "NOP", "GONOWHERE", "GOWHERE"],
     },

@@ -105,7 +105,8 @@ enum MaterialType {
   IKEA,
   Flesh,
   Dirt,
-  Mud
+  Mud,
+  Glass
 }
 
 enum TxtDefType {

@@ -17,11 +17,15 @@ library Kick {
         ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             uint32[] memory objIds = RoomStore.getObjectIds(curRmId);
-            for (uint8 i = 0; i < objIds.length; i++) {
-                ObjectType testType = ObjectStore.getObjectType(objIds[i]);
+            for (uint8 objectIndex = 0; objectIndex < objIds.length; objectIndex++) {
+                ObjectType testType = ObjectStore.getObjectType(objIds[objectIndex]);
 
-                // have we foudn the ball in the room
+                // have we found the ball in the room?
                 if (testType == objType) {
+                    uint32[] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
+                    for (uint8 dirObjectIndex = 0; dirObjectIndex < objIds.length; dirObjectIndex++) {
+
+                    }
 
 
 
