@@ -19,7 +19,25 @@ library Kick {
             uint32[] memory objIds = RoomStore.getObjectIds(curRmId);
             for (uint8 i = 0; i < objIds.length; i++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);
+
+                // have we foudn the ball in the room
                 if (testType == objType) {
+
+
+
+                    // iterate through direction objects
+
+                        // iterate therough the actions of the direction object
+                            // find a breakable
+
+                                // check the flag
+                                    // set the flag
+                                        //show its (true) text
+
+                                        // for the direction object
+
+
+
                     Output.set("You kick the ball and experience moderate fun");
                     //    Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
                     //    objIds[i] = 0;
