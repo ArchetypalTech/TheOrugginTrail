@@ -4,8 +4,8 @@ pragma solidity >=0.8.21;
 import {console} from "forge-std/console.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 
-import {ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType} from '../codegen/common.sol';
-import {Player, CurrentPlayerId,RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore} from '../codegen/index.sol';
+import {ObjectType} from '../codegen/common.sol';
+import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 library Inventory {
     function take(address world, string[] memory tokens, uint32 rId) internal returns (uint8 err) {

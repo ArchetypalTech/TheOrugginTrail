@@ -5,8 +5,8 @@ pragma solidity >=0.8.21;
 import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol';
 
-import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
+import {ObjectType } from '../codegen/common.sol';
+import { RoomStore, ObjectStore, Output } from '../codegen/index.sol';
 
 library Kick {
 
