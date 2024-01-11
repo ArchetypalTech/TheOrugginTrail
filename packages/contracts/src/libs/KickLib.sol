@@ -6,7 +6,7 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol';
 
 import {ObjectType } from '../codegen/common.sol';
-import { RoomStore, ObjectStore, Output } from '../codegen/index.sol';
+import { DirObjectStore, RoomStore, ObjectStore, Output } from '../codegen/index.sol';
 
 library Kick {
 
@@ -23,8 +23,10 @@ library Kick {
                 // have we found the ball in the room?
                 if (testType == objType) {
                     uint32[] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
-                    for (uint8 dirObjectIndex = 0; dirObjectIndex < objIds.length; dirObjectIndex++) {
+                    for (uint8 dirObjectIndex = 0; dirObjectIndex < dirObjIds.length; dirObjectIndex++) {
 
+                  //    DirObjectStore dir = DirObjectStore.getDir(dirObjectIndex);
+                        console.log("----->KICK :", tokens[1]);
                     }
 
 

@@ -84,27 +84,23 @@ contract GameSetupSystem is System {
         // panic capicty error hence I assume blown stack
         uint32[] memory dids = new uint32[](32);
         uint32[] memory oids = new uint32[](32);
+        uint32[] memory directionActionIds = new uint32[](32);
 
         // KPLAIN
         dids[0] = createDirObj(DirectionType.North, KBarn,
                               DirObjectType.Path, MaterialType.Dirt,
-                              "path");
+                              "path",directionActionIds);
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-                              "path");
+                              "path",directionActionIds);
 
+        directionActionIds[0] = createAction(ActionType.Break, "Broken Window", false );
 
-
-
-        uint32 kickActionId = createAction(ActionType.Kick, "ball kick placeholder", false );
-
-
-        // -------
         dids[2] = createDirObj(DirectionType.South, KMountainPath,
             DirObjectType.Path, MaterialType.Glass,
-            "Window");
-        // ----
+            "Window", directionActionIds);
+        clearArr(directionActionIds);
 
         // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
@@ -130,9 +126,10 @@ contract GameSetupSystem is System {
         clearArr(dids);
         clearArr(oids);
 
+
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door"
+                                "door",directionActionIds
 
                                );
 
@@ -151,9 +148,10 @@ contract GameSetupSystem is System {
         // KPATH
         clearArr(dids);
         clearArr(oids);
+
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path");
+                               "path",directionActionIds);
 
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
@@ -172,14 +170,12 @@ contract GameSetupSystem is System {
 
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
-                                                    MaterialType mType,string memory desc)
+                                                    MaterialType mType,string memory desc, uint32[] memory actionObjects)
                                                                     private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, dirObjId, TxtDefType.DirObject, desc);
-        uint32[] memory actions = new uint32[](0);
-        DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actions);
+        DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actionObjects);
         DirObjectStore.set(dirObjId, dirObjData);
-
         return dirObjId++;
     }
 
