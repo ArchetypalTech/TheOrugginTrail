@@ -113,7 +113,8 @@ enum TxtDefType {
   DirObject,
   Dir,
   Place,
-  Object
+  Object,
+  Action
 }
 
 enum CommandError {

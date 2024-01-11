@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
-import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TxtDefStore } from "../codegen/index.sol";
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -179,12 +179,13 @@ contract GameSetupSystem is System {
         ObjectStore.set(objId, objData);
         return objId++;
     }
-
+/*
     function createAction(ActionType actionType, string memory desc) private returns (uint32){
-        ActionStore.setActionType(actionId, actionType);
-        TextDefStore.set( keccak256(abi.encodePacked(desc)), TxtDefType.Action, mType, desc);
-        ActionStore.setTexDefId(actionId, keccak256(abi.encodePacked(desc)));
+        bytes32 txtId = keccak256(abi.encodePacked(desc));
+        TxtDefStore.set(txtId, actionId, TxtDefType.Action, desc);
+        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,true,true);
+        ActionStore.set(actionId, actionData);
         return actionId++;
     }
+    */
 }
-
