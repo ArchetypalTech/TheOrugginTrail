@@ -4,21 +4,11 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import {console} from "forge-std/console.sol";
 
-/*
-<<<<<<< HEAD
-import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectStoreData, ObjectStore, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
-DirObjectStoreData, TextDefStore} from "../codegen/index.sol";
-import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
-import {GameConstants, ErrCodes, ResCodes} from "../constants/defines.sol";
-=======
-*/
 import { System } from "@latticexyz/world/src/System.sol";
 import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
     DirObjectStoreData, TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
-
 
 import {IWorld} from "../codegen/world/IWorld.sol";
 
