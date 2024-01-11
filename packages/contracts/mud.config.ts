@@ -124,8 +124,9 @@ export default mudConfig({
                 // the next 2 are a pair really a door is a good example
                 // is it nESSy: ie. is it just a prop
                 // if it IS then CAN it be, like has it been unlocked
-                nussy: "bool", // can it be used?
-                pBit: "bool" // is it done, LOCK->lockED, CLOSE -> closeED etc
+                pBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
+       /*         actionTrueTextDefId: "bytes32",
+                actionFalseTextDefId: "bytes32"*/
             },
         },
         // attach to rooms/paths to set the exits

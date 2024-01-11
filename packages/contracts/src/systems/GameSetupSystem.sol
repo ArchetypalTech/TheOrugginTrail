@@ -179,13 +179,13 @@ contract GameSetupSystem is System {
         ObjectStore.set(objId, objData);
         return objId++;
     }
-/*
+
     function createAction(ActionType actionType, string memory desc) private returns (uint32){
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, actionId, TxtDefType.Action, desc);
-        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,true,true);
+        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,true);
         ActionStore.set(actionId, actionData);
         return actionId++;
     }
-    */
+
 }

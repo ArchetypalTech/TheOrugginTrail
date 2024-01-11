@@ -13,6 +13,8 @@ import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 import {IWorld} from "../codegen/world/IWorld.sol";
 
 import {LookAt} from '../libs/LookLib.sol';
+import {Kick} from '../libs/KickLib.sol';
+import {Inventory} from '../libs/InventoryLib.sol';
 
 import {console} from "forge-std/console.sol";
 
@@ -53,11 +55,20 @@ contract MeatPuppetSystem is System {
         console.log("---->HDL_VRB");
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
-        } else if (vrb == ActionType.Take || vrb == ActionType.Drop || vrb == ActionType.Kick) {
-            e = _handleAction(tokens, curRm);
+        } else if (vrb == ActionType.Take ) {
+            e = Inventory.take(world, tokens, curRm);
+        } else if (vrb == ActionType.Drop) {
+            e = Inventory.drop(world, tokens, curRm);
+        } else if (vrb == ActionType.Kick) {
+            e = Kick.kick(world, tokens, curRm);
         }
+            /*else if (vrb == ActionType.Unlock) {
+            e = Open.unlock
+            } else if (vrb == ActionType.Use) {
+            e = Open.unlock
+            }
+            */
         return e;
-
     }
 
     function _describeObjectsInRoom(uint32 rId) private returns (string memory) {
@@ -90,101 +101,6 @@ contract MeatPuppetSystem is System {
         }
         return msgStr;
     }
-
-    function _kick(string[] memory tokens, uint32 rId) private returns (uint8 err) {
-        console.log("----->KICK :", tokens[1]);
-        uint8 tok_err;
-        string memory tok = tokens[1];
-        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
-        if (objType != ObjectType.None) {
-            uint32[] memory objIds = RoomStore.getObjectIds(rId);
-            for (uint8 i = 0; i < objIds.length; i++) {
-                ObjectType testType = ObjectStore.getObjectType(objIds[i]);
-                if (testType == objType) {
-                    Output.set("You kick the ball and experience moderate fun");
-                    //    Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
-                    //    objIds[i] = 0;
-                    //    RoomStore.setObjectIds(rId, objIds);
-                   return 0;
-                }
-            }
-        }
-
-        Output.set("Kick what?");
-
-        return 0;
-    }
-
-
-    function _take(string[] memory tokens, uint32 rId) private returns (uint8 err) {
-        console.log("----->TAKE :", tokens[1]);
-        uint8 tok_err;
-        string memory tok = tokens[1];
-        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
-        if (objType != ObjectType.None) {
-            uint32[] memory objIds = RoomStore.getObjectIds(rId);
-            for (uint8 i = 0; i < objIds.length; i++) {
-                ObjectType testType = ObjectStore.getObjectType(objIds[i]);
-                if (testType == objType) {
-                    Output.set("You picked it up");
-                    Player.pushObjectIds(CurrentPlayerId.get(), objIds[i]);
-                    objIds[i] = 0;
-                    RoomStore.setObjectIds(rId, objIds);
-                    break;
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    function _drop(string[] memory tokens, uint32 rId) private returns (uint8 err) {
-        console.log("----->DROP :", tokens[1]);
-        uint8 tok_err;
-        string memory tok = tokens[1];
-        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
-        if (objType != ObjectType.None) {
-            console.log("1");
-            uint32[] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
-            for (uint8 i = 0; i < objIds.length; i++) {
-                console.log("2");
-                ObjectType testType = ObjectStore.getObjectType(objIds[i]);
-                if (testType == objType) {
-                    Output.set("You took the item from your faded Aldi bag and placed it on the floor");
-                    console.log("3");
-                    RoomStore.pushObjectIds(rId, objIds[i]);
-                    objIds[i] = 0;
-                    Player.setObjectIds(CurrentPlayerId.get(), objIds);
-                    return 0;
-                }
-            }
-            Output.set("That item is not in the Aldi carrer bag");
-        }
-        Output.set("I'm not sure what one of those is");
-
-        return 0;
-    }
-
-    // MOVE TO OWN SYSTEM -- MEATCOMMANDER
-    /* handle NON MOVEMENT VERBS */
-    function _handleAction(string[] memory tokens, uint32 rId) private returns (uint8 err) {
-        console.log("---->HDL_ACT", tokens[1]);
-
-        string memory tok = tokens[0];
-
-        ActionType actionType = IWorld(world).meat_TokeniserSystem_getActionType(tok);
-
-        if (actionType == ActionType.Take) {
-            return _take(tokens, rId);
-        } else if (actionType == ActionType.Drop) {
-            return _drop(tokens, rId);
-        } else if (actionType == ActionType.Kick) {
-            return _kick(tokens, rId);
-        }
-
-        return 0;
-    }
-
 
     // this is about to be redundant so dont do anymore work omn it
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
