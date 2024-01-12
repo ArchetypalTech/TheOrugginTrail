@@ -8,7 +8,7 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IDirectionSystem {
-  function meat_DirectionSystem_initDFS(address tokeniser, address wrld) external returns (address);
+  function meat_DirectionSystem_initDFS(address wrld) external returns (address);
 
   function meat_DirectionSystem_getNextRoom(
     string[] memory tokens,

@@ -13,13 +13,13 @@ import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
 
 import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
 
-import { RoomStore, RoomStoreData, ActionStore, DirObjectStore } from "../codegen/index.sol";
+import { RoomStore, RoomStoreData, ActionStore,ActionStoreData, DirObjectStore } from "../codegen/index.sol";
 
 contract DirectionSystem is System {
 
     address world;
 
-    function initDFS(address tokeniser, address wrld) public returns (address) {
+    function initDFS(address wrld) public returns (address) {
         //console.log("--->initDFS: %s", wrld);
         world = wrld;
         return address(this);
@@ -40,7 +40,6 @@ contract DirectionSystem is System {
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             //console.log("->DF--->DOBJ:", dObjId);
-
             uint32 nxtRm = DirObjectStore.getDestId(dObjId);
             //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
@@ -55,9 +54,20 @@ contract DirectionSystem is System {
         }
     }
 
-    function _canMove() private view returns (bool success) {
+    function _canMove(uint32 exitId) private view returns (bool success) {
        // check LOCK/UNLOCK, OPEN/CLOSED 
-        return true;
+       uint32[] memory actions = DirObjectStore.getObjectActionIds(exitId);
+       bool canMove = false; // inits to 0 by default but lets be explicit
+       for (uint8 i =0; i < actions.length; i++) {
+           ActionStoreData memory action = ActionStore.get(actions[i]);
+           if (action.actionType == ActionType.Open) {
+               canMove = action.enabled == true && action.dBit == true;
+           }        
+           if (action.actionType == ActionType.Lock) {
+               canMove = action.enabled == true && action.dBit == false;
+           }
+       }
+       return canMove;
     }
 
 
@@ -65,17 +75,14 @@ contract DirectionSystem is System {
     function _directionCheck (uint32 rId, DirectionType d) private view returns (bool success, uint32 next) {
         //console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
-
         //console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
         for (uint8 i = 0; i < exitIds.length; i++) {
-
             //console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
             // just for debug output
-            DirectionType dt = DirObjectStore.getDirType(exitIds[i]);
+            //DirectionType dt = DirObjectStore.getDirType(exitIds[i]);
             //console.log( "-->i:", i, "-->", uint8(dt) );
             if ( DirObjectStore.getDirType(exitIds[i]) == d) { 
-
-                if (_canMove() == true){
+                if (_canMove(exitIds[i]) == true){
                     return (true, exitIds[i]); 
                 }
             } 
