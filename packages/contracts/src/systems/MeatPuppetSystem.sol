@@ -11,11 +11,9 @@ import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from ".
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import {IWorld} from "../codegen/world/IWorld.sol";
-
 import {LookAt} from '../libs/LookLib.sol';
 import {Kick} from '../libs/KickLib.sol';
 import {Inventory} from '../libs/InventoryLib.sol';
-
 import {console} from "forge-std/console.sol";
 
 contract MeatPuppetSystem is System {
@@ -58,7 +56,8 @@ contract MeatPuppetSystem is System {
         } else if (vrb == ActionType.Take ) {
             e = Inventory.take(world, tokens, curRm);
         } else if (vrb == ActionType.Drop) {
-            e = Inventory.drop(world, tokens, curRm);
+      // taken this out due to cotract size limit when developing kick
+      //      e = Inventory.drop(world, tokens, curRm);
         } else if (vrb == ActionType.Kick) {
             e = Kick.kick(world, tokens, curRm);
         }
