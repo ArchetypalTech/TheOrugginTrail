@@ -28,7 +28,7 @@ library Kick {
                 if (testType == objType) {
                     console.log("------>we found the ball");
                     // we need a check to see if the object is actually kickable
-                    bool foundObjectToBreak = false;
+
                     // the exits for this room
                     uint32[] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
                     console.log('-------->dirObjIds.length = %d', dirObjIds.length);
@@ -42,14 +42,18 @@ library Kick {
                             // we found a breakable object
                             if (action.actionType == ActionType.Break) {
                                 Output.set("you broke something");
-                                foundObjectToBreak = true;
+
+                                // remove kicked object from the room
+                                objIds[objectIndex] = 0;
+                                RoomStore.setObjectIds(curRmId, objIds);
+                                return 0;
                             }
                         }
                     }
 
-                    if (foundObjectToBreak == false) {
+
                         Output.set("You kick the ball");
-                    }
+
                     return 0;
                 }
             }
