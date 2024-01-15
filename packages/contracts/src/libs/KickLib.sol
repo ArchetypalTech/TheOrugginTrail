@@ -13,8 +13,6 @@ library Kick {
 
         console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);
 
-
-
         uint8 tok_err;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
