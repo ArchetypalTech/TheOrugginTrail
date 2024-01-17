@@ -91,7 +91,7 @@ contract GameSetupSystem is System {
                               DirObjectType.Path, MaterialType.Dirt,
                               "path",directionActionIds);
 
-        dids[1] = createDirObj(DirectionType.Ea§§st, KMountainPath,
+        dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
                               "path",directionActionIds);
 
