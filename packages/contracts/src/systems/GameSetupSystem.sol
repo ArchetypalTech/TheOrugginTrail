@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
-import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TxtDefStore } from "../codegen/index.sol";
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -15,6 +15,8 @@ contract GameSetupSystem is System {
 
     uint32 dirObjId = 1;
     uint32 objId = 1;
+    uint32 actionId = 1;
+
     uint32[256] private map;
 
     function init() public returns (uint32) {
@@ -37,13 +39,13 @@ contract GameSetupSystem is System {
         setupRooms();
         setupPlayer();
     }
-    
+
     function guid() private view returns (uint32) {
         bytes32 hash = keccak256(
             abi.encodePacked(
-                block.timestamp, 
-                block.prevrandao, 
-                blockhash(block.number - 1), 
+                block.timestamp,
+                block.prevrandao,
+                blockhash(block.number - 1),
                 msg.sender
             )
         );
@@ -63,7 +65,7 @@ contract GameSetupSystem is System {
         }
     }
 
-    function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public { 
+    function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public {
         for (uint8 i = 0; i < dirObjects.length; i++) {
                 RoomStore.pushDirObjIds(id, dirObjects[i]);
         }
@@ -82,16 +84,24 @@ contract GameSetupSystem is System {
         // panic capicty error hence I assume blown stack
         uint32[] memory dids = new uint32[](32);
         uint32[] memory oids = new uint32[](32);
+        uint32[] memory directionActionIds = new uint32[](32);
 
         // KPLAIN
-        dids[0] = createDirObj(DirectionType.North, KBarn, 
-                              DirObjectType.Path, MaterialType.Dirt, 
-                              "path");
+        dids[0] = createDirObj(DirectionType.North, KBarn,
+                              DirObjectType.Path, MaterialType.Dirt,
+                              "path",directionActionIds);
 
-        dids[1] = createDirObj(DirectionType.East, KMountainPath, 
+        dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-                              "path");
-        
+                              "path",directionActionIds);
+
+        directionActionIds[0] = createAction(ActionType.Break, "Broken Window", false );
+
+        dids[2] = createDirObj(DirectionType.South, KMountainPath,
+            DirObjectType.Path, MaterialType.Glass,
+            "Window", directionActionIds);
+        clearArr(directionActionIds);
+
         // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
@@ -101,14 +111,14 @@ contract GameSetupSystem is System {
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
-        
+
         bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
         TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "the wind blowing is cold and\n"
                                                                 "bison skulls in piles taller than houses\n"
                                                                 "cover the plains as far as your eye can see\n"
                                                                 "the air tastes of burnt grease and bensons.");
-                                                                
-        createPlace(KPlain, dids, oids, tid_plain); 
+
+        createPlace(KPlain, dids, oids, tid_plain);
 
 
         // KBARN
@@ -116,14 +126,15 @@ contract GameSetupSystem is System {
         clearArr(dids);
         clearArr(oids);
 
+
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door"
+                                "door",directionActionIds
 
-                               ); 
+                               );
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
-        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
@@ -137,9 +148,10 @@ contract GameSetupSystem is System {
         // KPATH
         clearArr(dids);
         clearArr(oids);
+
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path");
+                               "path",directionActionIds);
 
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
@@ -149,33 +161,39 @@ contract GameSetupSystem is System {
                          "On closer inspection the TP might \nbe the remains of a cricket team\n"
                          "or pehaps a lost and very dead KKK picnic group.\n"
                          "It's brass monkeys.");
-        
+
         RoomStore.setDescription(KMountainPath,  "a high mountain pass");
         RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
-    
+
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
-                                                    MaterialType mType,string memory desc) 
+                                                    MaterialType mType,string memory desc, uint32[] memory actionObjects)
                                                                     private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, dirObjId, TxtDefType.DirObject, desc);
-        uint32[] memory actions = new uint32[](0);
-        DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actions); 
+        DirObjectStoreData memory dirObjData = DirObjectStoreData(dOType, dirType, mType, dstId, txtId, actionObjects);
         DirObjectStore.set(dirObjId, dirObjData);
-
         return dirObjId++;
     }
 
     function createObject(ObjectType objType, MaterialType mType, string memory desc, string memory name) private returns (uint32){
         bytes32 txtId = keccak256(abi.encodePacked(desc));
-        TxtDefStore.set(txtId, objId, TxtDefType.Object, desc); 
+        TxtDefStore.set(txtId, objId, TxtDefType.Object, desc);
         uint32[] memory actions = new uint32[](0);
-        ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions, name); 
+        ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions, name);
         ObjectStore.set(objId, objData);
         return objId++;
     }
-}
 
+    function createAction(ActionType actionType, string memory desc, bool pBit) private returns (uint32){
+        bytes32 txtId = keccak256(abi.encodePacked(desc));
+        TxtDefStore.set(txtId, actionId, TxtDefType.Action, desc);
+        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,pBit);
+        ActionStore.set(actionId, actionData);
+        return actionId++;
+    }
+
+}
