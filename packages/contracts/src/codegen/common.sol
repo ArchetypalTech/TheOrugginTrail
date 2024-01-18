@@ -78,11 +78,7 @@ enum ActionType {
   Close,
   Break,
   Throw,
-  Drop,
-  Set,
-  Fire,
-  Light,
-  Burn
+  Drop
 }
 
 enum ObjectType {
@@ -109,7 +105,8 @@ enum MaterialType {
   IKEA,
   Flesh,
   Dirt,
-  Mud
+  Mud,
+  Glass
 }
 
 enum TxtDefType {
@@ -117,7 +114,8 @@ enum TxtDefType {
   DirObject,
   Dir,
   Place,
-  Object
+  Object,
+  Action
 }
 
 enum CommandError {

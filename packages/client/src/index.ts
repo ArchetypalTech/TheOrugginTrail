@@ -7,7 +7,6 @@ const {
   network,
 } = await setup();
 
-
 $('body').terminal(async function(command)  {
     // sanity test for calling the contract
     if(command == 'init') {

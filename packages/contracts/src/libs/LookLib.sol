@@ -24,7 +24,6 @@ library LookAt {
         ActionType vrb = IWorld(wrld).meat_TokeniserSystem_getActionType(tokens[0]);
         GrammarType gObj;
 
-
         // we know it is an action because the commandProcessors has pre-parsed for us
         // so we dont need to test for a garbage vrb token
         if ( vrb == ActionType.Look ) {
@@ -83,8 +82,10 @@ library LookAt {
             string memory objsDesc = "\nYou can alse see a ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
+
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n")); 
                     bytes32 tId =  ObjectStore.getTxtDefId(objs[i]); 
+
                     objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
 
                 }

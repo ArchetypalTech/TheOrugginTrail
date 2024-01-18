@@ -67,7 +67,8 @@ contract DirectionSystem is System {
                canMove = action.enabled && !action.dBit;
            }
        }
-       return canMove;
+       // for now just allow it as we dont have any actions
+       return true; //canMove;
     }
 
 
