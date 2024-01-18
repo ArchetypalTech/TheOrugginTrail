@@ -61,10 +61,10 @@ contract DirectionSystem is System {
        for (uint8 i =0; i < actions.length; i++) {
            ActionStoreData memory action = ActionStore.get(actions[i]);
            if (action.actionType == ActionType.Open) {
-               canMove = action.enabled == true && action.dBit == true;
+               canMove = action.enabled  && action.dBit; 
            }        
            if (action.actionType == ActionType.Lock) {
-               canMove = action.enabled == true && action.dBit == false;
+               canMove = action.enabled && !action.dBit;
            }
        }
        return canMove;
