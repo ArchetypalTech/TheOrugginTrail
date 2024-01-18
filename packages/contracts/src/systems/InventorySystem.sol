@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import {console} from "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
+import {System} from "@latticexyz/world/src/System.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 
 import {ObjectType} from '../codegen/common.sol';
 import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
-library Inventory {
-    function take(address world, string[] memory tokens, uint32 rId) internal returns (uint8 err) {
+contract InventorySystem is System {
+    function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->TAKE :", tokens[1]);
         uint8 tok_err;
         string memory tok = tokens[1];
@@ -31,7 +32,7 @@ library Inventory {
 
     }
 
-    function drop(address world, string[] memory tokens, uint32 rId) internal returns (uint8 err) {
+    function drop(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->DROP :", tokens[1]);
         uint8 tok_err;
         string memory tok = tokens[1];
@@ -57,4 +58,6 @@ library Inventory {
 
         return 0;
     }
+
+
 }

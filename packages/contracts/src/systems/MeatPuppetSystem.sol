@@ -10,10 +10,11 @@ import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
+import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
+
 import {IWorld} from "../codegen/world/IWorld.sol";
 import {LookAt} from '../libs/LookLib.sol';
 import {Kick} from '../libs/KickLib.sol';
-import {Inventory} from '../libs/InventoryLib.sol';
 import {console} from "forge-std/console.sol";
 
 contract MeatPuppetSystem is System {
@@ -54,9 +55,9 @@ contract MeatPuppetSystem is System {
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
         } else if (vrb == ActionType.Take ) {
-            e = Inventory.take(world, tokens, curRm);
+            e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm);
         } else if (vrb == ActionType.Drop) {
-            e = Inventory.drop(world, tokens, curRm);
+            e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm);
         } else if (vrb == ActionType.Kick) {
             e = Kick.kick(world, tokens, curRm);
         }
