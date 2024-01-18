@@ -21,15 +21,20 @@ contract TokeniserSystem is System {
     mapping(ObjectType => string) public reverseObjLookup;
     mapping(DirectionType => string) public revDirLookup;
     mapping(MaterialType => string) public revMat;
+    //mapping(ActionType => string) public revCmd;
 
     function initTS() public returns (address) {
         console.log("--->initTS");
         setupCmds();
         setupObjects();
         setupDirs();
-        setupGrammar();
+        //setupGrammar();
         return address(this);
     }
+    
+    //function reverseActType(ActionType key) public view returns (string memory) {
+        //return revCmd[key];
+    //}
 
     function reverseDirType(DirectionType key) public view returns (string memory) {
         return revDirLookup[key];
@@ -73,7 +78,23 @@ contract TokeniserSystem is System {
         cmdLookup["UNLOCK"]     = ActionType.Unlock;
         cmdLookup["OPEN"]       = ActionType.Open;
         cmdLookup["LOOK"]       = ActionType.Look;
+        cmdLookup["CLOSE"]      = ActionType.Close;
+        cmdLookup["BREAK"]      = ActionType.Break;
+        cmdLookup["THROW"]      = ActionType.Throw;
         cmdLookup["DROP"]       = ActionType.Drop;
+
+        //revCmd[ActionType.Go]           = "GO";
+        //revCmd[ActionType.Move]         = "MOVE";
+        //revCmd[ActionType.Loot]         = "LOOT";
+        //revCmd[ActionType.Describe]     = "DESCRIBE";
+        //revCmd[ActionType.Take]         = "TAKE";
+        //revCmd[ActionType.Kick]         = "KICK";
+        //revCmd[ActionType.Lock]         = "LOCK";
+        //revCmd[ActionType.Unlock]       = "UNLOCK";
+        //revCmd[ActionType.Open]         = "OPEN";
+        //revCmd[ActionType.Look]         = "LOOK";
+        //revCmd[ActionType.Drop]         = "DROP";
+
     }
 
     // this could autogen because we just take set of "str"
@@ -101,8 +122,8 @@ contract TokeniserSystem is System {
     }
 
     function setupGrammar () private {
-       grammarLookup["The"]     = GrammarType.DefiniteArticle;
-       grammarLookup["To"]      = GrammarType.Preposition;
+       //grammarLookup["The"]     = GrammarType.DefiniteArticle;
+       //grammarLookup["To"]      = GrammarType.Preposition;
        grammarLookup["Around"]  = GrammarType.Adverb;
     }
 

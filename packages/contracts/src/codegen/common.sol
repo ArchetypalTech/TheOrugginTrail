@@ -78,7 +78,11 @@ enum ActionType {
   Close,
   Break,
   Throw,
-  Drop
+  Drop,
+  Set,
+  Fire,
+  Light,
+  Burn
 }
 
 enum ObjectType {

@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
-import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, TxtDefStore } from "../codegen/index.sol";
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData, TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 // NOTE of interest in the return types of the functions, these
@@ -74,14 +74,17 @@ contract GameSetupSystem is System {
     }
 
     function setupRooms() private {
+        uint32 KForest = 3;
         uint32 KPlain = 2;
         uint32 KBarn = 1;
         uint32 KMountainPath = 0;
 
-        // much bigger than this and it seems to blow up the stack?
-        // panic capicty error hence I assume blown stack
-        uint32[] memory dids = new uint32[](32);
-        uint32[] memory oids = new uint32[](32);
+        // if we go for 256 then the contract fails to deploy
+        // but we donr need that many anyway but essentially after
+        // > 32 we are back in uncharted waters
+        uint32[] memory dids = new uint32[](8);
+        uint32[] memory oids = new uint32[](8);
+        uint32[] memory aids = new uint32[](8);
 
         // KPLAIN
         dids[0] = createDirObj(DirectionType.North, KBarn, 
@@ -98,6 +101,8 @@ contract GameSetupSystem is System {
                                 "not quite spherical, it's "
                                 "kickable though", "football");
 
+        // football is gay 
+        aids[0] = createAction(true, oids[0], ActionType.Kick, false);  
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -119,7 +124,10 @@ contract GameSetupSystem is System {
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
                                 "door"
-
+                               ); 
+        dids[1] = createDirObj(DirectionType.East, KForest,
+                                DirObjectType.Window, MaterialType.Wood,
+                                "window"
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
@@ -155,7 +163,15 @@ contract GameSetupSystem is System {
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
-    
+    function createAction(bool isObj, uint32 oId, ActionType t, bool enable) private returns (uint32) {
+        //uint32 id = guid();
+        //ActionStore.set(id, t, enable);
+        //if (isObj == true) {
+            //ObjectStore.pushObjectActionIds(oId, id);
+        //} else {
+        //}
+
+    }
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
                                                     MaterialType mType,string memory desc) 

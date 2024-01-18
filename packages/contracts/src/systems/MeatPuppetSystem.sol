@@ -39,14 +39,6 @@ contract MeatPuppetSystem is System  {
         _enterRoom(0);
     }
 
-    function _describeRoom(uint32 rId) private returns (string memory) {
-        console.log("--------->DescribeRoom:");
-        RoomStoreData memory currRoom = RoomStore.get(rId);
-        return string(abi.encodePacked(currRoom.description, "\n",
-            "You can go", _describeActions(rId), _describeObjectsInRoom(rId), _describeObjectsInInventory())
-        );
-    }
-
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e; 
@@ -144,7 +136,7 @@ contract MeatPuppetSystem is System  {
         return 0;
     }
 
-    // MOVE TO OWN SYSTEM -- MEATCOMMANDER
+    // called from handleVerb should really remove
     /* handle NON MOVEMENT VERBS */
     function _handleAction(string[] memory tokens, uint32 rId) private returns (uint8 err) {
         console.log("---->HDL_ACT", tokens[1]);
@@ -159,41 +151,13 @@ contract MeatPuppetSystem is System  {
             return _drop(tokens, rId);
 
         }
-
         return 0;
-    }
-
-
-    // this is about to be redundant so dont do anymore work omn it
-    // MOVE TO OWN SYSTEM -- MEATWHISPERER
-    /* build up the text description strings for general output */
-    function _describeActions(uint32 rId) private view returns (string memory) {
-        RoomStoreData memory currRm = RoomStore.get(rId);
-        string[8] memory dirStrings;
-        string memory msgStr;
-        for (uint8 i = 0; i < currRm.dirObjIds.length; i++) {
-            DirObjectStoreData memory dir = DirObjectStore.get(currRm.dirObjIds[i]);
-
-            if (dir.dirType == DirectionType.North) {
-                dirStrings[i] = " North";
-            } else if (dir.dirType == DirectionType.East) {
-                dirStrings[i] = " East";
-            } else if (dir.dirType == DirectionType.South) {
-                dirStrings[i] = " South";
-            } else if (dir.dirType == DirectionType.West) {
-                dirStrings[i] = " West";
-            }
-        }
-        for (uint16 i = 0; i < dirStrings.length; i++) {
-            msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
-        }
-        return msgStr;
     }
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(CurrentPlayerId.get(), rId);
-        Output.set(_describeRoom(rId));
+        Output.set(LookAt.getRoomDesc(rId));
         return 0;
     }
     
@@ -219,8 +183,7 @@ contract MeatPuppetSystem is System  {
             //console.log("---->DIR:");
             /* DIR: form */
             move = true;
-            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
-                rId);
+            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
@@ -228,8 +191,7 @@ contract MeatPuppetSystem is System  {
                 if ( IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go ) {
                     /* GO: form */
                     move = true;
-                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
-                        rId);
+                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
                     err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
@@ -255,7 +217,7 @@ contract MeatPuppetSystem is System  {
             if ( move ) {
                 _enterRoom(nxt);
             } else {
-                // hit look libs_
+                // hit look libs_ perhaps?
             }
         }
     }
