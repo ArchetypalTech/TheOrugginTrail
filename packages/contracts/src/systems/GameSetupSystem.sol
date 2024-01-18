@@ -90,13 +90,12 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
-                              "path");
+                              "path", directionActionIds);
 
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-
-                              "path");
+                              "path", directionActionIds);
         
 
         // TODO creat a kick action and add to the football
@@ -126,9 +125,7 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-
-                                "door"
-
+                                "door", directionActionIds 
                                ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
@@ -150,8 +147,7 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-
-                               "path");
+                               "path", directionActionIds);
 
 
 
@@ -167,7 +163,6 @@ contract GameSetupSystem is System {
         RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
-
 
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
@@ -189,12 +184,13 @@ contract GameSetupSystem is System {
         return objId++;
     }
 
-    function createAction(ActionType actionType, string memory desc, bool pBit) private returns (uint32){
-        bytes32 txtId = keccak256(abi.encodePacked(desc));
-        TxtDefStore.set(txtId, actionId, TxtDefType.Action, desc);
-        ActionStoreData memory actionData = ActionStoreData(actionType,txtId,pBit);
-        ActionStore.set(actionId, actionData);
-        return actionId++;
-    }
+    //function createAction(ActionType actionType, string memory desc, bool pBit) private returns (uint32){
+        ////bytes32 txtId = keccak256(abi.encodePacked(desc));
+        //// bodged in and broken FIXME we need a REAL objId
+        ////TxtDefStore.set(txtId, 0, actionId, actionType, desc);
+        ////ActionStoreData memory actionData = ActionStoreData(actionType,txtId,pBit);
+        ////ActionStore.set(actionId, actionData);
+        //return actionId++;
+    //}
 
 }
