@@ -57,7 +57,7 @@ contract DirectionSystem is System {
     function _canMove(uint32 exitId) private view returns (bool success) {
        // check LOCK/UNLOCK, OPEN/CLOSED 
        uint32[] memory actions = DirObjectStore.getObjectActionIds(exitId);
-       bool canMove = false; // inits to 0 by default but lets be explicit
+       bool canMove = false; // inits to 0 by default but let's be explicit
        for (uint8 i =0; i < actions.length; i++) {
            ActionStoreData memory action = ActionStore.get(actions[i]);
            if (action.actionType == ActionType.Open) {
@@ -67,7 +67,9 @@ contract DirectionSystem is System {
                canMove = action.enabled && !action.dBit;
            }
        }
-       return canMove;
+       // set to treu for now until we add some actions
+       //return canMove;
+       return true;
     }
 
 
