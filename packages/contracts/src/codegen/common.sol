@@ -105,7 +105,8 @@ enum MaterialType {
   IKEA,
   Flesh,
   Dirt,
-  Mud
+  Mud,
+  Glass
 }
 
 enum TxtDefType {
@@ -113,7 +114,8 @@ enum TxtDefType {
   DirObject,
   Dir,
   Place,
-  Object
+  Object,
+  Action
 }
 
 enum CommandError {
