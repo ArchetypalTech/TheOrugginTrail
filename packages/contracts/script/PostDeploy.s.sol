@@ -156,7 +156,7 @@ contract PostDeploy is Script {
         address tokeniser = IWorld(worldAddress).meat_TokeniserSystem_initTS();
         
         address directionFinder =
-            IWorld(worldAddress).meat_DirectionSystem_initDFS(tokeniser, worldAddress);
+            IWorld(worldAddress).meat_DirectionSystem_initDFS(worldAddress);
 
         address meatPuppet = IWorld(worldAddress).meat_MeatPuppetSystem_initGES(worldAddress);
 

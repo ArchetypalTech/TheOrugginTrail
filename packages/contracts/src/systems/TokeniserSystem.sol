@@ -122,7 +122,7 @@ contract TokeniserSystem is System {
         revMat[MaterialType.Stone]  = "stone";
         revMat[MaterialType.Flesh]  = "fleah";
         revMat[MaterialType.Wood]   = "wood";
-        revMat[MaterialType.Glass]   = "glass";
+
 
     }
 

@@ -87,20 +87,17 @@ contract GameSetupSystem is System {
         uint32[] memory directionActionIds = new uint32[](32);
 
         // KPLAIN
-        dids[0] = createDirObj(DirectionType.North, KBarn,
-                              DirObjectType.Path, MaterialType.Dirt,
-                              "path",directionActionIds);
+
+        dids[0] = createDirObj(DirectionType.North, KBarn, 
+                              DirObjectType.Path, MaterialType.Dirt, 
+                              "path");
+
 
         dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-                              "path",directionActionIds);
 
-        directionActionIds[0] = createAction(ActionType.Break, "Broken Window", false );
-
-        dids[2] = createDirObj(DirectionType.South, KMountainPath,
-            DirObjectType.Path, MaterialType.Glass,
-            "Window", directionActionIds);
-        clearArr(directionActionIds);
+                              "path");
+        
 
         // TODO creat a kick action and add to the football
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
@@ -129,12 +126,14 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door",directionActionIds
 
-                               );
+                                "door"
+
+                               ); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
-        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
+
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
@@ -151,7 +150,9 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path",directionActionIds);
+
+                               "path");
+
 
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
