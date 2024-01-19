@@ -5,17 +5,18 @@ import {console} from "forge-std/console.sol";
 import { IWorld } from '../codegen/world/IWorld.sol'; 
 
 
+
 import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
 
 import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
 
-import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
+
 
 library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
 
-    function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
+
+    function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 e) {
         // Composes the descriptions for stuff Players can see
         // right now that's from string's stored in object meta data
         console.log("---->SEE T:%s, R:%d", tokens[0], curRmId);
@@ -27,13 +28,11 @@ library LookAt {
         // so we dont need to test for a garbage vrb token
         if ( vrb == ActionType.Look ) {
             console.log("---->LK RM:%s", curRmId);
-            string memory tok = tokens[tokens.length -1];
+            //string memory tok = tokens[tokens.length -1]; // use to determine the direct object
             if (tokens.length > 1) {
                gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
                if (gObj != GrammarType.Adverb) {
-
                   err = _lookAround(curRmId, wrld); 
-
                   console.log("->_LA:%s", err);
                }
             }
@@ -43,10 +42,20 @@ library LookAt {
         return err;
     }
 
+    function getRoomDesc(uint32 id) internal view returns (string memory d) {
+        // return the room description but dont bother with the exits or the objects
+        string memory desc = "You are ";
+        if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+            desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
+        } else {
+            desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
+        }
+        desc = string(abi.encodePacked(desc, "\n"));
+        return desc;
+    }
 
-    function _genDescText(uint32 id, address wrld) internal returns (string memory) {
-        string memory desc = "Looking around you see that\nYou are standing ";
-
+    function _genDescText(uint32 id, address wrld) internal view returns (string memory) {
+        string memory desc = "You are standing ";
         string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
         if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
@@ -67,7 +76,7 @@ library LookAt {
         return desc;
     }
 
-    function _genObjDesc(uint32[] memory objs) internal returns (string memory) {
+    function _genObjDesc(uint32[] memory objs) internal view returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
 
             string memory objsDesc = "\nYou can alse see a ";
@@ -85,7 +94,7 @@ library LookAt {
         }
     }
 
-    function _genMaterial(MaterialType mt, DirObjectType dt, string memory value, address wrld) internal returns (string memory) {
+    function _genMaterial(MaterialType mt, DirObjectType dt, string memory value, address wrld) internal view returns (string memory) {
         string memory dsc; 
         if (dt == DirObjectType.Path || dt == DirObjectType.Trail) {
             dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " "));
@@ -98,27 +107,23 @@ library LookAt {
 
     
     // there is a PATH made os mud to the DIR | there is a wood door to the 
-    function _genExitDesc(uint32[] memory objs, address wrld) internal returns (string memory) {
+    function _genExitDesc(uint32[] memory objs, address wrld) internal view returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";
             for(uint8 i = 0; i < objs.length; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
                     DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);// there is a fleshy path to the | there
-
                    if (i == 0) { 
                        exitsDesc = string(abi.encodePacked(exitsDesc, _genMaterial(objData.matType,
                                                                                    objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld), 
-
                                                                                    "to the ",
                                                                                    IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
                    } else { // we got more exits
                        exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
-
                                                                                                       objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld), 
                                                                                                       "to the ",IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
                                                                                                       "\n"));
                    } 
-
                 }
             }
             return exitsDesc;

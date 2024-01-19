@@ -28,7 +28,8 @@ export function createSystemCalls(
   { Output }: ClientComponents
 ) {
   const initData = async () => {
-    const tx = await worldContract.write.initData();
+    // this is used to call everything right now
+    const tx = await worldContract.write.meat_GameSetupSystem_init();
     await waitForTransaction(tx);
   };
 

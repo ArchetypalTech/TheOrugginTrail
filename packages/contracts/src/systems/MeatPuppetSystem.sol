@@ -40,17 +40,9 @@ contract MeatPuppetSystem is System {
         _enterRoom(0);
     }
 
-    function _describeRoom(uint32 rId) private returns (string memory) {
-        console.log("--------->DescribeRoom:");
-        RoomStoreData memory currRoom = RoomStore.get(rId);
-        return string(abi.encodePacked(currRoom.description, "\n",
-            "You can go", _describeActions(rId), _describeObjectsInRoom(rId), _describeObjectsInInventory())
-        );
-    }
-
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
-        uint8 e;
+        uint8 e; 
         console.log("---->HDL_VRB");
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
@@ -130,7 +122,7 @@ contract MeatPuppetSystem is System {
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(CurrentPlayerId.get(), rId);
-        Output.set(_describeRoom(rId));
+        Output.set(LookAt.getRoomDesc(rId));
         return 0;
     }
 
@@ -156,17 +148,15 @@ contract MeatPuppetSystem is System {
             //console.log("---->DIR:");
             /* DIR: form */
             move = true;
-            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
-                rId);
-        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None) {
+            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
                 //console.log("-->tok.len %d", tokens.length);
                 if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
                     /* GO: form */
                     move = true;
-                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens,
-                        rId);
+                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
                     err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
@@ -192,7 +182,7 @@ contract MeatPuppetSystem is System {
             if (move) {
                 _enterRoom(nxt);
             } else {
-                // hit look libs_
+                // hit look libs_ perhaps?
             }
         }
     }

@@ -8,19 +8,20 @@ import { ErrCodes } from '../constants/defines.sol';
 import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
-// NOTE of interest in the return types of the functions, these
-// are later used in the logs of the game provided by the MUD
-// dev tooling
 contract GameSetupSystem is System {
 
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
+    
+    // just for now
+    uint8 MAXOBJ = 16;
 
     uint32[256] private map;
 
     function init() public returns (uint32) {
 
+        console.log("--->setup: init()");
         setupWorld();
 
         // we are right now initing the data in the
@@ -59,8 +60,9 @@ contract GameSetupSystem is System {
         CurrentPlayerId.set(guid());
     }
 
-    function clearArr(uint32[] memory arr) private pure {
-        for (uint8 i = 0; i < 32; i++) {
+    function clearArr(uint32[] memory arr) private view {
+        console.log("---> clear");
+        for (uint8 i = 0; i < MAXOBJ; i++) {
             arr[i] = 0;
         }
     }
@@ -76,26 +78,27 @@ contract GameSetupSystem is System {
     }
 
     function setupRooms() private {
+        uint32 KForest = 3;
         uint32 KPlain = 2;
         uint32 KBarn = 1;
         uint32 KMountainPath = 0;
 
-        // much bigger than this and it seems to blow up the stack?
-        // panic capicty error hence I assume blown stack
-        uint32[] memory dids = new uint32[](32);
-        uint32[] memory oids = new uint32[](32);
-        uint32[] memory directionActionIds = new uint32[](32);
+        // if we go for 256 then the contract fails to deploy
+        // but we donr need that many anyway but essentially after
+        // > 32 we are back in uncharted waters
+        uint32[] memory dids = new uint32[](MAXOBJ);
+        uint32[] memory oids = new uint32[](MAXOBJ);
+        uint32[] memory aids = new uint32[](MAXOBJ);
 
         // KPLAIN
 
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
-                              "path", directionActionIds);
+                              "path", aids);
 
-
-        dids[1] = createDirObj(DirectionType.East, KMountainPath,
+        dids[1] = createDirObj(DirectionType.East, KMountainPath, 
                               DirObjectType.Path, MaterialType.Mud,
-                              "path", directionActionIds);
+                              "path", aids);
         
 
         // TODO creat a kick action and add to the football
@@ -104,6 +107,8 @@ contract GameSetupSystem is System {
                                 "not quite spherical, it's "
                                 "kickable though", "football");
 
+        // football is gay 
+        aids[0] = createAction(true, oids[0], ActionType.Kick, false);  
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -125,12 +130,13 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door", directionActionIds 
-                               ); 
+                                "door", aids); 
+        dids[1] = createDirObj(DirectionType.East, KForest,
+                                DirObjectType.Window, MaterialType.Wood,
+                                "window", aids); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
-
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
@@ -147,7 +153,7 @@ contract GameSetupSystem is System {
 
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path", directionActionIds);
+                               "path", aids);
 
 
 
@@ -164,6 +170,15 @@ contract GameSetupSystem is System {
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
+    function createAction(bool isObj, uint32 oId, ActionType t, bool enable) private returns (uint32) {
+        //uint32 id = guid();
+        //ActionStore.set(id, t, enable);
+        //if (isObj == true) {
+            //ObjectStore.pushObjectActionIds(oId, id);
+        //} else {
+        //}
+
+    }
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
                                                     MaterialType mType,string memory desc, uint32[] memory actionObjects)
