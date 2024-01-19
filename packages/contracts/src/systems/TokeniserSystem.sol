@@ -31,7 +31,7 @@ contract TokeniserSystem is System {
         //setupGrammar();
         return address(this);
     }
-    
+
     //function reverseActType(ActionType key) public view returns (string memory) {
         //return revCmd[key];
     //}
@@ -82,19 +82,7 @@ contract TokeniserSystem is System {
         cmdLookup["BREAK"]      = ActionType.Break;
         cmdLookup["THROW"]      = ActionType.Throw;
         cmdLookup["DROP"]       = ActionType.Drop;
-
-        //revCmd[ActionType.Go]           = "GO";
-        //revCmd[ActionType.Move]         = "MOVE";
-        //revCmd[ActionType.Loot]         = "LOOT";
-        //revCmd[ActionType.Describe]     = "DESCRIBE";
-        //revCmd[ActionType.Take]         = "TAKE";
-        //revCmd[ActionType.Kick]         = "KICK";
-        //revCmd[ActionType.Lock]         = "LOCK";
-        //revCmd[ActionType.Unlock]       = "UNLOCK";
-        //revCmd[ActionType.Open]         = "OPEN";
-        //revCmd[ActionType.Look]         = "LOOK";
-        //revCmd[ActionType.Drop]         = "DROP";
-
+        cmdLookup["INVENTORY"]  = ActionType.Inventory;
     }
 
     // this could autogen because we just take set of "str"

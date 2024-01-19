@@ -40,9 +40,23 @@ contract MeatPuppetSystem is System {
         _enterRoom(0);
     }
 
+    function _handleAlias(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
+        // we are not handling go aliases right now
+        ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
+        uint8 e;
+        console.log("---->HDL_ALIAS");
+        if( vrb == ActionType.Inventory) {
+            e = IWorld(world).meat_InventorySystem_inventory(world);
+        } else {
+       //     return ErrCodes.ER_PR_NO;
+        }
+        return e;
+    }
+
+
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
-        uint8 e; 
+        uint8 e;
         console.log("---->HDL_VRB");
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
@@ -164,7 +178,8 @@ contract MeatPuppetSystem is System {
                     move = false;
                 }
             } else {
-                err = ErrCodes.ER_PR_NO;
+                err = _handleAlias(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                move = false;
             }
         } else {
             err = ErrCodes.ER_PR_NOP;

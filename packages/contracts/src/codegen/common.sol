@@ -78,7 +78,8 @@ enum ActionType {
   Close,
   Break,
   Throw,
-  Drop
+  Drop,
+  Inventory
 }
 
 enum ObjectType {
