@@ -34,7 +34,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 
 struct ActionStoreData {
   ActionType actionType;
-  bytes32 texDefId;
+  bytes32 txtDefId;
   bool enabled;
   bool dBit;
 }
@@ -89,7 +89,7 @@ library ActionStore {
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](4);
     fieldNames[0] = "actionType";
-    fieldNames[1] = "texDefId";
+    fieldNames[1] = "txtDefId";
     fieldNames[2] = "enabled";
     fieldNames[3] = "dBit";
   }
@@ -151,9 +151,9 @@ library ActionStore {
   }
 
   /**
-   * @notice Get texDefId.
+   * @notice Get txtDefId.
    */
-  function getTexDefId(uint32 actionId) internal view returns (bytes32 texDefId) {
+  function getTxtDefId(uint32 actionId) internal view returns (bytes32 txtDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -162,9 +162,9 @@ library ActionStore {
   }
 
   /**
-   * @notice Get texDefId.
+   * @notice Get txtDefId.
    */
-  function _getTexDefId(uint32 actionId) internal view returns (bytes32 texDefId) {
+  function _getTxtDefId(uint32 actionId) internal view returns (bytes32 txtDefId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
@@ -173,23 +173,23 @@ library ActionStore {
   }
 
   /**
-   * @notice Set texDefId.
+   * @notice Set txtDefId.
    */
-  function setTexDefId(uint32 actionId, bytes32 texDefId) internal {
+  function setTxtDefId(uint32 actionId, bytes32 txtDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((texDefId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((txtDefId)), _fieldLayout);
   }
 
   /**
-   * @notice Set texDefId.
+   * @notice Set txtDefId.
    */
-  function _setTexDefId(uint32 actionId, bytes32 texDefId) internal {
+  function _setTxtDefId(uint32 actionId, bytes32 txtDefId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(actionId));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((texDefId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((txtDefId)), _fieldLayout);
   }
 
   /**
@@ -309,8 +309,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 actionId, ActionType actionType, bytes32 texDefId, bool enabled, bool dBit) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, enabled, dBit);
+  function set(uint32 actionId, ActionType actionType, bytes32 txtDefId, bool enabled, bool dBit) internal {
+    bytes memory _staticData = encodeStatic(actionType, txtDefId, enabled, dBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -324,8 +324,8 @@ library ActionStore {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 actionId, ActionType actionType, bytes32 texDefId, bool enabled, bool dBit) internal {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, enabled, dBit);
+  function _set(uint32 actionId, ActionType actionType, bytes32 txtDefId, bool enabled, bool dBit) internal {
+    bytes memory _staticData = encodeStatic(actionType, txtDefId, enabled, dBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -340,7 +340,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.enabled, _table.dBit);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.txtDefId, _table.enabled, _table.dBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -355,7 +355,7 @@ library ActionStore {
    * @notice Set the full data using the data struct.
    */
   function _set(uint32 actionId, ActionStoreData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.actionType, _table.texDefId, _table.enabled, _table.dBit);
+    bytes memory _staticData = encodeStatic(_table.actionType, _table.txtDefId, _table.enabled, _table.dBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -371,10 +371,10 @@ library ActionStore {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (ActionType actionType, bytes32 texDefId, bool enabled, bool dBit) {
+  ) internal pure returns (ActionType actionType, bytes32 txtDefId, bool enabled, bool dBit) {
     actionType = ActionType(uint8(Bytes.slice1(_blob, 0)));
 
-    texDefId = (Bytes.slice32(_blob, 1));
+    txtDefId = (Bytes.slice32(_blob, 1));
 
     enabled = (_toBool(uint8(Bytes.slice1(_blob, 33))));
 
@@ -392,7 +392,7 @@ library ActionStore {
     PackedCounter,
     bytes memory
   ) internal pure returns (ActionStoreData memory _table) {
-    (_table.actionType, _table.texDefId, _table.enabled, _table.dBit) = decodeStatic(_staticData);
+    (_table.actionType, _table.txtDefId, _table.enabled, _table.dBit) = decodeStatic(_staticData);
   }
 
   /**
@@ -421,11 +421,11 @@ library ActionStore {
    */
   function encodeStatic(
     ActionType actionType,
-    bytes32 texDefId,
+    bytes32 txtDefId,
     bool enabled,
     bool dBit
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(actionType, texDefId, enabled, dBit);
+    return abi.encodePacked(actionType, txtDefId, enabled, dBit);
   }
 
   /**
@@ -436,11 +436,11 @@ library ActionStore {
    */
   function encode(
     ActionType actionType,
-    bytes32 texDefId,
+    bytes32 txtDefId,
     bool enabled,
     bool dBit
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(actionType, texDefId, enabled, dBit);
+    bytes memory _staticData = encodeStatic(actionType, txtDefId, enabled, dBit);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;

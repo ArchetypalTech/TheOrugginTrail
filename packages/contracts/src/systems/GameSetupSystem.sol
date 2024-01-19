@@ -90,25 +90,34 @@ contract GameSetupSystem is System {
         uint32[] memory oids = new uint32[](MAXOBJ);
         uint32[] memory aids = new uint32[](MAXOBJ);
 
-        // KPLAIN
+        // KPLAIN -> N, E
+        aids[0] = createAction(ActionType.Open, "the door opens with a farty noise\n"
+                                "oddly you can actually smell fart",
+                                true, true);  
 
         dids[0] = createDirObj(DirectionType.North, KBarn, 
                               DirObjectType.Path, MaterialType.Dirt, 
                               "path", aids);
 
+        aids[1] = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
+                                "your nose is really itchy",
+                                true, true);  
+
         dids[1] = createDirObj(DirectionType.East, KMountainPath, 
                               DirObjectType.Path, MaterialType.Mud,
                               "path", aids);
-        
+       clearArr(aids); 
 
-        // TODO creat a kick action and add to the football
+        // football is gay 
+        aids[0] = createAction(ActionType.Kick, "the ball (such as it is)"
+                                "bounces feebly\n then rolls into some fresh dog eggs\n"
+                                "none the less you briefly feel a little better",
+                                true, false);  
+
         oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "football");
-
-        // football is gay 
-        aids[0] = createAction(true, oids[0], ActionType.Kick, false);  
+                                "kickable though", "football", aids);
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -122,15 +131,25 @@ contract GameSetupSystem is System {
         createPlace(KPlain, dids, oids, tid_plain);
 
 
-        // KBARN
+        // KBARN -> S
         // TODO add a smash action to the window
         clearArr(dids);
         clearArr(oids);
-
+        clearArr(aids);
+        
+        aids[0] = createAction(ActionType.Open, "the door opens\n", true, true);
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
                                 "door", aids); 
+        clearArr(aids);
+        aids[0] = createAction(ActionType.Open, "the window, glass and frame smashed"
+                                "falls open\n", true, false);
+        aids[1] = createAction(ActionType.Break, "I love the sound of breaking glass\n"
+                                "especially when I'm lonely, the panes and the frame shatter\n"
+                                "satisfyingly spreading broken joy on the floor"
+                                , true, false);
+
         dids[1] = createDirObj(DirectionType.East, KForest,
                                 DirObjectType.Window, MaterialType.Wood,
                                 "window", aids); 
@@ -147,10 +166,12 @@ contract GameSetupSystem is System {
 
         createPlace(KBarn, dids, oids, tid_barn);
 
-        // KPATH
+        // KPATH -> W
         clearArr(dids);
         clearArr(oids);
 
+        // this is a path we might want to say BLOCK it which would mean adding a BLOCK
+        // and an OPEN which we would set to false
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
                                "path", aids);
@@ -170,16 +191,6 @@ contract GameSetupSystem is System {
         createPlace(KMountainPath, dids, oids, tid_mpath);
     }
 
-    function createAction(bool isObj, uint32 oId, ActionType t, bool enable) private returns (uint32) {
-        //uint32 id = guid();
-        //ActionStore.set(id, t, enable);
-        //if (isObj == true) {
-            //ObjectStore.pushObjectActionIds(oId, id);
-        //} else {
-        //}
-
-    }
-
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
                                                     MaterialType mType,string memory desc, uint32[] memory actionObjects)
                                                                     private returns (uint32) {
@@ -190,22 +201,21 @@ contract GameSetupSystem is System {
         return dirObjId++;
     }
 
-    function createObject(ObjectType objType, MaterialType mType, string memory desc, string memory name) private returns (uint32){
+    function createObject(ObjectType objType, MaterialType mType, string memory desc, string memory name, uint32[] memory actions) private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         TxtDefStore.set(txtId, objId, TxtDefType.Object, desc);
-        uint32[] memory actions = new uint32[](0);
         ObjectStoreData memory objData = ObjectStoreData(objType, mType, txtId, actions, name);
         ObjectStore.set(objId, objData);
         return objId++;
     }
 
-    //function createAction(ActionType actionType, string memory desc, bool pBit) private returns (uint32){
-        ////bytes32 txtId = keccak256(abi.encodePacked(desc));
-        //// bodged in and broken FIXME we need a REAL objId
-        ////TxtDefStore.set(txtId, 0, actionId, actionType, desc);
-        ////ActionStoreData memory actionData = ActionStoreData(actionType,txtId,pBit);
-        ////ActionStore.set(actionId, actionData);
-        //return actionId++;
-    //}
+    function createAction(ActionType actionType, string memory desc, bool enabled, bool dBit) private returns (uint32) {
+        bytes32 txtId = keccak256(abi.encodePacked(desc));
+        uint32 aId = guid();
+        TxtDefStore.set(txtId, aId, TxtDefType.Action, desc);
+        ActionStoreData memory actionData = ActionStoreData(actionType, txtId, enabled, dBit);
+        ActionStore.set(aId, actionData);
+        return aId;
+    }
 
 }

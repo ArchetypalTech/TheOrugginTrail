@@ -120,10 +120,10 @@ export default mudConfig({
             },
             valueSchema: {
                 actionType: "ActionType",
-                texDefId: "bytes32", // not sure we really need this tbh
+                txtDefId: "bytes32", // @DDT shoud we have a TRUE abd FALSe text here maybe?
                 // the next 2 are a pair really a door is a good example
-                // is it nESSy: ie. is it just a prop
-                // if it IS then CAN it be, like has it been unlocked
+                // is it enabled: ie. can it be done
+                // if it CAN then HAS it been, like has it been unlocked
                 enabled: "bool", // can it be used?
                 dBit: "bool" // is it done, LOCK->lockED, CLOSE -> closeED etc
             },

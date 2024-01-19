@@ -71,8 +71,6 @@ contract DirectionSystem is System {
        return true; //canMove;
     }
 
-
-    /* NB this is ONLY checking that an exit exists TODO add an openable check */
     function _directionCheck (uint32 rId, DirectionType d) private view returns (bool success, uint32 next) {
         //console.log("---->DC room:", rId, "---> DR:", uint8(d));
         uint32[] memory exitIds = RoomStore.getDirObjIds(rId);  
