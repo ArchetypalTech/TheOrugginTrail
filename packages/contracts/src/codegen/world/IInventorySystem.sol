@@ -10,5 +10,7 @@ pragma solidity >=0.8.21;
 interface IInventorySystem {
   function meat_InventorySystem_take(address world, string[] memory tokens, uint32 rId) external returns (uint8 err);
 
+  function meat_InventorySystem_inventory(address world) external returns (uint8 err);
+
   function meat_InventorySystem_drop(address world, string[] memory tokens, uint32 rId) external returns (uint8 err);
 }
