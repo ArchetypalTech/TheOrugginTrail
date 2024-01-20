@@ -66,7 +66,7 @@ contract InventorySystem is System {
         }
 
         if(itemPickedUp == false) {
-        Output.set("That isn't here");
+            Output.set("That isn't here");
         }
 
         return 0;
