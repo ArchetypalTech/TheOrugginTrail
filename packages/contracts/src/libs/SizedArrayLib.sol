@@ -39,8 +39,4 @@ library SizedArray {
     function incCount(uint32[32] memory array) private {
         array[GameConstants.SIZED_AR_SIZE-1]++;
     }
-
-
-
-
 }

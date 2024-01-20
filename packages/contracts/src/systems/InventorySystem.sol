@@ -11,6 +11,32 @@ import {ObjectType} from '../codegen/common.sol';
 import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 contract InventorySystem is System {
+
+
+    function inventory(address world) public returns (uint8 err) {
+
+        uint32[32] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
+
+        if(SizedArray.count(objIds) == 0) {
+            Output.set("Your carrier bag is empty");
+            return 0;
+        }
+
+        string memory itemTxt = "You have ";
+        for (uint8 i = 0; i <SizedArray.count(objIds); i++) {
+            uint32 objectId = objIds[i];
+            if (objectId != 0) {
+                itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
+            }
+        }
+
+        Output.set(string(abi.encodePacked("You have ", itemTxt)));
+
+        return 0;
+
+    }
+
+
     function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->TAKE :", tokens[1]);
         uint8 tok_err;
@@ -47,31 +73,7 @@ contract InventorySystem is System {
     }
 
 
-    function inventory(address world) public returns (uint8 err) {
 
-        uint32[32] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
-
-        bool isEmpty = true;
-        string memory itemTxt = "";
-
-        for (uint8 i = 0; i < objIds.length; i++) {
-            uint32 objectId = objIds[i];
-            if (objectId != 0) {
-                itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
-                isEmpty = false;
-            }
-        }
-
-        if (objIds.length == 0) {
-            Output.set("Your carrier bag is empty");
-            return 0;
-        } else {
-            Output.set(string(abi.encodePacked("You have ", itemTxt)));
-        }
-
-        return 0;
-
-    }
 
     function drop(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->DROP :", tokens[1]);
@@ -92,7 +94,7 @@ contract InventorySystem is System {
 
                     // delete from the inventory
                     SizedArray.remove(playerObjIds,i);
-                    Player.setObjectIds(CurrentPlayerId.get(), roomObjIds);
+                    Player.setObjectIds(CurrentPlayerId.get(), playerObjIds);
 
                     return 0;
                 }
