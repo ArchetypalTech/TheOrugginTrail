@@ -15,7 +15,9 @@ import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
 import {IWorld} from "../codegen/world/IWorld.sol";
 import {LookAt} from '../libs/LookLib.sol';
 import {Kick} from '../libs/KickLib.sol';
+import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {console} from "forge-std/console.sol";
+
 
 contract MeatPuppetSystem is System {
 
@@ -86,20 +88,17 @@ contract MeatPuppetSystem is System {
         return _describeObjects(Player.getObjectIds(CurrentPlayerId.get()), "\nYour Aldi carrier bag contains ");
     }
 
-    function _describeObjects(uint32[] memory objectIds, string memory preText) private returns (string memory) {
+    function _describeObjects(uint32[32] memory objectIds, string memory preText) private returns (string memory) {
         console.log("--------->DescribeObjects:");
 
-        bool foundValidObject = false;
-        for (uint8 i = 0; i < objectIds.length; i++) {
-            if (objectIds[i] != 0) {
-                foundValidObject = true;
-                break;
-            }
+        uint32 objectCount = SizedArray.count(objectIds);
+
+        if(objectCount == 0) {
+            return "";
         }
 
-        if (foundValidObject == false) return "";
         string memory msgStr = preText;
-        for (uint8 i = 0; i < objectIds.length; i++) {
+        for (uint8 i = 0; i < objectCount; i++) {
             msgStr = string(abi.encodePacked(msgStr,
                 IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(
                     ObjectStore.get(objectIds[i]).objectType)));

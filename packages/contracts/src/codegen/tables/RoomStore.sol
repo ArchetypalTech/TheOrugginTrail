@@ -36,7 +36,7 @@ struct RoomStoreData {
   RoomType roomType;
   bytes32 txtDefId;
   string description;
-  uint32[] objectIds;
+  uint32[32] objectIds;
   uint32[] dirObjIds;
   uint32[] players;
 }
@@ -363,43 +363,43 @@ library RoomStore {
   /**
    * @notice Get objectIds.
    */
-  function getObjectIds(uint32 roomId) internal view returns (uint32[] memory objectIds) {
+  function getObjectIds(uint32 roomId) internal view returns (uint32[32] memory objectIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    return toStaticArray_uint32_32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /**
    * @notice Get objectIds.
    */
-  function _getObjectIds(uint32 roomId) internal view returns (uint32[] memory objectIds) {
+  function _getObjectIds(uint32 roomId) internal view returns (uint32[32] memory objectIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    return toStaticArray_uint32_32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /**
    * @notice Set objectIds.
    */
-  function setObjectIds(uint32 roomId, uint32[] memory objectIds) internal {
+  function setObjectIds(uint32 roomId, uint32[32] memory objectIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((objectIds)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_32(objectIds)));
   }
 
   /**
    * @notice Set objectIds.
    */
-  function _setObjectIds(uint32 roomId, uint32[] memory objectIds) internal {
+  function _setObjectIds(uint32 roomId, uint32[32] memory objectIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(roomId));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((objectIds)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_32(objectIds)));
   }
 
   /**
@@ -884,7 +884,7 @@ library RoomStore {
     RoomType roomType,
     bytes32 txtDefId,
     string memory description,
-    uint32[] memory objectIds,
+    uint32[32] memory objectIds,
     uint32[] memory dirObjIds,
     uint32[] memory players
   ) internal {
@@ -907,7 +907,7 @@ library RoomStore {
     RoomType roomType,
     bytes32 txtDefId,
     string memory description,
-    uint32[] memory objectIds,
+    uint32[32] memory objectIds,
     uint32[] memory dirObjIds,
     uint32[] memory players
   ) internal {
@@ -980,7 +980,7 @@ library RoomStore {
   )
     internal
     pure
-    returns (string memory description, uint32[] memory objectIds, uint32[] memory dirObjIds, uint32[] memory players)
+    returns (string memory description, uint32[32] memory objectIds, uint32[] memory dirObjIds, uint32[] memory players)
   {
     uint256 _start;
     uint256 _end;
@@ -993,7 +993,7 @@ library RoomStore {
     unchecked {
       _end += _encodedLengths.atIndex(1);
     }
-    objectIds = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+    objectIds = toStaticArray_uint32_32(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
     _start = _end;
     unchecked {
@@ -1061,7 +1061,7 @@ library RoomStore {
    */
   function encodeLengths(
     string memory description,
-    uint32[] memory objectIds,
+    uint32[32] memory objectIds,
     uint32[] memory dirObjIds,
     uint32[] memory players
   ) internal pure returns (PackedCounter _encodedLengths) {
@@ -1082,14 +1082,14 @@ library RoomStore {
    */
   function encodeDynamic(
     string memory description,
-    uint32[] memory objectIds,
+    uint32[32] memory objectIds,
     uint32[] memory dirObjIds,
     uint32[] memory players
   ) internal pure returns (bytes memory) {
     return
       abi.encodePacked(
         bytes((description)),
-        EncodeArray.encode((objectIds)),
+        EncodeArray.encode(fromStaticArray_uint32_32(objectIds)),
         EncodeArray.encode((dirObjIds)),
         EncodeArray.encode((players))
       );
@@ -1105,7 +1105,7 @@ library RoomStore {
     RoomType roomType,
     bytes32 txtDefId,
     string memory description,
-    uint32[] memory objectIds,
+    uint32[32] memory objectIds,
     uint32[] memory dirObjIds,
     uint32[] memory players
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
@@ -1126,4 +1126,43 @@ library RoomStore {
 
     return _keyTuple;
   }
+}
+
+/**
+ * @notice Cast a dynamic array to a static array.
+ * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
+ * so this function moves the pointer to the first element of the dynamic array.
+ * If the length of the dynamic array is smaller than the static length,
+ * the function returns an uninitialized array to avoid memory corruption.
+ * @param _value The dynamic array to cast.
+ * @return _result The static array.
+ */
+function toStaticArray_uint32_32(uint32[] memory _value) pure returns (uint32[32] memory _result) {
+  if (_value.length < 32) {
+    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
+    return _result;
+  } else {
+    // in memory static arrays are just dynamic arrays without the 32 length bytes
+    // (without the length check this could lead to memory corruption)
+    assembly {
+      _result := add(_value, 0x20)
+    }
+  }
+}
+
+/**
+ * @notice Copy a static array to a dynamic array.
+ * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
+ * @param _value The static array to copy.
+ * @return _result The dynamic array.
+ */
+function fromStaticArray_uint32_32(uint32[32] memory _value) pure returns (uint32[] memory _result) {
+  _result = new uint32[](32);
+  uint256 fromPointer;
+  uint256 toPointer;
+  assembly {
+    fromPointer := _value
+    toPointer := add(_result, 0x20)
+  }
+  Memory.copy(fromPointer, toPointer, 1024);
 }
