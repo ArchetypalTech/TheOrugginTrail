@@ -15,7 +15,7 @@ interface IGameSetupSystem {
   function meat_GameSetupSystem_createPlace(
     uint32 id,
     uint32[] memory dirObjects,
-    uint32[] memory objects,
+    uint32[32] memory objects,
     bytes32 txtId
   ) external;
 }

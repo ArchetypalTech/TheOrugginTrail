@@ -17,7 +17,7 @@ library Kick {
         string memory tok = tokens[1];
         ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
-            uint32[] memory objIds = RoomStore.getObjectIds(curRmId);
+            uint32[32] memory objIds = RoomStore.getObjectIds(curRmId);
             // find the object
             for (uint8 objectIndex = 0; objectIndex < objIds.length; objectIndex++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[objectIndex]);

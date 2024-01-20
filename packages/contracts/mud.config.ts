@@ -103,7 +103,7 @@ export default mudConfig({
                 roomType: "RoomType",
                 txtDefId: "bytes32",
                 description: "string", //temp
-                objectIds: "uint32[]",
+                objectIds: "uint32[32]",
                 dirObjIds: "uint32[]",
                 players: "uint32[]"
             },
@@ -195,7 +195,7 @@ export default mudConfig({
             },
             valueSchema: {
                 roomId: "uint32",
-                objectIds: "uint32[]",
+                objectIds: "uint32[32]",
             },
         },
     },

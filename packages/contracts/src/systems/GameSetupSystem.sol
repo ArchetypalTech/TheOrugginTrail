@@ -5,6 +5,7 @@ pragma solidity >=0.8.21;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
+import {SizedArray} from '../libs/SizedArrayLib.sol';
 import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
@@ -13,7 +14,7 @@ contract GameSetupSystem is System {
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
-    
+
     // just for now
     uint8 MAXOBJ = 16;
 
@@ -67,13 +68,34 @@ contract GameSetupSystem is System {
         }
     }
 
-    function createPlace(uint32 id, uint32[] memory dirObjects, uint32[] memory objects, bytes32 txtId) public {
+    function clearFixedSizeArr(uint32[32] memory arr) private view {
+        console.log("---> clear");
+        for (uint8 i = 0; i < MAXOBJ; i++) {
+            arr[i] = 0;
+        }
+    }
+
+    function createPlace(uint32 id, uint32[] memory dirObjects, uint32[32] memory objects, bytes32 txtId) public {
         for (uint8 i = 0; i < dirObjects.length; i++) {
                 RoomStore.pushDirObjIds(id, dirObjects[i]);
         }
+
+
+
+
         for (uint8 i = 0; i < objects.length ; i++) {
+
+            //quick hack here, but basicaly converting from a non sized array
+            //to a sized array
+
+
+
                 RoomStore.pushObjectIds(id, objects[i]);
         }
+
+
+
+
         RoomStore.setTxtDefId(id,txtId);
     }
 
@@ -87,28 +109,28 @@ contract GameSetupSystem is System {
         // but we donr need that many anyway but essentially after
         // > 32 we are back in uncharted waters
         uint32[] memory dids = new uint32[](MAXOBJ);
-        uint32[] memory oids = new uint32[](MAXOBJ);
+        uint32[32] memory oids;
         uint32[] memory aids = new uint32[](MAXOBJ);
 
         // KPLAIN
 
-        dids[0] = createDirObj(DirectionType.North, KBarn, 
-                              DirObjectType.Path, MaterialType.Dirt, 
+        dids[0] = createDirObj(DirectionType.North, KBarn,
+                              DirObjectType.Path, MaterialType.Dirt,
                               "path", aids);
 
-        dids[1] = createDirObj(DirectionType.East, KMountainPath, 
+        dids[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
                               "path", aids);
-        
+
 
         // TODO creat a kick action and add to the football
-        oids[0] = createObject(ObjectType.Football, MaterialType.Flesh,
+        SizedArray.add(oids, createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "football");
+                                "kickable though", "football"));
 
-        // football is gay 
-        aids[0] = createAction(true, oids[0], ActionType.Kick, false);  
+        // football is gay
+        aids[0] = createAction(true, oids[0], ActionType.Kick, false);
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -125,18 +147,18 @@ contract GameSetupSystem is System {
         // KBARN
         // TODO add a smash action to the window
         clearArr(dids);
-        clearArr(oids);
+        clearFixedSizeArr(oids);
 
 
         dids[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door", aids); 
+                                "door", aids);
         dids[1] = createDirObj(DirectionType.East, KForest,
                                 DirObjectType.Window, MaterialType.Wood,
-                                "window", aids); 
+                                "window", aids);
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
-        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
@@ -149,7 +171,7 @@ contract GameSetupSystem is System {
 
         // KPATH
         clearArr(dids);
-        clearArr(oids);
+        clearFixedSizeArr(oids);
 
         dids[0] = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
