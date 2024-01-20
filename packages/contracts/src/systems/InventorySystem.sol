@@ -6,6 +6,8 @@ import {System} from "@latticexyz/world/src/System.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 import {ITokeniserSystem} from '../codegen/world/ITokeniserSystem.sol';
 
+import {SizedArray} from '../libs/SizedArrayLib.sol';
+
 import {ObjectType} from '../codegen/common.sol';
 import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
