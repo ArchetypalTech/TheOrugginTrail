@@ -103,9 +103,9 @@ export default mudConfig({
                 roomType: "RoomType",
                 txtDefId: "bytes32",
                 description: "string", //temp
-                objectIds: "uint32[]",
-                dirObjIds: "uint32[]",
-                players: "uint32[]"
+                objectIds: "uint32[32]",
+                dirObjIds: "uint32[32]",
+                players: "uint32[32]"
             },
         },
         // Actions have a NESSy property
@@ -143,7 +143,7 @@ export default mudConfig({
                 matType: "MaterialType",
                 destId: "uint32",
                 txtDefId: "bytes32",
-                objectActionIds: "uint32[]" // Open/Lock/Break etc
+                objectActionIds: "uint32[32]" // Open/Lock/Break etc
             },
         },
         ObjectStore: {
@@ -154,7 +154,7 @@ export default mudConfig({
                 objectType: "ObjectType",
                 materialType: "MaterialType",
                 txtDefId: "bytes32",
-                objectActionIds: "uint32[]",
+                objectActionIds: "uint32[32]",
                 description: "string"
             },
         },
@@ -195,7 +195,7 @@ export default mudConfig({
             },
             valueSchema: {
                 roomId: "uint32",
-                objectIds: "uint32[]",
+                objectIds: "uint32[32]",
             },
         },
     },

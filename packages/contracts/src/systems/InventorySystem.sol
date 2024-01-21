@@ -6,16 +6,17 @@ import {System} from "@latticexyz/world/src/System.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 
 import {ObjectType} from '../codegen/common.sol';
+import {Constants} from '../constants/Constants.sol';
 import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
-contract InventorySystem is System {
+contract InventorySystem is System, Constants {
     function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->TAKE :", tokens[1]);
         uint8 tok_err;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
-            uint32[] memory objIds = RoomStore.getObjectIds(rId);
+            uint32[MAX_OBJ] memory objIds = RoomStore.getObjectIds(rId);
             for (uint8 i = 0; i < objIds.length; i++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);
                 if (testType == objType) {
@@ -39,7 +40,7 @@ contract InventorySystem is System {
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             console.log("1");
-            uint32[] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
+            uint32[MAX_OBJ] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
             for (uint8 i = 0; i < objIds.length; i++) {
                 console.log("2");
                 ObjectType testType = ObjectStore.getObjectType(objIds[i]);

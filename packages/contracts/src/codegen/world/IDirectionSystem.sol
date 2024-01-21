@@ -13,5 +13,5 @@ interface IDirectionSystem {
   function meat_DirectionSystem_getNextRoom(
     string[] memory tokens,
     uint32 currRm
-  ) external returns (uint8 e, uint32 nxtRm);
+  ) external returns (uint8 e, uint32 nxt);
 }

@@ -76,7 +76,7 @@ library LookAt {
         return desc;
     }
 
-    function _genObjDesc(uint32[] memory objs) internal view returns (string memory) {
+    function _genObjDesc(uint32[32] memory objs) internal view returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
 
             string memory objsDesc = "\nYou can alse see a ";
@@ -107,7 +107,7 @@ library LookAt {
 
     
     // there is a PATH made os mud to the DIR | there is a wood door to the 
-    function _genExitDesc(uint32[] memory objs, address wrld) internal view returns (string memory) {
+    function _genExitDesc(uint32[32] memory objs, address wrld) internal view returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";
             for(uint8 i = 0; i < objs.length; i++) {

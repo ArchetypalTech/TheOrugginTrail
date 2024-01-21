@@ -3,7 +3,6 @@ pragma solidity >=0.8.21;
 
 import {console} from "forge-std/console.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
-
 import {ObjectType, ActionType} from '../codegen/common.sol';
 import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
@@ -17,7 +16,7 @@ library Kick {
         string memory tok = tokens[1];
         ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
-            uint32[] memory objIds = RoomStore.getObjectIds(curRmId);
+            uint32[32] memory objIds = RoomStore.getObjectIds(curRmId);
             // find the object
             for (uint8 objectIndex = 0; objectIndex < objIds.length; objectIndex++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[objectIndex]);
@@ -28,7 +27,7 @@ library Kick {
                     // we need a check to see if the object is actually kickable
 
                     // the exits for this room
-                    uint32[] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
+                    uint32[32] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
                     console.log('-------->dirObjIds.length = %d', dirObjIds.length);
                     // iterate through direction objects
                     for (uint8 dirObjectIndex = 0; dirObjectIndex < dirObjIds.length; dirObjectIndex++) {
