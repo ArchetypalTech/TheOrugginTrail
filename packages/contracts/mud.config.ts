@@ -63,7 +63,7 @@ export default mudConfig({
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
-            "Look", "Close", "Break", "Throw", "Drop"
+            "Look", "Close", "Break", "Throw", "Drop", "Inventory",
         ],
         // add these to rooms for stuff to do
         ObjectType: [

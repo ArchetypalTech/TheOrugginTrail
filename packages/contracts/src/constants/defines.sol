@@ -3,11 +3,11 @@ pragma solidity >=0.8.21;
 
 // this should be auto generated ? but it isnt
 // but it can then be used in Obj creation
-// by the PreyEngine or perhaps we just use 
+// by the PreyEngine or perhaps we just use
 // this set of constants to define the entire// digetic set of poassible things
 library GameConstants {
- 
-    // some MAX_SIZES for functions 
+
+    // some MAX_SIZES for functions
     uint8 public constant MAX_TOK = 16;
     uint8 public constant MIN_TOK = 2;
 
@@ -21,6 +21,8 @@ library GameConstants {
     uint8 public constant EAST_DIR = 2;         // 0x0010
     uint8 public constant SOUTH_DIR = 4;        // 0x0100
     uint8 public constant WEST_DIR = 8;         // 0x1000
+
+    uint32 public constant SIZED_AR_SIZE = 32;   // the max size of a Sized Array, 31 items + 1 for count
 }
 
 
@@ -41,9 +43,11 @@ library ErrCodes {
     uint8 public constant ER_PR_NT = 125;
     uint8 public constant ER_PR_TK_CX = 126; // > MAX TOKS
     uint8 public constant ER_PR_NOP = 127;
-    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS 
+    uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS
     uint8 public constant ER_PR_NO = 129; // Error No DirectObject
     uint8 public constant ER_LK_NOP = 130; // Error Bad Look Command
     uint8 public constant ER_AR_BNDS = 131; // Error No DirectObject
 
+    uint8 public constant ER_SIZED_AR_OUT_OF_SPACE = 132; // when we try and add an item to a size array using the add function, but its full
+    uint8 public constant ER_SIZED_AR_NOT_ITEMS_TO_REMOVE = 133; // when we try and remove an item to a sized array using the remove function, but noone is home!
 }

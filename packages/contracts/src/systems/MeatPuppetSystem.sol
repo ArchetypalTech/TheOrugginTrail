@@ -46,9 +46,23 @@ contract MeatPuppetSystem is System, Constants {
         _enterRoom(0);
     }
 
+    function _handleAlias(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
+        // we are not handling go aliases right now
+        ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
+        uint8 e;
+        console.log("---->HDL_ALIAS");
+        if( vrb == ActionType.Inventory) {
+            e = IWorld(world).meat_InventorySystem_inventory(world);
+        } else {
+       //     return ErrCodes.ER_PR_NO;
+        }
+        return e;
+    }
+
+
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
-        uint8 e; 
+        uint8 e;
         console.log("---->HDL_VRB");
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
@@ -81,17 +95,14 @@ contract MeatPuppetSystem is System, Constants {
     function _describeObjects(uint32[MAX_OBJ] memory objectIds, string memory preText) private returns (string memory) {
         console.log("--------->DescribeObjects:");
 
-        bool foundValidObject = false;
-        for (uint8 i = 0; i < objectIds.length; i++) {
-            if (objectIds[i] != 0) {
-                foundValidObject = true;
-                break;
-            }
+        uint32 objectCount = SizedArray.count(objectIds);
+
+        if(objectCount == 0) {
+            return "";
         }
 
-        if (foundValidObject == false) return "";
         string memory msgStr = preText;
-        for (uint8 i = 0; i < objectIds.length; i++) {
+        for (uint8 i = 0; i < objectCount; i++) {
             msgStr = string(abi.encodePacked(msgStr,
                 IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(
                     ObjectStore.get(objectIds[i]).objectType)));
@@ -170,7 +181,8 @@ contract MeatPuppetSystem is System, Constants {
                     move = false;
                 }
             } else {
-                err = ErrCodes.ER_PR_NO;
+                err = _handleAlias(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                move = false;
             }
         } else {
             err = ErrCodes.ER_PR_NOP;

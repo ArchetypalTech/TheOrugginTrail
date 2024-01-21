@@ -6,6 +6,7 @@ import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
 import { Constants } from '../constants/Constants.sol';
+import {SizedArray} from '../libs/SizedArrayLib.sol';
 import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
@@ -14,7 +15,6 @@ contract GameSetupSystem is System, Constants {
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
-
     uint32 KForest = 3;
     uint32 KPlain = 2;
     uint32 KBarn = 1;
@@ -126,7 +126,6 @@ contract GameSetupSystem is System, Constants {
         uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true);
         uint32[MAX_OBJ] memory barn_plain;
         barn_plain[0] = open_2_south;
-
         uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
         dObjs[0] = createDirObj(DirectionType.South, KPlain,
@@ -150,7 +149,7 @@ contract GameSetupSystem is System, Constants {
                                 "window", window_actions); 
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
-        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place, 
+        TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
                                                     "The place is dusty and full of spiderwebs,\n"
                                                     "something died in here, possibly your own self\n"
                                                     "plenty of corners and dark shadows");
@@ -158,7 +157,6 @@ contract GameSetupSystem is System, Constants {
 
         RoomStore.setDescription(KBarn, 'a barn'); // this should be auto gen
         RoomStore.setRoomType(KBarn, RoomType.Room);
-
         createPlace(KBarn, dObjs, objs, tid_barn);
     }
 

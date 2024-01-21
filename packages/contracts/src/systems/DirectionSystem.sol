@@ -38,7 +38,7 @@ contract DirectionSystem is System, Constants {
 
         /* Test DIRECTION */
         DirectionType DIR = IWorld(world).meat_TokeniserSystem_getDirectionType(tok);
- 
+
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
             //console.log("->DF--->DOBJ:", dObjId);
@@ -84,7 +84,7 @@ contract DirectionSystem is System, Constants {
             // just for debug output
             //DirectionType dt = DirObjectStore.getDirType(exitIds[i]);
             //console.log( "-->i:", i, "-->", uint8(dt) );
-            if ( DirObjectStore.getDirType(exitIds[i]) == d) { 
+            if ( DirObjectStore.getDirType(exitIds[i]) == d) {
                 if (_canMove(exitIds[i]) == true){
                     return (true, exitIds[i]); 
                 } else {
@@ -92,8 +92,8 @@ contract DirectionSystem is System, Constants {
                     // why? So bubble up the reason
                     // TODO:
                 }
-            } 
-        }  
+            }
+        }
         // bad idea but we use 0 as a roomId
         // need to fix, we should stick with Solidity idiom
         // which is 0 is always false/None/Null
@@ -101,7 +101,7 @@ contract DirectionSystem is System, Constants {
     }
 
     function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
-        
+
         if (IWorld(world).meat_TokeniserSystem_getDirectionType(tokens[0]) != DirectionType.None) {
             //console.log("--->DIR %s", tokens[0]);
             /* Direction form
@@ -113,8 +113,8 @@ contract DirectionSystem is System, Constants {
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]) != ActionType.None ) {
             //console.log("--->GO %s", tok);
             /* GO form
-            * 
-            * go_cmd = go, [(pp da)], dir | obj 
+            *
+            * go_cmd = go, [(pp da)], dir | obj
             * pp = "to";
             * da = "the";
             * dir = n | e | s | w
@@ -134,7 +134,7 @@ contract DirectionSystem is System, Constants {
             }
 
             if (IWorld(world).meat_TokeniserSystem_getDirectionType(tok) != DirectionType.None ) {
-                return (tok, 0); 
+                return (tok, 0);
             } else {
                 return (tok, ErrCodes.ER_DR_ND);
             }
