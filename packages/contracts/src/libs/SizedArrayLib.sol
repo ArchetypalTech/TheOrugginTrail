@@ -2,27 +2,36 @@
 pragma solidity >=0.8.21;
 
 import { ErrCodes ,GameConstants } from "../constants/defines.sol";
+import {console} from "forge-std/console.sol";
 
 library SizedArray {
 
     function add(uint32[32] memory array, uint32 item) internal returns (uint8 err)  {
+        console.log("------------->SizedArray.add item:%d", item);
         if (count(array) == GameConstants.SIZED_AR_SIZE-1) {
             return ErrCodes.ER_SIZED_AR_OUT_OF_SPACE;
         }
 
-        array[array[GameConstants.SIZED_AR_SIZE-1]] = item;
+        array[count(array)] = item;
         incCount(array);
+
+        logArray(array);
 
         return 0;
     }
 
     function remove(uint32[32] memory array, uint32 index) internal returns (uint8 err)  {
-        if(index > GameConstants.SIZED_AR_SIZE-1) {
+        console.log("------------->SizedArray.remove index:%d", index);
+        console.log("------------->SizedArray.remove count:%d", count(array));
+
+        if( index >= count(array)) {
             return ErrCodes.ER_SIZED_AR_NOT_ITEMS_TO_REMOVE;
         }
 
-        array[count(array)] = array[index];
+        array[index] = array[count(array)-1];
         decCount(array);
+
+        logArray(array);
 
         return 0;
     }
@@ -38,5 +47,14 @@ library SizedArray {
 
     function incCount(uint32[32] memory array) private {
         array[GameConstants.SIZED_AR_SIZE-1]++;
+    }
+
+    function logArray(uint32[32] memory array) private {
+        console.log("------------->SizedArray.logArray :");
+        for(uint32 i = 0 ;  i < count(array) ; i++) {
+            console.log("--------------->%d", array[i]);
+        }
+        console.log("----------------->count:%d", array[GameConstants.SIZED_AR_SIZE-1]);
+
     }
 }

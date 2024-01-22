@@ -15,22 +15,28 @@ contract InventorySystem is System {
 
     function inventory(address world) public returns (uint8 err) {
 
+        console.log("----->INVENTORY:");
+
         uint32[32] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
 
-        if(SizedArray.count(objIds) == 0) {
+        if (SizedArray.count(objIds) == 0) {
             Output.set("Your carrier bag is empty");
             return 0;
         }
 
-        string memory itemTxt = "You have ";
-        for (uint8 i = 0; i <SizedArray.count(objIds); i++) {
+        string memory itemTxt = "You have a ";
+
+        console.log("----->INVENTORY COUNT:%d", SizedArray.count(objIds));
+
+        for (uint8 i = 0; i < SizedArray.count(objIds); i++) {
             uint32 objectId = objIds[i];
-            if (objectId != 0) {
+                if(i > 0) {
+                    itemTxt = string.concat(itemTxt, " and a ");
+                }
                 itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
-            }
         }
 
-        Output.set(string(abi.encodePacked("You have ", itemTxt)));
+        Output.set(itemTxt);
 
         return 0;
 
@@ -38,25 +44,40 @@ contract InventorySystem is System {
 
 
     function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
-        console.log("----->TAKE :", tokens[1]);
+        console.log("----->TAKE :%s", tokens[1]);
         uint8 tok_err;
         bool itemPickedUp = false;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
+
+            console.log("----->TAKE 1");
+
+
             uint32[32] memory roomObjIds = RoomStore.getObjectIds(rId);
+
+            console.log("----->TAKE room object item count:%d", SizedArray.count(roomObjIds));
+
+
+            console.log("----->TAKE 2");
             for (uint8 i = 0; i < SizedArray.count(roomObjIds); i++) {
+                console.log("----->TAKE 3");
                 ObjectType testType = ObjectStore.getObjectType(roomObjIds[i]);
                 if (testType == objType) {
                     Output.set("You picked it up");
 
+                    console.log("----->TAKE add item to the inventory");
                     // add the item to the inventory
-                    uint32[32] memory  playerObjIds = Player.getObjectIds(CurrentPlayerId.get());
+                    uint32[32] memory playerObjIds = Player.getObjectIds(CurrentPlayerId.get());
                     SizedArray.add(playerObjIds, roomObjIds[i]);
-                    Player.setObjectIds(CurrentPlayerId.get(), roomObjIds);
+                    Player.setObjectIds(CurrentPlayerId.get(), playerObjIds);
 
+                    console.log("----->TAKE remove from the room");
                     // delete from the room
-                    SizedArray.remove(roomObjIds,i);
+                    SizedArray.remove(roomObjIds, i);
+
+                    console.log("----->TAKE set object ids count:%d", SizedArray.count(roomObjIds));
+
                     RoomStore.setObjectIds(rId, roomObjIds);
 
                     itemPickedUp = true;
@@ -65,7 +86,7 @@ contract InventorySystem is System {
             }
         }
 
-        if(itemPickedUp == false) {
+        if (itemPickedUp == false) {
             Output.set("That isn't here");
         }
 
@@ -73,10 +94,8 @@ contract InventorySystem is System {
     }
 
 
-
-
     function drop(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
-        console.log("----->DROP :", tokens[1]);
+        console.log("----->DROP :%s", tokens[1]);
         uint8 tok_err;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
@@ -93,7 +112,7 @@ contract InventorySystem is System {
                     RoomStore.setObjectIds(rId, roomObjIds);
 
                     // delete from the inventory
-                    SizedArray.remove(playerObjIds,i);
+                    SizedArray.remove(playerObjIds, i);
                     Player.setObjectIds(CurrentPlayerId.get(), playerObjIds);
 
                     return 0;
