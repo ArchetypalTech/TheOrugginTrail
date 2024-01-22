@@ -51,17 +51,11 @@ contract InventorySystem is System {
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
 
-            console.log("----->TAKE 1");
-
-
             uint32[32] memory roomObjIds = RoomStore.getObjectIds(rId);
 
             console.log("----->TAKE room object item count:%d", SizedArray.count(roomObjIds));
 
-
-            console.log("----->TAKE 2");
             for (uint8 i = 0; i < SizedArray.count(roomObjIds); i++) {
-                console.log("----->TAKE 3");
                 ObjectType testType = ObjectStore.getObjectType(roomObjIds[i]);
                 if (testType == objType) {
                     Output.set("You picked it up");
