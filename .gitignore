@@ -19,6 +19,7 @@ Cargo.lock
 # tags
 tags*
 
+**/codegen
 **/broadcast
 **/contracts/cache
 **/contracts/deploys
