@@ -11,7 +11,7 @@ import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectSt
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 contract GameSetupSystem is System, Constants {
-    
+
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
@@ -19,7 +19,7 @@ contract GameSetupSystem is System, Constants {
     uint32 KPlain = 2;
     uint32 KBarn = 1;
     uint32 KMountainPath = 0;
-    
+
     function init() public returns (uint32) {
         setupWorld();
         return 0;
@@ -68,47 +68,47 @@ contract GameSetupSystem is System, Constants {
         }
         RoomStore.setTxtDefId(id,txtId);
     }
-    
+
     function _setupPlain() private {
         // KPLAIN -> N, E
         uint32 open_2_barn = createAction(ActionType.Open, "the door opens with a farty noise\n"
                                 "oddly you can actually smell fart",
-                                true, true);  
-        
+                                true, true);
+
         uint32[MAX_OBJ] memory plain_barn;
         uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
-        
+
         plain_barn[0] = open_2_barn;
 
-        dObjs[0] = createDirObj(DirectionType.North, KBarn, 
-                              DirObjectType.Path, MaterialType.Dirt, 
+        dObjs[0] = createDirObj(DirectionType.North, KBarn,
+                              DirObjectType.Path, MaterialType.Dirt,
                               "path", plain_barn);
 
         uint32 open_2_path = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
                                 "your nose is really itchy",
-                                true, true);  
+                                true, true);
 
         uint32[MAX_OBJ] memory plain_path;
         plain_barn[0] = open_2_path;
-        dObjs[1] = createDirObj(DirectionType.East, KMountainPath, 
+        dObjs[1] = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
                               "path", plain_path);
 
         uint32 kick = createAction(ActionType.Kick, "the ball (such as it is)"
                                 "bounces feebly\n then rolls into some fresh dog eggs\n"
                                 "none the less you briefly feel a little better",
-                                true, false);  
-        
+                                true, false);
+
         uint32[MAX_OBJ] memory ball_actions;
         ball_actions[0] = kick;
 
-        objs[0] = createObject(ObjectType.Football, MaterialType.Flesh,
+        SizedArray.add(objs,createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "football", ball_actions);
+                                "kickable though", "football", ball_actions));
 
-        RoomStore.setDescription(KPlain,  'a windswept plain');
+         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
 
         bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
@@ -130,11 +130,11 @@ contract GameSetupSystem is System, Constants {
         uint32[MAX_OBJ] memory objs;
         dObjs[0] = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door", barn_plain); 
+                                "door", barn_plain);
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
                                 "falls open\n", true, false);
-        
+
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"
                                 "satisfyingly spreading broken joy on the floor"
@@ -146,7 +146,7 @@ contract GameSetupSystem is System, Constants {
 
         dObjs[1] = createDirObj(DirectionType.East, KForest,
                                 DirObjectType.Window, MaterialType.Wood,
-                                "window", window_actions); 
+                                "window", window_actions);
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
@@ -162,7 +162,7 @@ contract GameSetupSystem is System, Constants {
 
     function _createMountainPath() private {
         // KPATH -> W
-        uint32 open_2_west = createAction(ActionType.Open, "the path is passable", true, true); 
+        uint32 open_2_west = createAction(ActionType.Open, "the path is passable", true, true);
         uint32[MAX_OBJ] memory path_actions;
         path_actions[0] = open_2_west;
 
