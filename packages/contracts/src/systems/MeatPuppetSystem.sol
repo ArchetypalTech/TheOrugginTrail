@@ -55,8 +55,8 @@ contract MeatPuppetSystem is System, Constants {
         console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world);
-        } else {
-       //     return ErrCodes.ER_PR_NO;
+        } else if (vrb == ActionType.Look) {
+            e = LookAt.stuff(world, tokens, curRm);
         }
         return e;
     }
@@ -84,7 +84,7 @@ contract MeatPuppetSystem is System, Constants {
         return e;
     }
 
-    function _describeObjectsInRoom(uint32 rId) private returns (string memory) {
+    /*function _describeObjectsInRoom(uint32 rId) private returns (string memory) {
         console.log("--------->DescribeObjectsInRoom:");
         return _describeObjects(RoomStore.get(rId).objectIds, "\nThis room contains ");
     }
@@ -115,7 +115,7 @@ contract MeatPuppetSystem is System, Constants {
     // this is about to be redundant so dont do anymore work omn it
     // MOVE TO OWN SYSTEM -- MEATWHISPERER
     /* build up the text description strings for general output */
-    function _describeActions(uint32 rId) private view returns (string memory) {
+    /*function _describeActions(uint32 rId) private view returns (string memory) {
         RoomStoreData memory currRm = RoomStore.get(rId);
         string[8] memory dirStrings;
         string memory msgStr;
@@ -136,7 +136,7 @@ contract MeatPuppetSystem is System, Constants {
             msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
         }
         return msgStr;
-    }
+    }*/
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);

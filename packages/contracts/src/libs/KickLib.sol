@@ -8,6 +8,18 @@ import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomSt
 
 library Kick {
 
+    function _fishVrb() internal returns (uint8 er) {
+
+    }
+
+    function _fishObj() internal returns (uint8 er) {
+    
+    }
+
+    function _fishIObj() internal returns (uint8 er) {
+    
+    }
+
     function kick(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
 
         console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);

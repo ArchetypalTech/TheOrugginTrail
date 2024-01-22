@@ -23,3 +23,4 @@ tags*
 **/contracts/cache
 **/contracts/deploys
 **/contracts/out
+.DS*

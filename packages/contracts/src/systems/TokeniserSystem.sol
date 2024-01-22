@@ -110,8 +110,9 @@ contract TokeniserSystem is System {
     }
 
     function setupGrammar () private {
-       //grammarLookup["The"]     = GrammarType.DefiniteArticle;
-       //grammarLookup["To"]      = GrammarType.Preposition;
+       grammarLookup["The"]     = GrammarType.DefiniteArticle;
+       grammarLookup["To"]      = GrammarType.Preposition;
+       grammarLookup["at"]      = GrammarType.Preposition;
        grammarLookup["Around"]  = GrammarType.Adverb;
     }
 
@@ -129,7 +130,7 @@ contract TokeniserSystem is System {
         revMat[MaterialType.Mud]    = "mud";
         revMat[MaterialType.Dirt]   = "dirt";
         revMat[MaterialType.Stone]  = "stone";
-        revMat[MaterialType.Flesh]  = "fleah";
+        revMat[MaterialType.Flesh]  = "flesh";
         revMat[MaterialType.Wood]   = "wood";
     }
 
