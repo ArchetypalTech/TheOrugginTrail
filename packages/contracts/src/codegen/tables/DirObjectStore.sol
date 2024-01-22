@@ -38,7 +38,7 @@ struct DirObjectStoreData {
   MaterialType matType;
   uint32 destId;
   bytes32 txtDefId;
-  uint32[] objectActionIds;
+  uint32[32] objectActionIds;
 }
 
 library DirObjectStore {
@@ -327,43 +327,43 @@ library DirObjectStore {
   /**
    * @notice Get objectActionIds.
    */
-  function getObjectActionIds(uint32 dirObjId) internal view returns (uint32[] memory objectActionIds) {
+  function getObjectActionIds(uint32 dirObjId) internal view returns (uint32[32] memory objectActionIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    return toStaticArray_uint32_32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /**
    * @notice Get objectActionIds.
    */
-  function _getObjectActionIds(uint32 dirObjId) internal view returns (uint32[] memory objectActionIds) {
+  function _getObjectActionIds(uint32 dirObjId) internal view returns (uint32[32] memory objectActionIds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    return toStaticArray_uint32_32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /**
    * @notice Set objectActionIds.
    */
-  function setObjectActionIds(uint32 dirObjId, uint32[] memory objectActionIds) internal {
+  function setObjectActionIds(uint32 dirObjId, uint32[32] memory objectActionIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectActionIds)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_32(objectActionIds)));
   }
 
   /**
    * @notice Set objectActionIds.
    */
-  function _setObjectActionIds(uint32 dirObjId, uint32[] memory objectActionIds) internal {
+  function _setObjectActionIds(uint32 dirObjId, uint32[32] memory objectActionIds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(dirObjId));
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((objectActionIds)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_32(objectActionIds)));
   }
 
   /**
@@ -526,7 +526,7 @@ library DirObjectStore {
     MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
-    uint32[] memory objectActionIds
+    uint32[32] memory objectActionIds
   ) internal {
     bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
@@ -549,7 +549,7 @@ library DirObjectStore {
     MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
-    uint32[] memory objectActionIds
+    uint32[32] memory objectActionIds
   ) internal {
     bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
@@ -631,13 +631,13 @@ library DirObjectStore {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[] memory objectActionIds) {
+  ) internal pure returns (uint32[32] memory objectActionIds) {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
-    objectActionIds = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+    objectActionIds = toStaticArray_uint32_32(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
   }
 
   /**
@@ -694,7 +694,7 @@ library DirObjectStore {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(uint32[] memory objectActionIds) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(uint32[32] memory objectActionIds) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(objectActionIds.length * 4);
@@ -705,8 +705,8 @@ library DirObjectStore {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(uint32[] memory objectActionIds) internal pure returns (bytes memory) {
-    return abi.encodePacked(EncodeArray.encode((objectActionIds)));
+  function encodeDynamic(uint32[32] memory objectActionIds) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode(fromStaticArray_uint32_32(objectActionIds)));
   }
 
   /**
@@ -721,7 +721,7 @@ library DirObjectStore {
     MaterialType matType,
     uint32 destId,
     bytes32 txtDefId,
-    uint32[] memory objectActionIds
+    uint32[32] memory objectActionIds
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(objType, dirType, matType, destId, txtDefId);
 
@@ -740,4 +740,43 @@ library DirObjectStore {
 
     return _keyTuple;
   }
+}
+
+/**
+ * @notice Cast a dynamic array to a static array.
+ * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
+ * so this function moves the pointer to the first element of the dynamic array.
+ * If the length of the dynamic array is smaller than the static length,
+ * the function returns an uninitialized array to avoid memory corruption.
+ * @param _value The dynamic array to cast.
+ * @return _result The static array.
+ */
+function toStaticArray_uint32_32(uint32[] memory _value) pure returns (uint32[32] memory _result) {
+  if (_value.length < 32) {
+    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
+    return _result;
+  } else {
+    // in memory static arrays are just dynamic arrays without the 32 length bytes
+    // (without the length check this could lead to memory corruption)
+    assembly {
+      _result := add(_value, 0x20)
+    }
+  }
+}
+
+/**
+ * @notice Copy a static array to a dynamic array.
+ * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
+ * @param _value The static array to copy.
+ * @return _result The dynamic array.
+ */
+function fromStaticArray_uint32_32(uint32[32] memory _value) pure returns (uint32[] memory _result) {
+  _result = new uint32[](32);
+  uint256 fromPointer;
+  uint256 toPointer;
+  assembly {
+    fromPointer := _value
+    toPointer := add(_result, 0x20)
+  }
+  Memory.copy(fromPointer, toPointer, 1024);
 }

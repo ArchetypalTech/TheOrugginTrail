@@ -25,12 +25,14 @@ library GameConstants {
     uint32 public constant SIZED_AR_SIZE = 32;   // the max size of a Sized Array, 31 items + 1 for count
 }
 
+
+
 // some result codes (from game commands)
 library ResCodes {
-    uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
+    uint8 public constant GO_NO_EXIT = 9; // Error DirectionRoutine DR
     // We use a custom return type for LOOK's
-    // becaseu we cant retutn a 0 for no err unlike the rest of our commands
-    uint8 public constant LK_RT = 8;
+    // because we cant return a 0 for no err unlike the rest of our commands
+    uint8 public constant LK_RT = 8; 
 }
 
 library ErrCodes {
@@ -43,7 +45,7 @@ library ErrCodes {
     uint8 public constant ER_PR_NOP = 127;
     uint8 public constant ER_PR_TK_C1 = 128; // < MIN TOKS
     uint8 public constant ER_PR_NO = 129; // Error No DirectObject
-    uint8 public constant ER_LK_NOP = 130; // Error No DirectObject
+    uint8 public constant ER_LK_NOP = 130; // Error Bad Look Command
     uint8 public constant ER_AR_BNDS = 131; // Error No DirectObject
 
     uint8 public constant ER_SIZED_AR_OUT_OF_SPACE = 132; // when we try and add an item to a size array using the add function, but its full

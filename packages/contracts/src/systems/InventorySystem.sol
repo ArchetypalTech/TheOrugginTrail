@@ -7,7 +7,6 @@ import {IWorld} from '../codegen/world/IWorld.sol';
 import {ITokeniserSystem} from '../codegen/world/ITokeniserSystem.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {ObjectType} from '../codegen/common.sol';
-
 import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 contract InventorySystem is System {
@@ -35,7 +34,6 @@ contract InventorySystem is System {
         return 0;
 
     }
-
 
     function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
         console.log("----->TAKE :", tokens[1]);

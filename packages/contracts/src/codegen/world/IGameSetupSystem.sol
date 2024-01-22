@@ -10,11 +10,9 @@ pragma solidity >=0.8.21;
 interface IGameSetupSystem {
   function meat_GameSetupSystem_init() external returns (uint32);
 
-  function meat_GameSetupSystem_getArrayValue(uint8 index) external view returns (uint32, uint8 er);
-
   function meat_GameSetupSystem_createPlace(
     uint32 id,
-    uint32[] memory dirObjects,
+    uint32[32] memory dirObjects,
     uint32[32] memory objects,
     bytes32 txtId
   ) external;

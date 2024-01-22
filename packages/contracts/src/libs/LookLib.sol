@@ -104,9 +104,9 @@ library LookAt {
         return dsc;
     }
 
-
-    // there is a PATH made os mud to the DIR | there is a wood door to the
-    function _genExitDesc(uint32[] memory objs, address wrld) internal view returns (string memory) {
+    
+    // there is a PATH made os mud to the DIR | there is a wood door to the 
+    function _genExitDesc(uint32[32] memory objs, address wrld) internal view returns (string memory) {
         if (objs[0] != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";
             for(uint8 i = 0; i < objs.length; i++) {
