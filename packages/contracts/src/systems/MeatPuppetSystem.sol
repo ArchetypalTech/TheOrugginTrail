@@ -2,26 +2,32 @@
 pragma solidity >=0.8.21;
 
 // get some debug OUT going
-import {console} from "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
+
 import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
     DirObjectStoreData, TxtDefStore } from "../codegen/index.sol";
+
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
+
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
 
-import {IWorld} from "../codegen/world/IWorld.sol";
-import {LookAt} from '../libs/LookLib.sol';
-import {Kick} from '../libs/KickLib.sol';
-import {SizedArray} from '../libs/SizedArrayLib.sol';
-import {console} from "forge-std/console.sol";
+import { IWorld } from "../codegen/world/IWorld.sol";
+
+import { LookAt } from '../libs/LookLib.sol';
+
+import { Kick } from '../libs/KickLib.sol';
+
+import { Constants } from '../constants/Constants.sol';
+
+import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 
-contract MeatPuppetSystem is System {
+contract MeatPuppetSystem is System, Constants {
 
-    event debugLog(string msg, uint8 val);
     using LookAt for *;
 
     address world;
@@ -88,7 +94,7 @@ contract MeatPuppetSystem is System {
         return _describeObjects(Player.getObjectIds(CurrentPlayerId.get()), "\nYour Aldi carrier bag contains ");
     }
 
-    function _describeObjects(uint32[32] memory objectIds, string memory preText) private returns (string memory) {
+    function _describeObjects(uint32[MAX_OBJ] memory objectIds, string memory preText) private returns (string memory) {
         console.log("--------->DescribeObjects:");
 
         uint32 objectCount = SizedArray.count(objectIds);

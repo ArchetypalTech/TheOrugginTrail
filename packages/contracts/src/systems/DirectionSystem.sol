@@ -3,19 +3,21 @@ pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
 
-import {System} from "@latticexyz/world/src/System.sol";
+import { System } from "@latticexyz/world/src/System.sol";
 
 import { IWorld } from "../codegen/world/IWorld.sol";
+
+import { Constants } from "../constants/Constants.sol";
 
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
 import { ITokeniserSystem } from '../codegen/world/ITokeniserSystem.sol';
 
-import {ActionType, RoomType, ObjectType, CommandError, DirectionType} from "../codegen/common.sol";
+import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
 
 import { RoomStore, RoomStoreData, ActionStore,ActionStoreData, DirObjectStore } from "../codegen/index.sol";
 
-contract DirectionSystem is System {
+contract DirectionSystem is System, Constants {
 
     address world;
 
@@ -25,7 +27,7 @@ contract DirectionSystem is System {
         return address(this);
     }
 
-    function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxtRm) {
+    function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxt) {
         //console.log("----->DF_NXT_RM tok: ", tokens[0]);
 
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
@@ -43,9 +45,9 @@ contract DirectionSystem is System {
             uint32 nxtRm = DirObjectStore.getDestId(dObjId);
             //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
-        }else {
-            //console.log("--->DF:0000");
-            // check reason we didnt move this can currently only
+        }else { 
+            console.log("--->DF:0000"); 
+            // check reason we didnt move this can currently only 
             // be cannot actually move that way because no exit
             //string memory errMsg;
             //errMsg = _insultMeat(GO_NO_EXT, tok);
@@ -55,27 +57,27 @@ contract DirectionSystem is System {
     }
 
     function _canMove(uint32 exitId) private view returns (bool success) {
-       // check LOCK/UNLOCK, OPEN/CLOSED
-       uint32[] memory actions = DirObjectStore.getObjectActionIds(exitId);
+       // check LOCK/UNLOCK, OPEN/CLOSED 
+       uint32[MAX_OBJ] memory actions = DirObjectStore.getObjectActionIds(exitId);
        bool canMove = false; // inits to 0 by default but lets be explicit
        for (uint8 i =0; i < actions.length; i++) {
            ActionStoreData memory action = ActionStore.get(actions[i]);
            if (action.actionType == ActionType.Open) {
-               canMove = action.enabled  && action.dBit;
-           }
+               console.log("--->canMove_open: e:%s d:%s", action.enabled, action.dBit);
+               canMove = action.enabled && action.dBit; 
+           }        
            if (action.actionType == ActionType.Lock) {
+               console.log("--->canMove_lock: e:%s d:%s", action.enabled, action.dBit);
                canMove = action.enabled && !action.dBit;
            }
        }
        // for now just allow it as we dont have any actions
-       return true; //canMove;
+       return canMove;
     }
 
-
-    /* NB this is ONLY checking that an exit exists TODO add an openable check */
     function _directionCheck (uint32 rId, DirectionType d) private view returns (bool success, uint32 next) {
         //console.log("---->DC room:", rId, "---> DR:", uint8(d));
-        uint32[] memory exitIds = RoomStore.getDirObjIds(rId);
+        uint32[MAX_OBJ] memory exitIds = RoomStore.getDirObjIds(rId);  
         //console.log("---->DC room:", rId, "---> EXITIDS.LEN:", uint8(exitIds.length));
         for (uint8 i = 0; i < exitIds.length; i++) {
             //console.log( "-->i:", i, "-->[]", uint32(exitIds[i]) );
@@ -84,7 +86,11 @@ contract DirectionSystem is System {
             //console.log( "-->i:", i, "-->", uint8(dt) );
             if ( DirObjectStore.getDirType(exitIds[i]) == d) {
                 if (_canMove(exitIds[i]) == true){
-                    return (true, exitIds[i]);
+                    return (true, exitIds[i]); 
+                } else {
+                    // the exit is there but we cant go that way
+                    // why? So bubble up the reason
+                    // TODO:
                 }
             }
         }
