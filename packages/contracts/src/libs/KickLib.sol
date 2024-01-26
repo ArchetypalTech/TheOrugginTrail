@@ -8,22 +8,6 @@ import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomSt
 
 library Kick {
     /* k_cmd = kick, [the], obj, [ ( at, [the], obj ) ]; */
-    
-    function _fishObj(address wrld, string[] memory tokens) internal returns (string memory tok, uint8 er) {
-        // kick, obj
-        string memory tok;
-        if (IWorld(world).meat_TokeniserSystem_getDirectionType(tokens[1]) != ObjectType.None) {
-           tok = tokens[1];
-        } else {
-            /* has to be > 2 because we already tested for this in MeatPuppet   */
-            /* so de we have a "the" (definite article)                         */
-        }
-    }
-
-    function _fishIObj() internal returns (uint8 er) {
-    
-    }
-
     function kick(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
     /*  */
         console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);

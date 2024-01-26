@@ -2,12 +2,63 @@
 pragma solidity >=0.8.21;
 
 import { console } from "forge-std/console.sol";
-import {System} from "@latticexyz/world/src/System.sol";
-import {ObjectType, MaterialType, ActionType, DirectionType, GrammarType} from "../codegen/common.sol";
-import {Dirs} from "../codegen/tables/Dirs.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { ObjectType, MaterialType, ActionType, DirectionType, GrammarType, DirObjectType } from "../codegen/common.sol";
+import { Dirs } from "../codegen/tables/Dirs.sol";
+import { ErrCodes, VerbData } from '../constants/defines.sol';
 
 
 contract TokeniserSystem is System {
+
+    // we can handle token streams of VRB, OBJ, IOBJ, the IOBJ might be an ObjectType or a DirObjectType
+    // eg: "Throw the bottle at the cop", "Kick ball at window" etc
+    function fishTokens(string[] memory tokens) public view returns (VerbData memory vrbData) {
+        uint8 err = 0;
+        VerbData memory data;
+        uint32 len = uint32(tokens.length - 1);
+        ObjectType iobj;
+        ActionType vrb = cmdLookup[tokens[0]];
+        ObjectType obj = objLookup[tokens[len]];
+        DirObjectType dobj = dirObjLookup[tokens[len]];
+
+        data.verb = vrb;
+        if (obj == ObjectType.None && dobj == DirObjectType.None) {
+            data.errCode = ErrCodes.ER_TKPR_NO ;
+           } else {
+               // ? VRB, OBJ ? //
+               if ( obj != ObjectType.None && tokens.length <= 3) {
+                   data.directNoun = obj;
+               } else if (obj == ObjectType.None) {
+                    err = ErrCodes.ER_TKPR_NO;   
+               }
+               if (tokens.length > 3) {
+                   // ? VRB, [DA], OBJ, IOBJ ? // 
+                   // dirObj ?
+                   if (dobj != DirObjectType.None) {
+                       // we have IOBJ find DOBJ
+                       obj = objLookup[tokens[1]];
+                       if (obj == ObjectType.None) {
+                           obj = objLookup[tokens[2]];
+                           if (obj == ObjectType.None) {
+                               err = ErrCodes.ER_TKPR_NO;
+                           }
+                       }
+                   } else if (obj != ObjectType.None) {
+                       // we arent dealing with this type structure right now
+                       // but we have a "throw thing1 at thing2" form where thing2
+                       // is not a direction object. Probably combat as it goes
+                       // so for now return
+                       return data;
+                   }
+               }
+           }
+           console.log("--->d.dobj:%s iobj:%s", uint8(obj), uint8(dobj));
+           //console.log("---->d.dobj:%s d.vrb:%s d.iobj:%s", data.directNoun, data.indirectDirNoun, data.verb);
+           data.directNoun = obj;
+           data.indirectDirNoun = dobj;
+           data.errCode = err;
+           return data;
+    }
 
     /*
      * We use the maps below but it might be better to use tables
@@ -16,6 +67,7 @@ contract TokeniserSystem is System {
      */
     mapping (string => ActionType) public cmdLookup;
     mapping (string => DirectionType) public dirLookup;
+    mapping (string => DirObjectType) public dirObjLookup;
     mapping (string => GrammarType) public grammarLookup;
     mapping(string => ObjectType) public objLookup;
     mapping(ObjectType => string) public reverseObjLookup;
@@ -28,7 +80,8 @@ contract TokeniserSystem is System {
         setupCmds();
         setupObjects();
         setupDirs();
-        //setupGrammar();
+        setupDirObjs();
+        setupGrammar();
         return address(this);
     }
 
@@ -109,6 +162,16 @@ contract TokeniserSystem is System {
         revDirLookup[DirectionType.Backward] = "backward";
     }
 
+    function setupDirObjs () private {
+        dirObjLookup["DOOR"]        = DirObjectType.Door;
+        dirObjLookup["WINDOW"]      = DirObjectType.Window;
+        dirObjLookup["STAIRS"]      = DirObjectType.Stairs;
+        dirObjLookup["LADDER"]      = DirObjectType.Ladder;
+        dirObjLookup["PATH"]        = DirObjectType.Path;
+        dirObjLookup["TRAIL"]       = DirObjectType.Trail;
+    }
+
+    // TODO: we probably no longer need this
     function setupGrammar () private {
        grammarLookup["The"]     = GrammarType.DefiniteArticle;
        grammarLookup["To"]      = GrammarType.Preposition;
