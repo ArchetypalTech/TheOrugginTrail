@@ -52,7 +52,7 @@ contract TokeniserSystem is System {
                    }
                }
            }
-           console.log("--->d.dobj:%s iobj:%s", uint8(obj), uint8(dobj));
+           console.log("--->d.dobj:%s iobj:%s vrb:%s", uint8(obj), uint8(dobj), uint8(vrb));
            //console.log("---->d.dobj:%s d.vrb:%s d.iobj:%s", data.directNoun, data.indirectDirNoun, data.verb);
            data.directNoun = obj;
            data.indirectDirNoun = dobj;
