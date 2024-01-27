@@ -55,8 +55,8 @@ contract MeatPuppetSystem is System, Constants {
         console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world);
-        } else {
-       //     return ErrCodes.ER_PR_NO;
+        } else if (vrb == ActionType.Look) {
+            e = LookAt.stuff(world, tokens, curRm);
         }
         return e;
     }
@@ -66,6 +66,7 @@ contract MeatPuppetSystem is System, Constants {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
+        IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
         } else if (vrb == ActionType.Take ) {
@@ -82,60 +83,6 @@ contract MeatPuppetSystem is System, Constants {
             }
             */
         return e;
-    }
-
-    function _describeObjectsInRoom(uint32 rId) private returns (string memory) {
-        console.log("--------->DescribeObjectsInRoom:");
-        return _describeObjects(RoomStore.get(rId).objectIds, "\nThis room contains ");
-    }
-
-    function _describeObjectsInInventory() private returns (string memory) {
-        console.log("--------->DescribeObjectsInInventory:");
-        return _describeObjects(Player.getObjectIds(CurrentPlayerId.get()), "\nYour Aldi carrier bag contains ");
-    }
-
-    function _describeObjects(uint32[MAX_OBJ] memory objectIds, string memory preText) private returns (string memory) {
-        console.log("--------->DescribeObjects:");
-
-        uint32 objectCount = SizedArray.count(objectIds);
-
-        if(objectCount == 0) {
-            return "";
-        }
-
-        string memory msgStr = preText;
-        for (uint8 i = 0; i < objectCount; i++) {
-            msgStr = string(abi.encodePacked(msgStr,
-                IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(
-                    ObjectStore.get(objectIds[i]).objectType)));
-        }
-        return msgStr;
-    }
-
-    // this is about to be redundant so dont do anymore work omn it
-    // MOVE TO OWN SYSTEM -- MEATWHISPERER
-    /* build up the text description strings for general output */
-    function _describeActions(uint32 rId) private view returns (string memory) {
-        RoomStoreData memory currRm = RoomStore.get(rId);
-        string[8] memory dirStrings;
-        string memory msgStr;
-        for (uint8 i = 0; i < currRm.dirObjIds.length; i++) {
-            DirObjectStoreData memory dir = DirObjectStore.get(currRm.dirObjIds[i]);
-
-            if (dir.dirType == DirectionType.North) {
-                dirStrings[i] = " North";
-            } else if (dir.dirType == DirectionType.East) {
-                dirStrings[i] = " East";
-            } else if (dir.dirType == DirectionType.South) {
-                dirStrings[i] = " South";
-            } else if (dir.dirType == DirectionType.West) {
-                dirStrings[i] = " West";
-            }
-        }
-        for (uint16 i = 0; i < dirStrings.length; i++) {
-            msgStr = string(abi.encodePacked(msgStr, dirStrings[i]));
-        }
-        return msgStr;
     }
 
     function _enterRoom(uint32 rId) private returns (uint8 err) {

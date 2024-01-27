@@ -31,8 +31,12 @@ library LookAt {
                   err = _lookAround(curRmId, wrld);
                   console.log("->_LA:%s", err);
                }
+            } else {
+                // alias form LOOK
+                  err = _lookAround(curRmId, wrld);
+                  console.log("->_LOOK:%s", err);
             }
-        } else if ( vrb == ActionType.Describe ) {
+        } else if ( vrb == ActionType.Describe || vrb == ActionType.Look) {
             console.log("---->DESC");
         }
         return err;

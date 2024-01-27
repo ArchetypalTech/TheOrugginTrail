@@ -7,9 +7,9 @@ import {ObjectType, ActionType} from '../codegen/common.sol';
 import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 library Kick {
-
+    /* k_cmd = kick, [the], obj, [ ( at, [the], obj ) ]; */
     function kick(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
-
+    /*  */
         console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);
 
         uint8 tok_err;
