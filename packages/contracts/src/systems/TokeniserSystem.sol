@@ -16,7 +16,7 @@ contract TokeniserSystem is System {
         uint8 err = 0;
         VerbData memory data;
         uint32 len = uint32(tokens.length - 1);
-        ObjectType iobj;
+        //ObjectType iobj; // not used right now
         ActionType vrb = cmdLookup[tokens[0]];
         ObjectType obj = objLookup[tokens[len]];
         DirObjectType dobj = dirObjLookup[tokens[len]];
@@ -69,10 +69,10 @@ contract TokeniserSystem is System {
     mapping (string => DirectionType) public dirLookup;
     mapping (string => DirObjectType) public dirObjLookup;
     mapping (string => GrammarType) public grammarLookup;
-    mapping(string => ObjectType) public objLookup;
-    mapping(ObjectType => string) public reverseObjLookup;
-    mapping(DirectionType => string) public revDirLookup;
-    mapping(MaterialType => string) public revMat;
+    mapping (string => ObjectType) public objLookup;
+    mapping (ObjectType => string) public reverseObjLookup;
+    mapping (DirectionType => string) public revDirLookup;
+    mapping (MaterialType => string) public revMat;
     //mapping(ActionType => string) public revCmd;
 
     function initTS() public returns (address) {
