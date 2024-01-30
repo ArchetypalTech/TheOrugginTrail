@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 import {console} from "forge-std/console.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 import {ObjectType, ActionType} from '../codegen/common.sol';
+import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 library Kick {
@@ -17,8 +18,9 @@ library Kick {
         ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             uint32[32] memory objIds = RoomStore.getObjectIds(curRmId);
+            uint32 objIdCount = SizedArray.count(objIds);
             // find the object
-            for (uint8 objectIndex = 0; objectIndex < objIds.length; objectIndex++) {
+            for (uint8 objectIndex = 0; objectIndex < objIdCount; objectIndex++) {
                 ObjectType testType = ObjectStore.getObjectType(objIds[objectIndex]);
 
                 // have we found the ball in the room?
@@ -28,9 +30,10 @@ library Kick {
 
                     // the exits for this room
                     uint32[32] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
-                    console.log('-------->dirObjIds.length = %d', dirObjIds.length);
+                    uint32 dirIdCount = SizedArray.count(dirObjIds);
+                    console.log('-------->dirObjIds.count = %d', dirIdCount);
                     // iterate through direction objects
-                    for (uint8 dirObjectIndex = 0; dirObjectIndex < dirObjIds.length; dirObjectIndex++) {
+                    for (uint8 dirObjectIndex = 0; dirObjectIndex < dirIdCount; dirObjectIndex++) {
                         DirObjectStoreData memory dir = DirObjectStore.get(dirObjectIndex);
                         console.log('---------->dir.objectActionIds.length = %d', dir.objectActionIds.length);
                         // iterate through the actions of the direction object
