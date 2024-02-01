@@ -66,6 +66,11 @@ contract MeatPuppetSystem is System, Constants {
     }
 
 
+    /**
+        At this point we should have a valid `VRB` as the initial parser takes care of this
+        for us. We have already handled MOVE's and `ALIASES` (i.e short forms) so all that
+        remains is to handle `LOOK` commands, `INVENTORY` cmds and everything else.
+    */
     function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
