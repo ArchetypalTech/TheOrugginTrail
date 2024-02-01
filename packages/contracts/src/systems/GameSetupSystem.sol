@@ -81,9 +81,9 @@ contract GameSetupSystem is System, Constants {
 
         plain_barn[0] = open_2_barn;
 
-        dObjs[0] = createDirObj(DirectionType.North, KBarn,
+        SizedArray.add(dObjs,createDirObj(DirectionType.North, KBarn,
                               DirObjectType.Path, MaterialType.Dirt,
-                              "path", plain_barn);
+                              "path", plain_barn));
 
         uint32 open_2_path = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
                                 "your nose is really itchy",
@@ -91,9 +91,9 @@ contract GameSetupSystem is System, Constants {
 
         uint32[MAX_OBJ] memory plain_path;
         plain_barn[0] = open_2_path;
-        dObjs[1] = createDirObj(DirectionType.East, KMountainPath,
+        SizedArray.add(dObjs,createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-                              "path", plain_path);
+                              "path", plain_path));
 
         uint32 kick = createAction(ActionType.Kick, "the ball (such as it is)"
                                 "bounces feebly\n then rolls into some fresh dog eggs\n"
@@ -128,9 +128,9 @@ contract GameSetupSystem is System, Constants {
         barn_plain[0] = open_2_south;
         uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
-        dObjs[0] = createDirObj(DirectionType.South, KPlain,
+        SizedArray.add(dObjs,createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door", barn_plain);
+                                "door", barn_plain));
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
                                 "falls open\n", true, false);
@@ -144,9 +144,9 @@ contract GameSetupSystem is System, Constants {
         window_actions[0] = open_2_forest;
         window_actions[1] = smash_window;
 
-        dObjs[1] = createDirObj(DirectionType.East, KForest,
+        SizedArray.add(dObjs, createDirObj(DirectionType.East, KForest,
                                 DirObjectType.Window, MaterialType.Wood,
-                                "window", window_actions);
+                                "window", window_actions));
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
@@ -171,9 +171,9 @@ contract GameSetupSystem is System, Constants {
         // this is a path we might want to say BLOCK it which would mean adding a BLOCK
         // and an OPEN which we would set to false but as can be seen above right
         // now its just open and there is no state change to describe it
-        dirObjs[0] = createDirObj(DirectionType.West, KPlain,
+        SizedArray.add(dirObjs,createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path", path_actions);
+                               "path", path_actions));
 
 
 
