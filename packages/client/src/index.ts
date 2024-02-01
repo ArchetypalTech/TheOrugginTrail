@@ -7,14 +7,28 @@ const {
   network,
 } = await setup();
 
+
+var playerId = 0;
+
 $('body').terminal(async function(command)  {
-    // sanity test for calling the contract
-    if(command == 'init') {
+
+    var term = $.terminal.active();
+
+    if(command == '1') {
+        playerId = 1;
+        term.echo('Set to player 1');
+    } else if(command == '2') {
+        playerId = 2;
+        term.echo('Set to player 2');
+    } else if(command == '3') {
+        playerId = 3;
+        term.echo('Set to player 3');
+    } else if(command == 'init') {
         await initData();
-} else {
-    const tk = components.tokenise(command);
-    await processCommand(tk);
-}
+    } else {
+        const tk = components.tokenise(command);
+        await processCommand(tk,playerId);
+    }
     },
     { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
 );

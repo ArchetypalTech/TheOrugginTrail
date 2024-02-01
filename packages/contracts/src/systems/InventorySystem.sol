@@ -7,26 +7,17 @@ import {IWorld} from '../codegen/world/IWorld.sol';
 import {ITokeniserSystem} from '../codegen/world/ITokeniserSystem.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {ObjectType} from '../codegen/common.sol';
-import {Player, CurrentPlayerId, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
+import {Player, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
 
 contract InventorySystem is System {
 
-
-    function inventory(address world) public returns (uint8 err) {
-
-        console.log("----->INVENTORY:");
-
-        uint32[32] memory objIds = Player.getObjectIds(CurrentPlayerId.get());
-
+    function inventory(address world, uint32 playerId) public returns (uint8 err) {
+        uint32[32] memory objIds = Player.getObjectIds(playerId);
         if (SizedArray.count(objIds) == 0) {
             Output.set("Your carrier bag is empty");
             return 0;
         }
-
         string memory itemTxt = "You have a ";
-
-        console.log("----->INVENTORY COUNT:%d", SizedArray.count(objIds));
-
         for (uint8 i = 0; i < SizedArray.count(objIds); i++) {
             uint32 objectId = objIds[i];
                 if(i > 0) {
@@ -34,15 +25,11 @@ contract InventorySystem is System {
                 }
                 itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
         }
-
         Output.set(itemTxt);
-
         return 0;
-
     }
 
-    function take(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
-        console.log("----->TAKE :%s", tokens[1]);
+    function take(address world, string[] memory tokens, uint32 rId, uint32 playerId) public returns (uint8 err) {
         uint8 tok_err;
         bool itemPickedUp = false;
         string memory tok = tokens[1];
@@ -58,17 +45,13 @@ contract InventorySystem is System {
                 if (testType == objType) {
                     Output.set("You picked it up");
 
-                    console.log("----->TAKE add item to the inventory");
                     // add the item to the inventory
-                    uint32[32] memory playerObjIds = Player.getObjectIds(CurrentPlayerId.get());
+                    uint32[32] memory playerObjIds = Player.getObjectIds(playerId);
                     SizedArray.add(playerObjIds, roomObjIds[i]);
-                    Player.setObjectIds(CurrentPlayerId.get(), playerObjIds);
+                    Player.setObjectIds(playerId, playerObjIds);
 
-                    console.log("----->TAKE remove from the room");
                     // delete from the room
                     SizedArray.remove(roomObjIds, i);
-
-                    console.log("----->TAKE set object ids count:%d", SizedArray.count(roomObjIds));
 
                     RoomStore.setObjectIds(rId, roomObjIds);
 
@@ -86,13 +69,12 @@ contract InventorySystem is System {
     }
 
 
-    function drop(address world, string[] memory tokens, uint32 rId) public returns (uint8 err) {
-        console.log("----->DROP :%s", tokens[1]);
+    function drop(address world, string[] memory tokens, uint32 rId, uint32 playerId) public returns (uint8 err) {
         uint8 tok_err;
         string memory tok = tokens[1];
         ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
-            uint32[32] memory playerObjIds = Player.getObjectIds(CurrentPlayerId.get());
+            uint32[32] memory playerObjIds = Player.getObjectIds(playerId);
             for (uint8 i = 0; i < SizedArray.count(playerObjIds); i++) {
                 ObjectType testType = ObjectStore.getObjectType(playerObjIds[i]);
                 if (testType == objType) {
@@ -105,7 +87,7 @@ contract InventorySystem is System {
 
                     // delete from the inventory
                     SizedArray.remove(playerObjIds, i);
-                    Player.setObjectIds(CurrentPlayerId.get(), playerObjIds);
+                    Player.setObjectIds(playerId, playerObjIds);
 
                     return 0;
                 }
