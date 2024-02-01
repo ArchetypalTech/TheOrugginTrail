@@ -38,8 +38,8 @@ export function createSystemCalls(
       await waitForTransaction(tx);
   };
 
-  const processCommand = async (command) => {
-    const tx = await worldContract.write.meat_MeatPuppetSystem_processCommandTokens([command]);
+  const processCommand = async (command, playerId) => {
+    const tx = await worldContract.write.meat_MeatPuppetSystem_processCommandTokens([command, playerId]);
     await waitForTransaction(tx);
   };
 

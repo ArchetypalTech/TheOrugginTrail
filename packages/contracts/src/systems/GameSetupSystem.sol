@@ -7,7 +7,7 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { ErrCodes } from '../constants/defines.sol';
 import { Constants } from '../constants/Constants.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
-import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
+import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
 contract GameSetupSystem is System, Constants {
@@ -27,7 +27,7 @@ contract GameSetupSystem is System, Constants {
 
     function setupWorld() private {
         setupRooms();
-        setupPlayer();
+        setupPlayers();
     }
 
     function textGuid(string memory str) private returns (uint32) {
@@ -48,8 +48,10 @@ contract GameSetupSystem is System, Constants {
         return g++;
     }
 
-    function setupPlayer() private {
-        CurrentPlayerId.set(guid());
+    function setupPlayers() private {
+        Player.setRoomId(0, 0);
+        Player.setRoomId(1, 0);
+        Player.setRoomId(2, 0);
     }
 
     function clearArr(uint32[MAX_OBJ] memory arr) private view {
