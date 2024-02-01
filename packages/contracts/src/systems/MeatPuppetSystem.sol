@@ -17,6 +17,7 @@ import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
 
 import { IWorld } from "../codegen/world/IWorld.sol";
 
+
 import { LookAt } from '../libs/LookLib.sol';
 
 import { Kick } from '../libs/KickLib.sol';
@@ -28,8 +29,11 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 contract MeatPuppetSystem is System, Constants {
 
-    using LookAt for *;
-
+    // a quick note on Linking Libs
+    // we cant use the `using LookAt for *;` syntax
+    // because we dont seem to be able to dynamically 
+    // link libs with forge i.e we need to `include` them
+    // which increases the contract size.
     address world;
 
     // we call this from the post deploy contract
@@ -97,14 +101,14 @@ contract MeatPuppetSystem is System, Constants {
     // checks for first TOKEN which can be either a GO or another VERB.
     function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
-        uint8 err;
+        uint8 er;
         bool move;
         uint32 nxt;
 
         uint32 rId = Player.getRoomId(CurrentPlayerId.get());
 
         if (tokens.length > GameConstants.MAX_TOK) {
-            err = ErrCodes.ER_PR_TK_CX;
+            er = ErrCodes.ER_PR_TK_CX;
         }
         string memory tok1 = tokens[0];
         console.log("---->CMD: %s", tok1);
@@ -114,7 +118,7 @@ contract MeatPuppetSystem is System, Constants {
             //console.log("---->DIR:");
             /* DIR: form */
             move = true;
-            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+            (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
@@ -122,28 +126,28 @@ contract MeatPuppetSystem is System, Constants {
                 if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
                     /* GO: form */
                     move = true;
-                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+                    (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
-                    err = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                    er = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
                     console.log("->ERR: %s", err);
                     move = false;
                 }
             } else {
-                err = _handleAlias(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                er = _handleAlias(tokens, Player.getRoomId(CurrentPlayerId.get()));
                 move = false;
             }
         } else {
-            err = ErrCodes.ER_PR_NOP;
+            er = ErrCodes.ER_PR_NOP;
         }
 
         /* we have gone through the TOKENS, give err feedback if needed */
-        if (err != 0) {
+        if (er != 0) {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
             errMsg = _insultMeat(err, "");
             Output.set(errMsg);
-            return err;
+            return er;
         } else {
             // either a do something or move rooms command
             if (move) {

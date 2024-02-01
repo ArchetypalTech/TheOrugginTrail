@@ -30,7 +30,7 @@ export default mudConfig({
             "None", "BiomeTypes", "TerrainTypes",
             "RoomType", "ActionType",
         ],
-        // probably pointless
+        // use in describe things as a construciton type
         BiomeType: [
             "None","Tundra", "Arctic", "Temporate",
             "Alpine", "Jungle", "Faery"
@@ -59,15 +59,15 @@ export default mudConfig({
             "Path", "Trail"
         ],
         // use these in the parser, they are VERBS
-        //
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
-            "Look", "Close", "Break", "Throw", "Drop", "Inventory",
+            "Look", "Close", "Break", "Throw", "Drop",
+            "Inventory", "Burn", "Light"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
-            "None", "Football", "Key", "Knife", "Bottle"
+            "None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol"
         ],
         GrammarType: ["None", "DefiniteArticle", "Preposition", "Adverb", "DemPronoun"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh",

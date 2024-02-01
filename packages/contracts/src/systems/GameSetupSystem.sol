@@ -108,7 +108,7 @@ contract GameSetupSystem is System, Constants {
                                 "not quite spherical, it's "
                                 "kickable though", "football", ball_actions));
 
-         RoomStore.setDescription(KPlain,  'a windswept plain');
+        RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
 
         bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
