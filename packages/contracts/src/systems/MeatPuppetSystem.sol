@@ -17,6 +17,7 @@ import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
 
 import { IWorld } from "../codegen/world/IWorld.sol";
 
+import { VerbData } from "../constants/defines.sol";
 
 import { LookAt } from '../libs/LookLib.sol';
 
@@ -39,9 +40,7 @@ contract MeatPuppetSystem is System, Constants {
     // we call this from the post deploy contract
     function initGES(address wrld) public returns (address) {
         console.log('--->initGES() wr:%s', wrld);
-
         world = wrld;
-
         spawn(0);
         return address(this);
     }
@@ -75,15 +74,15 @@ contract MeatPuppetSystem is System, Constants {
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
-        IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
+        VerbData memory cmdData = IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
         } else if (vrb == ActionType.Take ) {
             e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm);
         } else if (vrb == ActionType.Drop) {
             e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm);
-        } else if (vrb == ActionType.Kick) {
-            e = Kick.kick(world, tokens, curRm);
+        }  else {
+            e = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
             /*else if (vrb == ActionType.Unlock) {
             e = Open.unlock

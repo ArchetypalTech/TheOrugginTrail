@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import {  console } from "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
 
@@ -19,11 +19,14 @@ contract ActionSystem is System, Constants {
 
     uint32[MAX_OBJ] private itemsToUse;
 
-    function act(VerbData memory cmd, uint32 rm) public returns (uint32 er) {
-        uint32[] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
+    function act(VerbData memory cmd, uint32 rm) public returns (uint8 er) {
+        uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
+        console.log("--->FOO");
         if (ids.length > 0) {
             console.log("---> Got objects:%d", ids.length);
         }
+        uint8 err = 0;
+        return err;
     }
 
     function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private view returns (uint32[MAX_OBJ] memory ids) {
