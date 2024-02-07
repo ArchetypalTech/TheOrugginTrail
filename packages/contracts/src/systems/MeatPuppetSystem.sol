@@ -6,7 +6,7 @@ import { console } from "forge-std/console.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
 
-import { ObjectStoreData, ObjectStore,Player, Output, CurrentPlayerId, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
+import { ObjectStoreData, ObjectStore,Player, Output, RoomStore, RoomStoreData, ActionStore, DirObjectStore,
     DirObjectStoreData, TxtDefStore } from "../codegen/index.sol";
 
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from "../codegen/common.sol";
@@ -56,24 +56,27 @@ contract MeatPuppetSystem is System, Constants {
 
     function _handleAlias(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
         // we are not handling go aliases right now
+        uint32 curRm = Player.getRoomId(playerId);
+
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
 //        console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
-            e = IWorld(world).meat_InventorySystem_inventory(world);
+            e = IWorld(world).meat_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
             e = LookAt.stuff(world, tokens, curRm);
         }
         return e;
     }
 
-
     /**
         At this point we should have a valid `VRB` as the initial parser takes care of this
         for us. We have already handled MOVE's and `ALIASES` (i.e short forms) so all that
         remains is to handle `LOOK` commands, `INVENTORY` cmds and everything else.
     */
-    function _handleVerb(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
+    function _handleVerb(string[] memory tokens,  uint32 playerId) private returns (uint8 err) {
+
+        uint32 curRm = Player.getRoomId(playerId);
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
@@ -81,7 +84,7 @@ contract MeatPuppetSystem is System, Constants {
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm);
         } else if (vrb == ActionType.Take ) {
-            e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm);
+            e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
             e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm);
         }  else {
@@ -96,9 +99,9 @@ contract MeatPuppetSystem is System, Constants {
         return e;
     }
 
-    function _enterRoom(uint32 rId) private returns (uint8 err) {
+    function _enterRoom(uint32 rId, uint32 playerId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
-        Player.setRoomId(CurrentPlayerId.get(), rId);
+        Player.setRoomId(playerId, rId);
         Output.set(LookAt.getRoomDesc(rId));
         return 0;
     }
@@ -106,13 +109,13 @@ contract MeatPuppetSystem is System, Constants {
 
     // intended soley to process tokens and then hand off to other systems
     // checks for first TOKEN which can be either a GO or another VERB.
-    function processCommandTokens(string[] calldata tokens) public returns (uint8 err) {
+    function processCommandTokens(string[] calldata tokens, uint32 playerId) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
         uint8 er;
         bool move;
         uint32 nxt;
 
-        uint32 rId = Player.getRoomId(CurrentPlayerId.get());
+        uint32 rId = Player.getRoomId(playerId);
 
         if (tokens.length > GameConstants.MAX_TOK) {
             er = ErrCodes.ER_PR_TK_CX;
@@ -136,12 +139,12 @@ contract MeatPuppetSystem is System, Constants {
                     (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
-                    er = _handleVerb(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                    er = _handleVerb(tokens, playerId);
                     console.log("->ERR: %s", err);
                     move = false;
                 }
             } else {
-                er = _handleAlias(tokens, Player.getRoomId(CurrentPlayerId.get()));
+                er = _handleAlias(tokens, playerId);
                 move = false;
             }
         } else {
@@ -158,7 +161,7 @@ contract MeatPuppetSystem is System, Constants {
         } else {
             // either a do something or move rooms command
             if (move) {
-                _enterRoom(nxt);
+                _enterRoom(nxt, playerId);
             } else {
                 // hit look libs_ perhaps?
             }

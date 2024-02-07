@@ -102,12 +102,16 @@ library LookAt {
         return dsc;
     }
 
-    
-    // there is a PATH made os mud to the DIR | there is a wood door to the 
+
+    // there is a PATH made os mud to the DIR | there is a wood door to the
     function _genExitDesc(uint32[32] memory objs, address wrld) internal view returns (string memory) {
-        if (objs[0] != 0) {// if the first item is 0 then there are no objects
+
+        uint32 count = SizedArray.count(objs);
+
+
+        if (count != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";
-            for(uint8 i = 0; i < objs.length; i++) {
+            for(uint8 i = 0; i < count; i++) {
                 if (objs[i] != 0) { // again, an id of 0 means no value
                     DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);// there is a fleshy path to the | there
                    if (i == 0) {
