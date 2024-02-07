@@ -59,7 +59,8 @@ contract ActionSystem is System, Constants {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
                 console.log("--->looking for resp vrb:%d", uint8(vrb));
                 ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(vrb);
-                if (responses[0] == ActionType.None) {break;}
+                console.log("--->XXXX: len:%d", responses.length);
+                if (responses.length == 0 || responses[0] == ActionType.None) {continue;}
                 for (uint256 k = 0; k < responses.length; k++) {
                     if (responses[k] == t) {
                         console.log("----> matched on:%t", uint8(t));

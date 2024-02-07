@@ -37,12 +37,15 @@ contract MeatPuppetSystem is System, Constants {
     // which increases the contract size.
     address world;
 
-    // we call this from the post deploy contract
-    function initGES(address wrld) public returns (address) {
-        console.log('--->initGES() wr:%s', wrld);
-        world = wrld;
-        spawn(0);
-        return address(this);
+    /**
+     * @param pId a player id and a room id
+     * @param rId a room id
+     * @dev the initialisation routine of right now the whole game takes a player id and
+     *  a room ID and then spawns the player there.
+     */
+    function spawnPlayer(uint32 pId, uint32 rId) public {
+        world = _world();
+        spawn(rId);
     }
 
     function spawn(uint32 startId) public {

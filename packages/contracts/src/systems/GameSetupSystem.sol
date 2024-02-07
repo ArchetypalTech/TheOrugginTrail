@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
+import { IWorld } from "../codegen/world/IWorld.sol";
 import { ErrCodes } from '../constants/defines.sol';
 import { Constants } from '../constants/Constants.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
@@ -28,6 +29,8 @@ contract GameSetupSystem is System, Constants {
     function setupWorld() private {
         setupRooms();
         setupPlayer();
+        IWorld(_world()).meat_TokeniserSystem_initLUTS();
+        IWorld(_world()).meat_MeatPuppetSystem_spawnPlayer(0,0);
     }
 
     function textGuid(string memory str) private returns (uint32) {

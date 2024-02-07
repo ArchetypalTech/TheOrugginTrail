@@ -73,7 +73,6 @@ contract TokeniserSystem is System {
     mapping (ObjectType => string) public reverseObjLookup;
     mapping (DirectionType => string) public revDirLookup;
     mapping (MaterialType => string) public revMat;
-//    mapping (ActionType => ActionType[]) public vrbResponse;§
 
     /**
     @dev The idea here is to get the corresponding actions for an action
@@ -82,8 +81,7 @@ contract TokeniserSystem is System {
     */
     mapping(ActionType => ActionType[]) public responseLookup;
 
-    function initTS() public returns (address) {
-        console.log("--->initTS");
+    function initLUTS() public returns (address) {
         setupCmds();
         setupObjects();
         setupDirs();
@@ -94,7 +92,7 @@ contract TokeniserSystem is System {
     }
 
     function getResponseForVerb(ActionType key) public view returns (ActionType[] memory) {
-        console.log("--->getResponseForVerb");
+        console.log("--->getResponseForVerb:%d", uint8(key));
         return responseLookup[key];
     }
 
@@ -130,6 +128,7 @@ contract TokeniserSystem is System {
         responseLookup[ActionType.Kick] = [ActionType.Break, ActionType.Hit, ActionType.Damage];
         responseLookup[ActionType.Burn] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
+        responseLookup[ActionType.Open] = [ActionType.Open];
     }
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
