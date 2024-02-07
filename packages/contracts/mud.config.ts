@@ -46,24 +46,31 @@ export default mudConfig({
             "Cavern", "StoneCabin", "Fort", "Room",
             "Plain"
         ],
-        // use these to set direction bits on a DirectionObject
-        // such as a door
+        /** @dev use these to set direction bits on a DirectionObject
+         * such as a door
+         */
         DirectionType: [
             "None", "North", "South", "East", "West",
             "Up", "Down", "Forward", "Backward"
         ],
-        // add a direction action to these to connect rooms
-        // then add them to a room
+        /**
+         * @dev add these to ROOMS to allow for movement
+         * between them
+         */
         DirObjectType: [
             "None", "Door", "Window", "Stairs", "Ladder",
             "Path", "Trail"
         ],
-        // use these in the parser, they are VERBS
+        /**
+         * @dev use these in the parser, they are VERBS
+         * we also use them to look for VERB response mapping
+         * e.g. KICK actions can affect HIT, DAMAGE, BREAK actions
+        */
         ActionType: [
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
             "Look", "Close", "Break", "Throw", "Drop",
-            "Inventory", "Burn", "Light"
+            "Inventory", "Burn", "Light", "Damage", "Hit"
         ],
         // add these to rooms for stuff to do
         ObjectType: [

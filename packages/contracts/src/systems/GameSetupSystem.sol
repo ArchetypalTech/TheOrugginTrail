@@ -122,7 +122,6 @@ contract GameSetupSystem is System, Constants {
 
     function _setupBarn() private {
         // KBARN -> S
-        // TODO add a smash action to the window
         uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true);
         uint32[MAX_OBJ] memory barn_plain;
         barn_plain[0] = open_2_south;

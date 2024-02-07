@@ -73,7 +73,14 @@ contract TokeniserSystem is System {
     mapping (ObjectType => string) public reverseObjLookup;
     mapping (DirectionType => string) public revDirLookup;
     mapping (MaterialType => string) public revMat;
-    //mapping(ActionType => string) public revCmd;
+//    mapping (ActionType => ActionType[]) public vrbResponse;§
+
+    /**
+    @dev The idea here is to get the corresponding actions for an action
+    or VRB
+    e.e. KICK -> [HIT]
+    */
+    mapping(ActionType => ActionType[]) public responseLookup;
 
     function initTS() public returns (address) {
         console.log("--->initTS");
@@ -82,12 +89,14 @@ contract TokeniserSystem is System {
         setupDirs();
         setupDirObjs();
         setupGrammar();
+        setupVrbAct();
         return address(this);
     }
 
-    //function reverseActType(ActionType key) public view returns (string memory) {
-        //return revCmd[key];
-    //}
+    function getResponseForVerb(ActionType key) public view returns (ActionType[] memory) {
+        console.log("--->getResponseForVerb");
+        return responseLookup[key];
+    }
 
     function reverseDirType(DirectionType key) public view returns (string memory) {
         return revDirLookup[key];
@@ -117,6 +126,11 @@ contract TokeniserSystem is System {
         return dirLookup[key];
     }
 
+    function setupVrbAct() private {
+        responseLookup[ActionType.Kick] = [ActionType.Break, ActionType.Hit, ActionType.Damage];
+        responseLookup[ActionType.Burn] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
+        responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
+    }
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
@@ -136,6 +150,8 @@ contract TokeniserSystem is System {
         cmdLookup["THROW"]      = ActionType.Throw;
         cmdLookup["DROP"]       = ActionType.Drop;
         cmdLookup["INVENTORY"]  = ActionType.Inventory;
+        cmdLookup["BURN"]       = ActionType.Burn;
+        cmdLookup["LIGHT"]      = ActionType.Light;
     }
 
     // this could autogen because we just take set of "str"

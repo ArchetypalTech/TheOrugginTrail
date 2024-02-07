@@ -80,11 +80,7 @@ library LookAt {
 
         uint32 count = SizedArray.count(objs);
         if (count != 0) {// if the first item is 0 then there are no objects
-
             string memory objsDesc = "\nYou can alse see a ";
-
-
-
             for(uint8 i = 0; i < count; i++) {
                     objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n"));
                     bytes32 tId =  ObjectStore.getTxtDefId(objs[i]);
