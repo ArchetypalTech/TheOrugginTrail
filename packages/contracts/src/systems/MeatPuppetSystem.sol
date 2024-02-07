@@ -58,7 +58,7 @@ contract MeatPuppetSystem is System, Constants {
         // we are not handling go aliases right now
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
-        console.log("---->HDL_ALIAS");
+//        console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world);
         } else if (vrb == ActionType.Look) {

@@ -81,18 +81,16 @@ contract TokeniserSystem is System {
     */
     mapping(ActionType => ActionType[]) public responseLookup;
 
-    function initLUTS() public returns (address) {
+    function initLUTS() public {
         setupCmds();
         setupObjects();
         setupDirs();
         setupDirObjs();
         setupGrammar();
         setupVrbAct();
-        return address(this);
     }
 
     function getResponseForVerb(ActionType key) public view returns (ActionType[] memory) {
-        console.log("--->getResponseForVerb:%d", uint8(key));
         return responseLookup[key];
     }
 
@@ -129,6 +127,7 @@ contract TokeniserSystem is System {
         responseLookup[ActionType.Burn] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Open] = [ActionType.Open];
+        responseLookup[ActionType.Break] = [ActionType.Break];
     }
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS

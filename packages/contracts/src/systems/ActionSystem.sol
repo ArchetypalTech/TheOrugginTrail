@@ -31,7 +31,7 @@ contract ActionSystem is System, Constants {
         uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
         uint32[MAX_OBJ] memory dids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
 
-        console.log("--->vrb%s", uint32(cmd.verb));
+//        console.log("--->vrb:%s, dids:%d, dids[0]:%d", uint32(cmd.verb), dids.length, dids[0]);
 
         if (ids.length > 0 && ids[0] != 0) {
             console.log("---> Got objects:%d", uint8(ids.length));
@@ -51,25 +51,31 @@ contract ActionSystem is System, Constants {
         i.e DAMAGE -> DAMAGED
     */
     function _fetchDObjsForType(DirObjectType dObjType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
+        console.log("-->FETCH_DOBJS");
+        uint32 count;
+        uint32[MAX_OBJ] memory objects;
         uint32[MAX_OBJ] memory objs =  RoomStore.getDirObjIds(rm);
         for (uint256 i = 0; i < objs.length; i++ ) {
             uint32[MAX_OBJ] memory actionIds =  DirObjectStore.getObjectActionIds(objs[i]);
             if (actionIds[0] == 0) {break;}
+//            console.log("-------------->AID:%d", actionIds[i]);
             for (uint256 j = 0; j < actionIds.length; j++) {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
-                console.log("--->looking for resp vrb:%d", uint8(vrb));
-                ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(vrb);
-                console.log("--->XXXX: len:%d", responses.length);
-                if (responses.length == 0 || responses[0] == ActionType.None) {continue;}
-                for (uint256 k = 0; k < responses.length; k++) {
-                    if (responses[k] == t) {
-                        console.log("----> matched on:%t", uint8(t));
-                        ids[i] = objs[i];
+                if (vrb == ActionType.None) { break; }
+//                console.log("------->want R-vrb:%d A-vrb:%d R:%d", uint8(vrb), uint8(t), rm);
+                ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(t);
+                if (responses.length > 0) {
+                    for (uint256 k = 0; k < responses.length; k++) {
+                        if (responses[k] == vrb) {
+//                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
+                            objects[count] = objs[i];
+                            count++;
+                        }
                     }
                 }
             }
         }
-        return ids;
+        return objects;
     }
 
     /**
@@ -80,19 +86,20 @@ contract ActionSystem is System, Constants {
         i.e DAMAGE -> DAMAGED
     */
     function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private view returns (uint32[MAX_OBJ] memory ids) {
+        console.log("-->FETCH_OBJS");
         uint32[MAX_OBJ] memory objs =  RoomStore.getObjectIds(rm);
         for(uint256 i = 0; i < objs.length; i++) {
-            console.log("------>rm:%d objects[%d]:%d",uint8(rm), uint8(i), uint8(objs[i]));
+//            console.log("------>rm:%d objects[%d]:%d",uint8(rm), uint8(i), uint8(objs[i]));
             uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objs[i]);
             if (actionIds[0] == 0) {break;}
             for(uint256 j = 0; j < actionIds.length; j++) {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
                 ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(vrb);
-                if (responses[0] == ActionType.None) {break;}
+                if (responses.length == 0) {break;}
                 for (uint256 k = 0; k < responses.length; k++) {
-                    console.log("--->reponse:%d", uint8(responses[k]));
+//                    console.log("--->reponse:%d", uint8(responses[k]));
                     if (responses[k] == t) {
-                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
+//                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
                         ids[i] = objs[i];
                     }
                 }

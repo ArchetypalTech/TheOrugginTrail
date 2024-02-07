@@ -21,14 +21,9 @@ contract DirectionSystem is System, Constants {
 
     address world;
 
-//    function initDFS(address wrld) public returns (address) {
-//        //console.log("--->initDFS: %s", wrld);
-//        world = wrld;
-//        return address(this);
-//    }
-
     function getNextRoom(string[] memory tokens, uint32 currRm) public returns (uint8 e, uint32 nxt) {
         //console.log("----->DF_NXT_RM tok: ", tokens[0]);
+        world = _world();
 
         (string memory tok, uint8 tok_err) = _fishDirectionTok(tokens);
 
