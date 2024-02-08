@@ -67,7 +67,7 @@ contract ActionSystem is System, Constants {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
 //                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
-                            SizedArray.add(matchedObjects, objs[i] );
+                            SizedArray.add(matchedObjects, objs[i]);
                         }
                     }
                 }
@@ -83,8 +83,9 @@ contract ActionSystem is System, Constants {
         If DAMAGE is ENABLED then its DAMAGE state can be flipped
         i.e DAMAGE -> DAMAGED
     */
-    function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private view returns (uint32[MAX_OBJ] memory ids) {
+    function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
         console.log("-->FETCH_OBJS");
+        uint32[MAX_OBJ] memory matchedObjects;
         uint32[MAX_OBJ] memory objs =  RoomStore.getObjectIds(rm);
         for(uint256 i = 0; i < objs.length; i++) {
 //            console.log("------>rm:%d objects[%d]:%d",uint8(rm), uint8(i), uint8(objs[i]));
@@ -92,18 +93,19 @@ contract ActionSystem is System, Constants {
             if (actionIds[0] == 0) {break;}
             for(uint256 j = 0; j < actionIds.length; j++) {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
+                if (vrb == ActionType.None) { break; }
                 ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(vrb);
-                if (responses.length == 0) {break;}
-                for (uint256 k = 0; k < responses.length; k++) {
-//                    console.log("--->reponse:%d", uint8(responses[k]));
-                    if (responses[k] == t) {
-//                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
-                        ids[i] = objs[i];
+                if (responses.length > 0) {
+                    for (uint256 k = 0; k < responses.length; k++) {
+    //                    console.log("--->response:%d", uint8(responses[k]));
+                        if (responses[k] == t) {
+    //                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
+                            SizedArray.add(matchedObjects, objs[i]);
+                        }
                     }
                 }
             }
         }
-        return ids;
+        return matchedObjects;
     }
-
 }
