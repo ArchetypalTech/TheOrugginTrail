@@ -23,24 +23,29 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 */
 contract ActionSystem is System, Constants {
 
-    uint32[MAX_OBJ] private itemsToUse;
-
     function act(VerbData memory cmd, uint32 rm) public returns (uint8 er) {
         uint8 err;
-
         uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
-        uint32[MAX_OBJ] memory dids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
-
-//        console.log("--->vrb:%s, dids:%d, dids[0]:%d", uint32(cmd.verb), dids.length, dids[0]);
+        uint32[MAX_OBJ] memory sizedDids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
 
         if (ids.length > 0 && ids[0] != 0) {
             console.log("---> Got objects:%d", uint8(ids.length));
         }
 
-        if (dids.length > 0 && dids[0] != 0) {
-            console.log("---> Got d_objects:%d", uint8(dids.length));
+        if (sizedDids.length > 0 && sizedDids[0] != 0) {
+            console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
+            console.log("----> Got d_obj[0]:%d", sizedDids[0]);
+            _processObjects(cmd.verb, sizedDids, true);
         }
         return err;
+    }
+
+    function _processObjects(ActionType t, uint32[MAX_OBJ] memory objs, bool isD) private view returns(uint8 er) {
+        uint32 ct = SizedArray.count(objs);
+        console.log("->sz:%d", ct);
+//        for (u32 i = 0; i < ct; i++) {
+//
+//        }
     }
 
     /**
