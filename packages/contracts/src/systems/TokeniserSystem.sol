@@ -16,7 +16,7 @@ contract TokeniserSystem is System {
         uint8 err = 0;
         VerbData memory data;
         uint32 len = uint32(tokens.length - 1);
-        ObjectType iobj;
+        //ObjectType iobj; // not used right now
         ActionType vrb = cmdLookup[tokens[0]];
         ObjectType obj = objLookup[tokens[len]];
         DirObjectType dobj = dirObjLookup[tokens[len]];
@@ -69,25 +69,30 @@ contract TokeniserSystem is System {
     mapping (string => DirectionType) public dirLookup;
     mapping (string => DirObjectType) public dirObjLookup;
     mapping (string => GrammarType) public grammarLookup;
-    mapping(string => ObjectType) public objLookup;
-    mapping(ObjectType => string) public reverseObjLookup;
-    mapping(DirectionType => string) public revDirLookup;
-    mapping(MaterialType => string) public revMat;
-    //mapping(ActionType => string) public revCmd;
+    mapping (string => ObjectType) public objLookup;
+    mapping (ObjectType => string) public reverseObjLookup;
+    mapping (DirectionType => string) public revDirLookup;
+    mapping (MaterialType => string) public revMat;
 
-    function initTS() public returns (address) {
-        console.log("--->initTS");
+    /**
+    @dev The idea here is to get the corresponding actions for an action
+    or VRB
+    e.e. KICK -> [HIT]
+    */
+    mapping(ActionType => ActionType[]) public responseLookup;
+
+    function initLUTS() public {
         setupCmds();
         setupObjects();
         setupDirs();
         setupDirObjs();
         setupGrammar();
-        return address(this);
+        setupVrbAct();
     }
 
-    //function reverseActType(ActionType key) public view returns (string memory) {
-        //return revCmd[key];
-    //}
+    function getResponseForVerb(ActionType key) public view returns (ActionType[] memory) {
+        return responseLookup[key];
+    }
 
     function reverseDirType(DirectionType key) public view returns (string memory) {
         return revDirLookup[key];
@@ -117,6 +122,13 @@ contract TokeniserSystem is System {
         return dirLookup[key];
     }
 
+    function setupVrbAct() private {
+        responseLookup[ActionType.Kick] = [ActionType.Break, ActionType.Hit, ActionType.Damage];
+        responseLookup[ActionType.Burn] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
+        responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
+        responseLookup[ActionType.Open] = [ActionType.Open];
+        responseLookup[ActionType.Break] = [ActionType.Break];
+    }
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
@@ -136,6 +148,8 @@ contract TokeniserSystem is System {
         cmdLookup["THROW"]      = ActionType.Throw;
         cmdLookup["DROP"]       = ActionType.Drop;
         cmdLookup["INVENTORY"]  = ActionType.Inventory;
+        cmdLookup["BURN"]       = ActionType.Burn;
+        cmdLookup["LIGHT"]      = ActionType.Light;
     }
 
     // this could autogen because we just take set of "str"
