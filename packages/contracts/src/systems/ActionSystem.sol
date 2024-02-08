@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, CurrentPlayerId, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore} from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore} from '../codegen/index.sol';
 
 import { ErrCodes, VerbData } from '../constants/defines.sol';
 
@@ -52,8 +52,7 @@ contract ActionSystem is System, Constants {
     */
     function _fetchDObjsForType(DirObjectType dObjType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
         console.log("-->FETCH_DOBJS");
-        uint32 count;
-        uint32[MAX_OBJ] memory objects;
+        uint32[MAX_OBJ] memory matchedObjects;
         uint32[MAX_OBJ] memory objs =  RoomStore.getDirObjIds(rm);
         for (uint256 i = 0; i < objs.length; i++ ) {
             uint32[MAX_OBJ] memory actionIds =  DirObjectStore.getObjectActionIds(objs[i]);
@@ -68,14 +67,13 @@ contract ActionSystem is System, Constants {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
 //                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
-                            objects[count] = objs[i];
-                            count++;
+                            SizedArray.add(matchedObjects, objs[i] );
                         }
                     }
                 }
             }
         }
-        return objects;
+        return matchedObjects;
     }
 
     /**

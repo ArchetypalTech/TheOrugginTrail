@@ -44,17 +44,12 @@ contract MeatPuppetSystem is System, Constants {
      *  a room ID and then spawns the player there.
      */
     function spawnPlayer(uint32 pId, uint32 rId) public {
+        console.log("--->spawn player:%d, room:%d", pId, rId);
         world = _world();
-        spawn(rId);
+        _enterRoom(rId, pId);
     }
 
-    function spawn(uint32 startId) public {
-        console.log("--->spawn");
-        // start on the mountain
-        _enterRoom(0);
-    }
-
-    function _handleAlias(string[] memory tokens, uint32 curRm) private returns (uint8 err) {
+    function _handleAlias(string[] memory tokens, uint32 playerId) private returns (uint8 err) {
         // we are not handling go aliases right now
         uint32 curRm = Player.getRoomId(playerId);
 
@@ -86,7 +81,7 @@ contract MeatPuppetSystem is System, Constants {
         } else if (vrb == ActionType.Take ) {
             e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
-            e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm);
+            e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm, playerId);
         }  else {
             e = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
