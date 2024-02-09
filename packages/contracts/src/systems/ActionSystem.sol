@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore} from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
 import { ErrCodes, VerbData } from '../constants/defines.sol';
 
@@ -35,29 +35,54 @@ contract ActionSystem is System, Constants {
         if (sizedDids.length > 0 && sizedDids[0] != 0) {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);
-            _processObjects(cmd.verb, sizedDids, true);
+            _processObjects(cmd, sizedDids, true);
         }
         return err;
     }
 
-    function _processObjects(ActionType t, uint32[MAX_OBJ] memory objs, bool isD) private view returns(uint8 er) {
-        uint32 ct = SizedArray.count(objs);
+    // flip the action bit i.e make it a past participle, broken/smashed/opened
+    // then I guess we need to return a success bit that the objects have been flipped
+    // also should handle for the base case
+    function _processObjects(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private view returns(uint8 er) {
+        uint32 ct = SizedArray.count(objIDs);
         console.log("->sz:%d", ct);
-//        for (u32 i = 0; i < ct; i++) {
-//
-//        }
+        for (uint32 i = 0; i < ct; i++) {
+            // set the action bit on the object for the verb
+            if (isD) {
+                // get the object data
+                DirObjectStoreData memory objData = DirObjectStore.get(objIDs[i]);
+                // are we dealing with a specific action or a general action i.e de we
+                // have an indirectObject in the command. If we don't have an indirectObj
+                // then we just do a base case which I dont know what that actually looks like
+                if (cmd.indirectDirNoun != DirObjectType.None) {
+                    for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
+                        ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
+                        if (actionData.enabled) {
+                            // flip the bit
+                            actionData.dBit = !actionData.dBit;
+                        }
+                    }
+                } else {
+                    // handle base case for verb
+                    // handleBaseForVrb(cmd)
+                }
+
+            } else {
+                // handle for objects
+            }
+        }
     }
 
     /**
         @dev Fetch the DirectionObjects we might need to act on
-        VERB `t` needs to be mapped to it's corresponding RESPONSE i.e
-        KICK/THROW/HIT -> DAMAGE
+    VERB `t` needs to be mapped to it's corresponding RESPONSE i.e
+    KICK/THROW/HIT -> DAMAGE
         If DAMAGE is ENABLED then its DAMAGE state can be flipped
         i.e DAMAGE -> DAMAGED
     */
     function _fetchDObjsForType(DirObjectType dObjType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
         console.log("-->FETCH_DOBJS");
-        uint32[MAX_OBJ] memory matchedObjects;
+        uint32[MAX_OBJ] memory matchedObIDs;
         uint32[MAX_OBJ] memory objs =  RoomStore.getDirObjIds(rm);
         for (uint256 i = 0; i < objs.length; i++ ) {
             uint32[MAX_OBJ] memory actionIds =  DirObjectStore.getObjectActionIds(objs[i]);
@@ -72,13 +97,13 @@ contract ActionSystem is System, Constants {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
 //                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
-                            SizedArray.add(matchedObjects, objs[i]);
+                            SizedArray.add(matchedObIDs, objs[i]);
                         }
                     }
                 }
             }
         }
-        return matchedObjects;
+        return matchedObIDs;
     }
 
     /**
