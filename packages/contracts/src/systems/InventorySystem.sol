@@ -14,7 +14,7 @@ contract InventorySystem is System {
     function inventory(address world, uint32 playerId) public returns (uint8 err) {
         uint32[32] memory objIds = Player.getObjectIds(playerId);
         if (SizedArray.count(objIds) == 0) {
-            Output.set("Your carrier bag is empty");
+            Output.set(playerId,"Your carrier bag is empty");
             return 0;
         }
         string memory itemTxt = "You have a ";
@@ -25,7 +25,7 @@ contract InventorySystem is System {
                 }
                 itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
         }
-        Output.set(itemTxt);
+        Output.set(playerId,itemTxt);
         return 0;
     }
 
@@ -43,7 +43,7 @@ contract InventorySystem is System {
             for (uint8 i = 0; i < SizedArray.count(roomObjIds); i++) {
                 ObjectType testType = ObjectStore.getObjectType(roomObjIds[i]);
                 if (testType == objType) {
-                    Output.set("You picked it up");
+                    Output.set(playerId,"You picked it up");
 
                     // add the item to the inventory
                     uint32[32] memory playerObjIds = Player.getObjectIds(playerId);
@@ -62,7 +62,7 @@ contract InventorySystem is System {
         }
 
         if (itemPickedUp == false) {
-            Output.set("That isn't here");
+            Output.set(playerId,"That isn't here");
         }
 
         return 0;
@@ -78,7 +78,7 @@ contract InventorySystem is System {
             for (uint8 i = 0; i < SizedArray.count(playerObjIds); i++) {
                 ObjectType testType = ObjectStore.getObjectType(playerObjIds[i]);
                 if (testType == objType) {
-                    Output.set("You took the item from your faded Aldi bag and placed it on the floor");
+                    Output.set(playerId,"You took the item from your faded Aldi bag and placed it on the floor");
 
                     // add the item to the room
                     uint32[32] memory roomObjIds = RoomStore.getObjectIds(rId);
@@ -92,10 +92,10 @@ contract InventorySystem is System {
                     return 0;
                 }
             }
-            Output.set("That item is not in the Aldi carrer bag");
+            Output.set(playerId,"That item is not in the Aldi carrer bag");
             return 0;
         }
-        Output.set("I'm not sure what one of those is");
+        Output.set(playerId,"I'm not sure what one of those is");
 
         return 0;
     }

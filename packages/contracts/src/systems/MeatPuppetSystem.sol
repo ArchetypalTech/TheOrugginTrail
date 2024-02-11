@@ -32,7 +32,7 @@ contract MeatPuppetSystem is System, Constants {
 
     // a quick note on Linking Libs
     // we cant use the `using LookAt for *;` syntax
-    // because we dont seem to be able to dynamically 
+    // because we dont seem to be able to dynamically
     // link libs with forge i.e we need to `include` them
     // which increases the contract size.
     address world;
@@ -59,7 +59,7 @@ contract MeatPuppetSystem is System, Constants {
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
-            e = LookAt.stuff(world, tokens, curRm);
+            e = LookAt.stuff(world, tokens, curRm, playerId);
         }
         return e;
     }
@@ -77,27 +77,23 @@ contract MeatPuppetSystem is System, Constants {
         console.log("---->HDL_VRB");
         VerbData memory cmdData = IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
-            e = LookAt.stuff(world, tokens, curRm);
+            e = LookAt.stuff(world, tokens, curRm, playerId);
         } else if (vrb == ActionType.Take ) {
             e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
             e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm, playerId);
+        } else if (vrb == ActionType.Kick) {
+            e = Kick.kick(world, tokens, curRm, playerId);
         }  else {
             e = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
-            /*else if (vrb == ActionType.Unlock) {
-            e = Open.unlock
-            } else if (vrb == ActionType.Use) {
-            e = Open.unlock
-            }
-            */
         return e;
     }
 
     function _enterRoom(uint32 rId, uint32 playerId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(playerId, rId);
-        Output.set(LookAt.getRoomDesc(rId));
+        Output.set(playerId,LookAt.getRoomDesc(rId));
         return 0;
     }
 
@@ -151,8 +147,9 @@ contract MeatPuppetSystem is System, Constants {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
             errMsg = _insultMeat(err, "");
-            Output.set(errMsg);
+            Output.set(playerId,errMsg);
             return er;
+
         } else {
             // either a do something or move rooms command
             if (move) {
