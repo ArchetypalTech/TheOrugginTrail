@@ -12,7 +12,7 @@ library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
 
 
-    function stuff(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 e) {
+    function stuff(address wrld, string[] memory tokens, uint32 curRmId, uint32 playerId) internal returns (uint8 e) {
         // Composes the descriptions for stuff Players can see
         // right now that's from string's stored in object meta data
         console.log("---->SEE T:%s, R:%d", tokens[0], curRmId);
@@ -28,12 +28,12 @@ library LookAt {
             if (tokens.length > 1) {
                gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
                if (gObj != GrammarType.Adverb) {
-                  err = _lookAround(curRmId, wrld);
+                  err = _lookAround(curRmId, wrld, playerId);
                   console.log("->_LA:%s", err);
                }
             } else {
                 // alias form LOOK
-                  err = _lookAround(curRmId, wrld);
+                  err = _lookAround(curRmId, wrld, playerId);
                   console.log("->_LOOK:%s", err);
             }
         } else if ( vrb == ActionType.Describe || vrb == ActionType.Look) {
@@ -135,9 +135,9 @@ library LookAt {
         }
     }
 
-    function _lookAround(uint32 rId, address w) internal returns (uint8 er) {
+    function _lookAround(uint32 rId, address w, uint32 playerId) internal returns (uint8 er) {
 
-       Output.set(_genDescText(rId, w));
+       Output.set(playerId,_genDescText(rId, w));
 
 
        return 0 ;

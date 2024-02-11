@@ -9,7 +9,7 @@ import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomSt
 
 library Kick {
     /* k_cmd = kick, [the], obj, [ ( at, [the], obj ) ]; */
-    function kick(address wrld, string[] memory tokens, uint32 curRmId) internal returns (uint8 err) {
+    function kick(address wrld, string[] memory tokens, uint32 curRmId, uint32 playerId) internal returns (uint8 err) {
     /*  */
         console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);
 
@@ -41,24 +41,24 @@ library Kick {
                             ActionStoreData memory action = ActionStore.get(actionIndex);
                             // we found a breakable object
                             if (action.actionType == ActionType.Break) {
-                                Output.set("you broke something");
+                                Output.set(playerId,"you broke something");
 
                                 // remove kicked object from the room
                                 objIds[objectIndex] = 0;
-                                RoomStore.setObjectIds(curRmId, objIds);
+     //TODO - MAKE SURE YOU RE-ADD THIS DDT                           RoomStore.setObjectIds(curRmId, objIds);
                                 return 0;
                             }
                         }
                     }
 
 
-                        Output.set("You kick the ball");
+                        Output.set(playerId, "You kick the ball");
 
                     return 0;
                 }
             }
         }
-        Output.set("Kick what?");
+        Output.set(playerId,"Kick what?");
         return 0;
     }
 
