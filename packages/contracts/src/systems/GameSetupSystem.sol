@@ -4,12 +4,17 @@ pragma solidity >=0.8.21;
 // get some debug OUT going
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
+import { IWorld } from "../codegen/world/IWorld.sol";
 import { ErrCodes } from '../constants/defines.sol';
 import { Constants } from '../constants/Constants.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
 import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
+/**
+ * @dev We use this to setup the word for dev and we could use this to setup
+ * the world for reals. But right now we arent this is pure test mode.
+ */
 contract GameSetupSystem is System, Constants {
 
     uint32 dirObjId = 1;
@@ -21,21 +26,23 @@ contract GameSetupSystem is System, Constants {
     uint32 KMountainPath = 0;
 
     function init() public returns (uint32) {
-        setupWorld();
+        _setupWorld();
         return 0;
     }
 
-    function setupWorld() private {
-        setupRooms();
-        setupPlayers();
+    function _setupWorld() private {
+        _setupRooms();
+        _setupPlayers();
+        IWorld(_world()).meat_TokeniserSystem_initLUTS();
+        IWorld(_world()).meat_MeatPuppetSystem_spawnPlayer(1,1);
     }
 
-    function textGuid(string memory str) private returns (uint32) {
+    function _textGuid(string memory str) private returns (uint32) {
         bytes4 trunc = bytes4(keccak256(abi.encodePacked(str)));
         return uint32(trunc);
     }
 
-    function guid() private view returns (uint32) {
+    function _guid() private view returns (uint32) {
         bytes32 hash = keccak256(
             abi.encodePacked(
                 block.timestamp,
@@ -47,14 +54,17 @@ contract GameSetupSystem is System, Constants {
         uint32 g = uint32(uint256(hash));
         return g++;
     }
-
-    function setupPlayers() private {
-        Player.setRoomId(0, 0);
-        Player.setRoomId(1, 0);
-        Player.setRoomId(2, 0);
+    // we start the main loop such as it is
+    // with the call to `_spawn_player`
+    // even though we are actually adding the players
+    // to the game...
+    function _setupPlayers() private {
+        Player.setRoomId(1, 1);
+        Player.setRoomId(2, 1);
+        Player.setRoomId(3, 1);
     }
 
-    function clearArr(uint32[MAX_OBJ] memory arr) private view {
+    function _clearArr(uint32[MAX_OBJ] memory arr) private view {
         console.log("---> clear");
         for (uint8 i = 0; i < MAX_OBJ; i++) {
             arr[i] = 0;
@@ -110,7 +120,7 @@ contract GameSetupSystem is System, Constants {
                                 "not quite spherical, it's "
                                 "kickable though", "football", ball_actions));
 
-         RoomStore.setDescription(KPlain,  'a windswept plain');
+        RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
 
         bytes32 tid_plain = keccak256(abi.encodePacked('a windsept plain'));
@@ -124,7 +134,6 @@ contract GameSetupSystem is System, Constants {
 
     function _setupBarn() private {
         // KBARN -> S
-        // TODO add a smash action to the window
         uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true);
         uint32[MAX_OBJ] memory barn_plain;
         barn_plain[0] = open_2_south;
@@ -157,7 +166,7 @@ contract GameSetupSystem is System, Constants {
                                                     "plenty of corners and dark shadows");
 
 
-        RoomStore.setDescription(KBarn, 'a barn'); // this should be auto gen
+        RoomStore.setDescription(KBarn, 'a barn');
         RoomStore.setRoomType(KBarn, RoomType.Room);
         createPlace(KBarn, dObjs, objs, tid_barn);
     }
@@ -193,7 +202,7 @@ contract GameSetupSystem is System, Constants {
 
     }
 
-    function setupRooms() private {
+    function _setupRooms() private {
         _setupPlain();
         _setupBarn();
         _createMountainPath();
@@ -219,7 +228,7 @@ contract GameSetupSystem is System, Constants {
 
     function createAction(ActionType actionType, string memory desc, bool enabled, bool dBit) private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
-        uint32 aId = textGuid(desc);
+        uint32 aId = _textGuid(desc);
         TxtDefStore.set(txtId, aId, TxtDefType.Action, desc);
         ActionStoreData memory actionData = ActionStoreData(actionType, txtId, enabled, dBit);
         ActionStore.set(aId, actionData);

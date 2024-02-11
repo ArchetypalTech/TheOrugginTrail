@@ -153,17 +153,6 @@ contract PostDeploy is Script {
 
         IWorld(worldAddress).meat_GameSetupSystem_init();
 
-        IWorld(worldAddress).meat_TokeniserSystem_initTS();
-        
-        IWorld(worldAddress).meat_DirectionSystem_initDFS(worldAddress);
-
-        IWorld(worldAddress).meat_MeatPuppetSystem_initGES(worldAddress);
-
-        //console.log("--->TK:%s DF:%s MP:%s", tokeniser, directionFinder, meatPuppet);
-
-        //setupData();
-        //setupMapData();
-
         vm.stopBroadcast();
     }
 }

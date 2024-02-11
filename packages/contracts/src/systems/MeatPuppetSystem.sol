@@ -17,6 +17,8 @@ import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
 
 import { IWorld } from "../codegen/world/IWorld.sol";
 
+import { VerbData } from "../constants/defines.sol";
+
 import { LookAt } from '../libs/LookLib.sol';
 
 import { Kick } from '../libs/KickLib.sol';
@@ -28,17 +30,23 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 contract MeatPuppetSystem is System, Constants {
 
-    using LookAt for *;
-
+    // a quick note on Linking Libs
+    // we cant use the `using LookAt for *;` syntax
+    // because we dont seem to be able to dynamically
+    // link libs with forge i.e we need to `include` them
+    // which increases the contract size.
     address world;
 
-    // we call this from the post deploy contract
-    function initGES(address wrld) public returns (address) {
-        console.log('--->initGES() wr:%s', wrld);
-
-        world = wrld;
-
-        return address(this);
+    /**
+     * @param pId a player id and a room id
+     * @param rId a room id
+     * @dev the initialisation routine of right now the whole game takes a player id and
+     *  a room ID and then spawns the player there.
+     */
+    function spawnPlayer(uint32 pId, uint32 rId) public {
+        console.log("--->spawn player:%d, room:%d", pId, rId);
+        world = _world();
+        _enterRoom(rId, pId);
     }
 
     function _handleAlias(string[] memory tokens, uint32 playerId) private returns (uint8 err) {
@@ -47,7 +55,7 @@ contract MeatPuppetSystem is System, Constants {
 
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
-        console.log("---->HDL_ALIAS");
+//        console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
@@ -56,14 +64,18 @@ contract MeatPuppetSystem is System, Constants {
         return e;
     }
 
-
+    /**
+        At this point we should have a valid `VRB` as the initial parser takes care of this
+        for us. We have already handled MOVE's and `ALIASES` (i.e short forms) so all that
+        remains is to handle `LOOK` commands, `INVENTORY` cmds and everything else.
+    */
     function _handleVerb(string[] memory tokens,  uint32 playerId) private returns (uint8 err) {
 
         uint32 curRm = Player.getRoomId(playerId);
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
-        IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
+        VerbData memory cmdData = IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm, playerId);
         } else if (vrb == ActionType.Take ) {
@@ -72,13 +84,9 @@ contract MeatPuppetSystem is System, Constants {
             e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Kick) {
             e = Kick.kick(world, tokens, curRm, playerId);
+        }  else {
+            e = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
-            /*else if (vrb == ActionType.Unlock) {
-            e = Open.unlock
-            } else if (vrb == ActionType.Use) {
-            e = Open.unlock
-            }
-            */
         return e;
     }
 
@@ -94,14 +102,14 @@ contract MeatPuppetSystem is System, Constants {
     // checks for first TOKEN which can be either a GO or another VERB.
     function processCommandTokens(string[] calldata tokens, uint32 playerId) public returns (uint8 err) {
         /* see action diagram in VP (tokenise) for logic */
-        uint8 err;
+        uint8 er;
         bool move;
         uint32 nxt;
 
         uint32 rId = Player.getRoomId(playerId);
 
         if (tokens.length > GameConstants.MAX_TOK) {
-            err = ErrCodes.ER_PR_TK_CX;
+            er = ErrCodes.ER_PR_TK_CX;
         }
         string memory tok1 = tokens[0];
         console.log("---->CMD: %s", tok1);
@@ -111,7 +119,7 @@ contract MeatPuppetSystem is System, Constants {
             //console.log("---->DIR:");
             /* DIR: form */
             move = true;
-            (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+            (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
         } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
@@ -119,28 +127,29 @@ contract MeatPuppetSystem is System, Constants {
                 if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
                     /* GO: form */
                     move = true;
-                    (err, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+                    (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
-                    err = _handleVerb(tokens, playerId);
+                    er = _handleVerb(tokens, playerId);
                     console.log("->ERR: %s", err);
                     move = false;
                 }
             } else {
-                err = _handleAlias(tokens, playerId);
+                er = _handleAlias(tokens, playerId);
                 move = false;
             }
         } else {
-            err = ErrCodes.ER_PR_NOP;
+            er = ErrCodes.ER_PR_NOP;
         }
 
         /* we have gone through the TOKENS, give err feedback if needed */
-        if (err != 0) {
+        if (er != 0) {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
             errMsg = _insultMeat(err, "");
             Output.set(playerId,errMsg);
-            return err;
+            return er;
+
         } else {
             // either a do something or move rooms command
             if (move) {

@@ -10,8 +10,6 @@ import {DirObjectStore, DirObjectStoreData, ActionStoreData, ActionStore, RoomSt
 library Kick {
     /* k_cmd = kick, [the], obj, [ ( at, [the], obj ) ]; */
     function kick(address wrld, string[] memory tokens, uint32 curRmId, uint32 playerId) internal returns (uint8 err) {
-    /*  */
-        console.log("---->KICK T:%s, R:%d", tokens[0], curRmId);
 
         uint8 tok_err;
         string memory tok = tokens[1];
@@ -25,17 +23,16 @@ library Kick {
 
                 // have we found the ball in the room?
                 if (testType == objType) {
-                    console.log("------>we found the ball");
-                    // we need a check to see if the object is actually kickable
 
+                    // we need a check to see if the object is actually kickable
                     // the exits for this room
                     uint32[32] memory dirObjIds = RoomStore.getDirObjIds(curRmId);
                     uint32 dirIdCount = SizedArray.count(dirObjIds);
-                    console.log('-------->dirObjIds.count = %d', dirIdCount);
+
                     // iterate through direction objects
                     for (uint8 dirObjectIndex = 0; dirObjectIndex < dirIdCount; dirObjectIndex++) {
                         DirObjectStoreData memory dir = DirObjectStore.get(dirObjectIndex);
-                        console.log('---------->dir.objectActionIds.length = %d', dir.objectActionIds.length);
+
                         // iterate through the actions of the direction object
                         for (uint8 actionIndex = 0; actionIndex < dir.objectActionIds.length; actionIndex++) {
                             ActionStoreData memory action = ActionStore.get(actionIndex);
@@ -45,7 +42,7 @@ library Kick {
 
                                 // remove kicked object from the room
                                 objIds[objectIndex] = 0;
-     //TODO - MAKE SURE YOU RE-ADD THIS DDT                           RoomStore.setObjectIds(curRmId, objIds);
+                        //ddt stack size issue        RoomStore.setObjectIds(curRmId, objIds);
                                 return 0;
                             }
                         }
