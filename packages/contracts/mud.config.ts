@@ -203,6 +203,7 @@ export default mudConfig({
             valueSchema: {
                 roomId: "uint32",
                 objectIds: "uint32[32]",
+                name: "string",
             },
         },
     },

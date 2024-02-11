@@ -62,6 +62,12 @@ contract GameSetupSystem is System, Constants {
         Player.setRoomId(1, 1);
         Player.setRoomId(2, 1);
         Player.setRoomId(3, 1);
+
+
+        Player.setName(1,"Bob");
+        Player.setName(2,"Steve");
+        Player.setName(3,"Nigel");
+
     }
 
     function _clearArr(uint32[MAX_OBJ] memory arr) private view {

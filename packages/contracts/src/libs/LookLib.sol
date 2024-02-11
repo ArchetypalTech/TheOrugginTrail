@@ -2,11 +2,12 @@
 pragma solidity >=0.8.21;
 
 import {console} from "forge-std/console.sol";
-import { IWorld } from '../codegen/world/IWorld.sol';
+import {IWorld} from '../codegen/world/IWorld.sol';
+import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {SizedArray} from '../libs/SizedArrayLib.sol';
 
-import { ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType } from '../codegen/common.sol';
-import { RoomStore, RoomStoreData, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore } from '../codegen/index.sol';
+import {ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType} from '../codegen/common.sol';
+import {Player, PlayerTableId, RoomStore, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore} from '../codegen/index.sol';
 
 library LookAt {
     /* l_cmd = (look, at, [ the ] , obj) | (look, around, [( [the], place )]) */
@@ -22,21 +23,21 @@ library LookAt {
 
         // we know it is an action because the commandProcessors has pre-parsed for us
         // so we dont need to test for a garbage vrb token
-        if ( vrb == ActionType.Look ) {
+        if (vrb == ActionType.Look) {
             console.log("---->LK RM:%s", curRmId);
             //string memory tok = tokens[tokens.length -1]; // use to determine the direct object
             if (tokens.length > 1) {
-               gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
-               if (gObj != GrammarType.Adverb) {
-                  err = _lookAround(curRmId, wrld, playerId);
-                  console.log("->_LA:%s", err);
-               }
+                gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length - 1]);
+                if (gObj != GrammarType.Adverb) {
+                    err = _lookAround(curRmId, wrld, playerId);
+                    console.log("->_LA:%s", err);
+                }
             } else {
                 // alias form LOOK
-                  err = _lookAround(curRmId, wrld, playerId);
-                  console.log("->_LOOK:%s", err);
+                err = _lookAround(curRmId, wrld, playerId);
+                console.log("->_LOOK:%s", err);
             }
-        } else if ( vrb == ActionType.Describe || vrb == ActionType.Look) {
+        } else if (vrb == ActionType.Describe || vrb == ActionType.Look) {
             console.log("---->DESC");
         }
         return err;
@@ -45,7 +46,7 @@ library LookAt {
     function getRoomDesc(uint32 id) internal view returns (string memory d) {
         // return the room description but dont bother with the exits or the objects
         string memory desc = "You are ";
-        if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+        if (RoomStore.getRoomType(id) == RoomType.Plain) {
             desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
         } else {
             desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
@@ -54,11 +55,11 @@ library LookAt {
         return desc;
     }
 
-    function _genDescText(uint32 id, address wrld) internal view returns (string memory) {
+    function _genDescText(uint32 playerId, uint32 id, address wrld) internal view returns (string memory) {
         string memory desc = "You are standing ";
         string memory storedDesc = TxtDefStore.getValue(RoomStore.getTxtDefId(id));
 
-        if ( RoomStore.getRoomType(id) == RoomType.Plain ) {
+        if (RoomStore.getRoomType(id) == RoomType.Plain) {
             desc = string(abi.encodePacked(desc, "on ", RoomStore.getDescription(id), "\n"));
         } else {
             desc = string(abi.encodePacked(desc, "in ", RoomStore.getDescription(id), "\n"));
@@ -70,8 +71,11 @@ library LookAt {
         desc = string(abi.encodePacked(desc, _genObjDesc(RoomStore.getObjectIds(id))));
 
         // handle the rooms exits
-
         desc = string(abi.encodePacked(desc, _genExitDesc(RoomStore.getDirObjIds(id), wrld)));
+
+        // handle player
+        desc = string(abi.encodePacked(desc, _genPlayerPresenceDesc(playerId, id, wrld)));
+
 
         return desc;
     }
@@ -81,11 +85,11 @@ library LookAt {
         uint32 count = SizedArray.count(objs);
         if (count != 0) {// if the first item is 0 then there are no objects
             string memory objsDesc = "\nYou can alse see a ";
-            for(uint8 i = 0; i < count; i++) {
-                    objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n"));
-                    bytes32 tId =  ObjectStore.getTxtDefId(objs[i]);
+            for (uint8 i = 0; i < count; i++) {
+                objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n"));
+                bytes32 tId = ObjectStore.getTxtDefId(objs[i]);
 
-                    objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
+                objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
             }
             return objsDesc;
         }
@@ -111,32 +115,68 @@ library LookAt {
 
         if (count != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";
-            for(uint8 i = 0; i < count; i++) {
-                if (objs[i] != 0) { // again, an id of 0 means no value
-                    DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);// there is a fleshy path to the | there
-                   if (i == 0) {
-                       exitsDesc = string(abi.encodePacked(exitsDesc, _genMaterial(objData.matType,
-                                                                                   objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
-                                                                                   "to the ",
-                                                                                   IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
-                   } else { // we got more exits
-                       exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
-                                                                                                      objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
-                                                                                                      "to the ",IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
-                                                                                                      "\n"));
-                   }
+            for (uint8 i = 0; i < count; i++) {
+                if (objs[i] != 0) {// again, an id of 0 means no value
+                    DirObjectStoreData memory objData = DirObjectStore.get(objs[i]);
+                    // there is a fleshy path to the | there
+                    if (i == 0) {
+                        exitsDesc = string(abi.encodePacked(exitsDesc, _genMaterial(objData.matType,
+                            objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
+                            "to the ",
+                            IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n"));
+                    } else {// we got more exits
+                        exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
+                            objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
+                            "to the ", IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
+                            "\n"));
+                    }
                 }
             }
             return exitsDesc;
         }
     }
 
+
+    // there is a PATH made os mud to the DIR | there is a wood door to the
+    function _genPlayerPresenceDesc(uint32 playerId, uint32 roomId, address wrld) internal view returns (string memory) {
+        uint32[32] memory playerIdsInRoom;
+
+        // logic
+        for (uint32 i = 1; i <= 3; i++) {
+            if (playerId != i) {
+                uint32 otherPlayerRoomId = Player.getRoomId(i);
+                if (otherPlayerRoomId == roomId) {
+                    SizedArray.add(playerIdsInRoom, i);
+                }
+            }
+        }
+
+        //formatting
+
+        uint32 count = SizedArray.count(playerIdsInRoom);
+
+        if (count == 1) {
+            return string(abi.encodePacked("\nIn this room is ", Player.getName(playerIdsInRoom[0])));
+        } else if (count > 1) {
+            string memory desc = "";
+            for (uint32 i = 0 ; i < count; i ++) {
+                desc = string(abi.encodePacked(desc, Player.getName(playerIdsInRoom[i])));
+             if(i != count - 1)   desc = string(abi.encodePacked(desc, i != count - 2 ? ", " : " and "));
+            }
+
+            desc = string(abi.encodePacked(desc, " are here."));
+
+            return desc;
+        }
+
+        return 'No other players at this location';
+
+    }
+
+
     function _lookAround(uint32 rId, address w, uint32 playerId) internal returns (uint8 er) {
-
-       Output.set(playerId,_genDescText(rId, w));
-
-
-       return 0 ;
+        Output.set(playerId, _genDescText(playerId, rId, w));
+        return 0;
     }
 }
 
