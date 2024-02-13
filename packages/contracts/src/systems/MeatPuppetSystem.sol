@@ -59,7 +59,7 @@ contract MeatPuppetSystem is System, Constants {
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).meat_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
-            e = LookAt.stuff(world, tokens, curRm);
+            e = LookAt.stuff(world, tokens, curRm, playerId);
         }
         return e;
     }
@@ -78,7 +78,7 @@ contract MeatPuppetSystem is System, Constants {
         console.log("---->HDL_VRB");
         VerbData memory cmdData = IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
-            e = LookAt.stuff(world, tokens, curRm);
+            e = LookAt.stuff(world, tokens, curRm, playerId);
         } else if (vrb == ActionType.Take ) {
             e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
@@ -86,19 +86,13 @@ contract MeatPuppetSystem is System, Constants {
         }  else {
             (e, resultStr) = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
-            /*else if (vrb == ActionType.Unlock) {
-            e = Open.unlock
-            } else if (vrb == ActionType.Use) {
-            e = Open.unlock
-            }
-            */
         return e;
     }
 
     function _enterRoom(uint32 rId, uint32 playerId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(playerId, rId);
-        Output.set(LookAt.getRoomDesc(rId));
+        Output.set(playerId,LookAt.getRoomDesc(rId));
         return 0;
     }
 

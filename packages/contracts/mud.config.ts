@@ -184,8 +184,12 @@ export default mudConfig({
             },
         },
         Output: {
-            keySchema: {},
-            valueSchema: "string",
+            keySchema: {
+            },
+            valueSchema: {
+                playerId: "uint32",
+                text: "string",
+           },
         },
         Description: {
             keySchema: {},

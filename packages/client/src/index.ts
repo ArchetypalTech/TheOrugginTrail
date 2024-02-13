@@ -35,9 +35,11 @@ $('body').terminal(async function(command)  {
 
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
-  console.log("Output updated", update, { nextValue, prevValue });
-    var term = $.terminal.active();
-    term.echo(nextValue.value);
+  if (nextValue.playerId == playerId) {
+    console.log("Output updated", update, { nextValue, prevValue });
+        var term = $.terminal.active();
+        term.echo(nextValue.text);
+    }
 });
 
 // https://vitejs.dev/guide/env-and-mode.html

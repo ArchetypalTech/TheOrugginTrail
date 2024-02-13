@@ -113,8 +113,8 @@ contract ActionSystem is System, Constants {
 
     /**
         @dev Fetch the DirectionObjects we might need to act on
-    VERB `t` needs to be mapped to it's corresponding RESPONSE i.e
-    KICK/THROW/HIT -> DAMAGE
+        VERB `t` needs to be mapped to it's corresponding RESPONSE i.e
+        KICK/THROW/HIT -> DAMAGE
         If DAMAGE is ENABLED then its DAMAGE state can be flipped
         i.e DAMAGE -> DAMAGED
     */
