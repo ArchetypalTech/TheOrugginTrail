@@ -23,8 +23,9 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 */
 contract ActionSystem is System, Constants {
 
-    function act(VerbData memory cmd, uint32 rm) public returns (uint8 er) {
+    function act(VerbData memory cmd, uint32 rm) public returns (uint8 er, string memory response) {
         uint8 err;
+        string memory responseStr;
         uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
         uint32[MAX_OBJ] memory sizedDids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
 
@@ -35,15 +36,38 @@ contract ActionSystem is System, Constants {
         if (sizedDids.length > 0 && sizedDids[0] != 0) {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);
-            _processObjects(cmd, sizedDids, true);
+            _setActionBits(cmd, sizedDids, true);
+//            _getResponseStr(cmd, sizedDids, true);
         }
-        return err;
+        return (err, responseStr);
+    }
+
+    function _handleBaseAction(uint32 actId) private returns (uint8 er, string memory response) {
+//        DirObjectStoreData memory objData = DirObjectStore.get(objID);
+//        for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
+//            ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
+//            if (actionData.enabled) {
+//            }
+//        }
+    }
+
+    function _getResponseStr() private {
+        console.log("--------> getResponseStr");
+    }
+
+    function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids, uint32 cnt) private returns (uint32 ct) {
+        uint32 id = ActionStore.getLinkedActionId(top);
+        if (id == 0) {return cnt;} else {
+            ++cnt;
+            SizedArray.add(ids, ActionStore.getLinkedActionId(top));
+            _followLinkedActions(id, ids, cnt);
+        }
     }
 
     // flip the action bit i.e make it a past participle, broken/smashed/opened
     // then I guess we need to return a success bit that the objects have been flipped
     // also should handle for the base case
-    function _processObjects(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private view returns(uint8 er) {
+    function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8 er) {
         uint32 ct = SizedArray.count(objIDs);
         console.log("->sz:%d", ct);
         for (uint32 i = 0; i < ct; i++) {
@@ -60,11 +84,25 @@ contract ActionSystem is System, Constants {
                         if (actionData.enabled) {
                             // flip the bit
                             actionData.dBit = !actionData.dBit;
+                            ActionStore.set(objData.objectActionIds[j], actionData);
+                            // follow any linked actions
+                            uint32 linkedActionId = ActionStore.getLinkedActionId(objData.objectActionIds[j]);
+                            if (linkedActionId != 0) {
+                                uint32[MAX_OBJ] memory linkedActions;
+                                uint32 count;
+                                _followLinkedActions(linkedActionId, linkedActions, count);
+                                console.log("------>followLinks count:%d", count);
+                                for (uint32 k = 0; k < SizedArray.count(linkedActions); k++) {
+                                    ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
+                                    lnkActionData.dBit = !lnkActionData.dBit;
+                                    ActionStore.set(linkedActions[k], lnkActionData);
+                                }
+                            }
                         }
                     }
                 } else {
                     // handle base case for verb
-                    // handleBaseForVrb(cmd)
+                    //handleBaseAction();
                 }
 
             } else {

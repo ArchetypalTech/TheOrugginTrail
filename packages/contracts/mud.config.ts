@@ -132,7 +132,8 @@ export default mudConfig({
                 // is it enabled: ie. can it be done
                 // if it CAN then HAS it been, like has it been unlocked
                 enabled: "bool", // can it be used?
-                dBit: "bool" // is it done, LOCK->lockED, CLOSE -> closeED etc
+                dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
+                linkedActionId: "uint32" // does it trigger something else
             },
         },
         // attach to rooms/paths to set the exits
