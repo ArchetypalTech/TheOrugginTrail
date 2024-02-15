@@ -183,6 +183,14 @@ export default mudConfig({
                 value: "string",
             },
         },
+        ActionOutputs: {
+            keySchema: {
+                actionId: "uint32",
+            },
+            valueSchema: {
+                txtIds: "bytes32[]"
+            },
+        },
         Output: {
             keySchema: {
             },
@@ -191,7 +199,7 @@ export default mudConfig({
                 text: "string",
            },
         },
-        Description: {
+        Description: { // might need a player id for multiplayer
             keySchema: {},
             valueSchema: {
                 txtIds: "bytes32[]"

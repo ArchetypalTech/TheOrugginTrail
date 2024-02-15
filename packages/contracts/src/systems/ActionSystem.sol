@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
 import { ErrCodes, VerbData } from '../constants/defines.sol';
 
@@ -85,6 +85,7 @@ contract ActionSystem is System, Constants {
                             // flip the bit
                             actionData.dBit = !actionData.dBit;
                             ActionStore.set(objData.objectActionIds[j], actionData);
+                            ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getTxtDefId(objData.objectActionIds[j]));
                             // follow any linked actions
                             uint32 linkedActionId = ActionStore.getLinkedActionId(objData.objectActionIds[j]);
                             if (linkedActionId != 0) {
@@ -96,6 +97,7 @@ contract ActionSystem is System, Constants {
                                     ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
                                     lnkActionData.dBit = !lnkActionData.dBit;
                                     ActionStore.set(linkedActions[k], lnkActionData);
+                                    ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getTxtDefId(linkedActions[k]));
                                 }
                             }
                         }
