@@ -115,25 +115,22 @@ export default mudConfig({
                 players: "uint32[32]"
             },
         },
-        // Actions have a NESSy property
-        // like are they doable, do'y
-        // eg a Winow can have an Open ActionType
-        // so that would make it NESSy OpenY
-        // this isn't the same as it being Open
-        // it's wether it can be opened, Openy
+        // NOTE the use of the `affects` and `affectedBy` actionIds
+        // we use these to create chains so if an action is `affectedBy`
+        // an object then that object must have the correct thing
+        // say a `rusty key` if they do then the `affects` would
+        // link to an `open` action and the thing would open.
         ActionStore: {
             keySchema: {
                 actionId: "uint32",
             },
             valueSchema: {
                 actionType: "ActionType",
-                txtDefId: "bytes32", // @DDT shoud we have a TRUE abd FALSe text here maybe?
-                // the next 2 are a pair really a door is a good example
-                // is it enabled: ie. can it be done
-                // if it CAN then HAS it been, like has it been unlocked
-                enabled: "bool", // can it be used?
+                dBitTxt: "bytes32", // txt when the state is flipped
+                enabled: "bool", // can it be used? so we can chain disabled actions that are triggered
                 dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
-                linkedActionId: "uint32" // does it trigger something else
+                affectsActionId: "uint32", // follow this action chain and flip bits
+                affectedByActionId: "uint32" // does this id match the calling action
             },
         },
         // attach to rooms/paths to set the exits

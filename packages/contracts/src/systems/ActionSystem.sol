@@ -56,18 +56,25 @@ contract ActionSystem is System, Constants {
     }
 
     function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids, uint32 cnt) private returns (uint32 ct) {
-        uint32 id = ActionStore.getLinkedActionId(top);
+        uint32 id = ActionStore.getAffectsActionId(top);
         if (id == 0) {return cnt;} else {
             ++cnt;
-            SizedArray.add(ids, ActionStore.getLinkedActionId(top));
+            SizedArray.add(ids, ActionStore.getAffectsActionId(top));
             _followLinkedActions(id, ids, cnt);
         }
     }
 
-    // flip the action bit i.e make it a past participle, broken/smashed/opened
-    // then I guess we need to return a success bit that the objects have been flipped
-    // also should handle for the base case
+    /// @notice flip the action bit i.e make it a past participle, broken/smashed/opened
+    // the logic is that we check for an enabled bit and then change the state
+    // and then follow any linked actions which allows us to then build puzzle chains
     function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8 er) {
+        /**
+            todo:
+            if (action.next.affectedByActionId == action.this.id) then { do stuff }
+            so a locked door that needs a `rusty key` would only get opened by a
+            `rusty key` that has an lock action set on it, the important part being
+            the id of the lock action and setting that on the correct item (`rusty key`)
+        */
         uint32 ct = SizedArray.count(objIDs);
         console.log("->sz:%d", ct);
         for (uint32 i = 0; i < ct; i++) {
@@ -77,7 +84,7 @@ contract ActionSystem is System, Constants {
                 DirObjectStoreData memory objData = DirObjectStore.get(objIDs[i]);
                 // are we dealing with a specific action or a general action i.e de we
                 // have an indirectObject in the command. If we don't have an indirectObj
-                // then we just do a base case which I dont know what that actually looks like
+                // then use the base case
                 if (cmd.indirectDirNoun != DirObjectType.None) {
                     for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
                         ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
@@ -85,9 +92,10 @@ contract ActionSystem is System, Constants {
                             // flip the bit
                             actionData.dBit = !actionData.dBit;
                             ActionStore.set(objData.objectActionIds[j], actionData);
-                            ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getTxtDefId(objData.objectActionIds[j]));
+                            // get the state change text and store
+                            ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getDBitTxt(objData.objectActionIds[j]));
                             // follow any linked actions
-                            uint32 linkedActionId = ActionStore.getLinkedActionId(objData.objectActionIds[j]);
+                            uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
                             if (linkedActionId != 0) {
                                 uint32[MAX_OBJ] memory linkedActions;
                                 uint32 count;
@@ -95,15 +103,21 @@ contract ActionSystem is System, Constants {
                                 console.log("------>followLinks count:%d", count);
                                 for (uint32 k = 0; k < SizedArray.count(linkedActions); k++) {
                                     ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
+                                    // flip the bit, and the enable bit if needed
+                                    lnkActionData.enabled = !lnkActionData.enabled;
                                     lnkActionData.dBit = !lnkActionData.dBit;
+                                    // store the new state
                                     ActionStore.set(linkedActions[k], lnkActionData);
-                                    ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getTxtDefId(linkedActions[k]));
+                                    // get the state change text and store
+                                    ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getDBitTxt(linkedActions[k]));
                                 }
                             }
                         }
                     }
                 } else {
-                    // handle base case for verb
+                    // handle base case for verb by looping though objects and flipping the state bits
+                    // if this is indeed the desired behaviour which it probably isn't so there is no implementation
+                    // here but we may want to, the current behaviour is take the txtDef from the action and use that
                     //handleBaseAction();
                 }
 
