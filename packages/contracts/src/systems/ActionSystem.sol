@@ -36,31 +36,29 @@ contract ActionSystem is System, Constants {
         if (sizedDids.length > 0 && sizedDids[0] != 0) {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);
-            _setActionBits(cmd, sizedDids, true);
-//            _getResponseStr(cmd, sizedDids, true);
+            if (cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
+                _handleBaseAction();
+            } else {
+                _setActionBits(cmd, sizedDids, true);
+            }
         }
         return (err, responseStr);
     }
 
-    function _handleBaseAction(uint32 actId) private returns (uint8 er, string memory response) {
-//        DirObjectStoreData memory objData = DirObjectStore.get(objID);
-//        for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
-//            ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
-//            if (actionData.enabled) {
-//            }
-//        }
+    function _handleBaseAction() private returns (uint8 er, string memory response) {
+       console.log("---->base action");
     }
 
     function _getResponseStr() private {
         console.log("--------> getResponseStr");
     }
 
-    function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids, uint32 cnt) private returns (uint32 ct) {
+    function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids) private returns(uint8 er)  {
         uint32 id = ActionStore.getAffectsActionId(top);
-        if (id == 0) {return cnt;} else {
-            ++cnt;
+        if (id == 0) {return 0;} else {
+            console.log("-->following links");
             SizedArray.add(ids, ActionStore.getAffectsActionId(top));
-            _followLinkedActions(id, ids, cnt);
+            _followLinkedActions(id, ids);
         }
     }
 
@@ -69,7 +67,7 @@ contract ActionSystem is System, Constants {
     // and then follow any linked actions which allows us to then build puzzle chains
     function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8 er) {
         /**
-            todo:
+            :TODO
             if (action.next.affectedByActionId == action.this.id) then { do stuff }
             so a locked door that needs a `rusty key` would only get opened by a
             `rusty key` that has an lock action set on it, the important part being
@@ -96,11 +94,12 @@ contract ActionSystem is System, Constants {
                             ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getDBitTxt(objData.objectActionIds[j]));
                             // follow any linked actions
                             uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
+                            console.log("--->link:%s", linkedActionId);
                             if (linkedActionId != 0) {
                                 uint32[MAX_OBJ] memory linkedActions;
-                                uint32 count;
-                                _followLinkedActions(linkedActionId, linkedActions, count);
-                                console.log("------>followLinks count:%d", count);
+                                SizedArray.add(linkedActions, linkedActionId);
+                                _followLinkedActions(linkedActionId, linkedActions);
+                                console.log("------>followLinks");
                                 for (uint32 k = 0; k < SizedArray.count(linkedActions); k++) {
                                     ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
                                     // flip the bit, and the enable bit if needed
@@ -118,13 +117,14 @@ contract ActionSystem is System, Constants {
                     // handle base case for verb by looping though objects and flipping the state bits
                     // if this is indeed the desired behaviour which it probably isn't so there is no implementation
                     // here but we may want to, the current behaviour is take the txtDef from the action and use that
-                    //handleBaseAction();
                 }
-
             } else {
                 // handle for objects
+                // :TODO
             }
         }
+
+        return 0;
     }
 
     /**
