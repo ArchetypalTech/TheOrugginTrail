@@ -71,6 +71,8 @@ contract TokeniserSystem is System {
     mapping (string => GrammarType) public grammarLookup;
     mapping (string => ObjectType) public objLookup;
     mapping (ObjectType => string) public reverseObjLookup;
+    mapping (DirObjectType => string) public reverseDObjLookup;
+    mapping (ActionType => string) public reverseVrbLookup;
     mapping (DirectionType => string) public revDirLookup;
     mapping (MaterialType => string) public revMat;
 
@@ -88,6 +90,7 @@ contract TokeniserSystem is System {
         setupDirObjs();
         setupGrammar();
         setupVrbAct();
+        setupRevVrb();
     }
 
     function getResponseForVerb(ActionType key) public view returns (ActionType[] memory) {
@@ -100,6 +103,18 @@ contract TokeniserSystem is System {
 
     function revMatType(MaterialType key) public view returns (string memory) {
         return revMat[key];
+    }
+
+    function revVrbType(ActionType key) public view returns (string memory) {
+        return reverseVrbLookup[key];
+    }
+
+    function revObjType(ObjectType key) public view returns (string memory) {
+        return reverseObjLookup[key];
+    }
+
+    function revDObjType(DirObjectType key) public view returns (string memory) {
+        return reverseDObjLookup[key];
     }
 
     function getObjectType(string memory key) public view returns (ObjectType) {
@@ -129,6 +144,27 @@ contract TokeniserSystem is System {
         responseLookup[ActionType.Open] = [ActionType.Open];
         responseLookup[ActionType.Break] = [ActionType.Break];
     }
+
+    function setupRevVrb() private {
+        reverseVrbLookup[ActionType.Go]         = "go";
+        reverseVrbLookup[ActionType.Move]       = "move";
+        reverseVrbLookup[ActionType.Loot]       = "loot";
+        reverseVrbLookup[ActionType.Describe]   = "describe";
+        reverseVrbLookup[ActionType.Take]       = "take";
+        reverseVrbLookup[ActionType.Kick]       = "kick";
+        reverseVrbLookup[ActionType.Lock]       = "lock";
+        reverseVrbLookup[ActionType.Unlock]     = "unlock";
+        reverseVrbLookup[ActionType.Open]       = "open";
+        reverseVrbLookup[ActionType.Look]       = "look";
+        reverseVrbLookup[ActionType.Close]      = "close";
+        reverseVrbLookup[ActionType.Break]      = "break";
+        reverseVrbLookup[ActionType.Throw]      = "throw";
+        reverseVrbLookup[ActionType.Drop]       = "drop";
+        reverseVrbLookup[ActionType.Inventory]  = "inventory";
+        reverseVrbLookup[ActionType.Burn]       = "burn";
+        reverseVrbLookup[ActionType.Light]      = "light";
+    }
+
     // we need to somewhere somehow read in the possible verbs if we
     // want users to have their own VERBS
     // how do we dynamically populate this ??
@@ -183,6 +219,13 @@ contract TokeniserSystem is System {
         dirObjLookup["LADDER"]      = DirObjectType.Ladder;
         dirObjLookup["PATH"]        = DirObjectType.Path;
         dirObjLookup["TRAIL"]       = DirObjectType.Trail;
+
+        reverseDObjLookup[DirObjectType.Door]        = "door";
+        reverseDObjLookup[DirObjectType.Window]      = "window";
+        reverseDObjLookup[DirObjectType.Stairs]      = "stairs";
+        reverseDObjLookup[DirObjectType.Ladder]      = "ladder";
+        reverseDObjLookup[DirObjectType.Path]        = "path";
+        reverseDObjLookup[DirObjectType.Trail]       = "trail";
     }
 
     // TODO: we probably no longer need this

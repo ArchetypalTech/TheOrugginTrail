@@ -17,7 +17,7 @@ library LookAt {
         // right now that's from string's stored in object meta data
         console.log("---->SEE T:%s, R:%d", tokens[0], curRmId);
         uint8 err;
-        ActionType vrb = IWorld(wrld).meat_TokeniserSystem_getActionType(tokens[0]);
+        ActionType vrb = IWorld(wrld).mp_TokeniserSystem_getActionType(tokens[0]);
         GrammarType gObj;
 
         // we know it is an action because the commandProcessors has pre-parsed for us
@@ -26,7 +26,7 @@ library LookAt {
             console.log("---->LK RM:%s", curRmId);
             //string memory tok = tokens[tokens.length -1]; // use to determine the direct object
             if (tokens.length > 1) {
-               gObj = IWorld(wrld).meat_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
+               gObj = IWorld(wrld).mp_TokeniserSystem_getGrammarType(tokens[tokens.length -1]);
                if (gObj != GrammarType.Adverb) {
                   err = _lookAround(curRmId, wrld, playerId);
                   console.log("->_LA:%s", err);
@@ -94,9 +94,9 @@ library LookAt {
     function _genMaterial(MaterialType mt, DirObjectType dt, string memory value, address wrld) internal view returns (string memory) {
         string memory dsc;
         if (dt == DirObjectType.Path || dt == DirObjectType.Trail) {
-            dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " "));
+            dsc = string(abi.encodePacked(value, " made mainly from ", IWorld(wrld).mp_TokeniserSystem_revMatType(mt), " "));
         } else {
-            dsc = string(abi.encodePacked(IWorld(wrld).meat_TokeniserSystem_revMatType(mt), " ", value, " "));
+            dsc = string(abi.encodePacked(IWorld(wrld).mp_TokeniserSystem_revMatType(mt), " ", value, " "));
 
         }
         return dsc;
@@ -118,11 +118,11 @@ library LookAt {
                        exitsDesc = string(abi.encodePacked(exitsDesc, _genMaterial(objData.matType,
                                                                                    objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
                                                                                    "to the ",
-                                                                                   IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
+                                                                                   IWorld(wrld).mp_TokeniserSystem_reverseDirType(objData.dirType), ".\n" ));
                    } else { // we got more exits
                        exitsDesc = string(abi.encodePacked(exitsDesc, "and there is a ", _genMaterial(objData.matType,
                                                                                                       objData.objType, TxtDefStore.getValue(objData.txtDefId), wrld),
-                                                                                                      "to the ",IWorld(wrld).meat_TokeniserSystem_reverseDirType(objData.dirType),
+                                                                                                      "to the ",IWorld(wrld).mp_TokeniserSystem_reverseDirType(objData.dirType),
                                                                                                       "\n"));
                    }
                 }

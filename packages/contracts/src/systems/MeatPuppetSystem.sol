@@ -35,7 +35,7 @@ contract MeatPuppetSystem is System, Constants {
     // because we dont seem to be able to dynamically 
     // link libs with forge i.e we need to `include` them
     // which increases the contract size.
-    address world;
+    address private world;
 
     /**
      * @param pId a player id and a room id
@@ -53,11 +53,11 @@ contract MeatPuppetSystem is System, Constants {
         // we are not handling go aliases right now
         uint32 curRm = Player.getRoomId(playerId);
 
-        ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
+        ActionType vrb = IWorld(world).mp_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
 //        console.log("---->HDL_ALIAS");
         if( vrb == ActionType.Inventory) {
-            e = IWorld(world).meat_InventorySystem_inventory(world, playerId);
+            e = IWorld(world).mp_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
             e = LookAt.stuff(world, tokens, curRm, playerId);
         }
@@ -73,18 +73,20 @@ contract MeatPuppetSystem is System, Constants {
 
         uint32 curRm = Player.getRoomId(playerId);
         string memory resultStr;
-        ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
+        ActionType vrb = IWorld(world).mp_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
-        VerbData memory cmdData = IWorld(world).meat_TokeniserSystem_fishTokens(tokens);
+        VerbData memory cmdData = IWorld(world).mp_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
             e = LookAt.stuff(world, tokens, curRm, playerId);
         } else if (vrb == ActionType.Take ) {
-            e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
+            e = IWorld(world).mp_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
-            e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm, playerId);
+            e = IWorld(world).mp_InventorySystem_drop(world,tokens, curRm, playerId);
         }  else {
-            (e, resultStr) = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
+            (e, resultStr) = IWorld(world).mp_ActionSystem_act(cmdData, curRm, playerId);
+            // this is probably not the place for this
+            Output.set(playerId, resultStr);
         }
         return e;
     }
@@ -112,21 +114,21 @@ contract MeatPuppetSystem is System, Constants {
         }
         string memory tok1 = tokens[0];
         console.log("---->CMD: %s", tok1);
-        DirectionType tokD = IWorld(world).meat_TokeniserSystem_getDirectionType(tok1);
+        DirectionType tokD = IWorld(world).mp_TokeniserSystem_getDirectionType(tok1);
 
         if (tokD != DirectionType.None) {
             //console.log("---->DIR:");
             /* DIR: form */
             move = true;
-            (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
-        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
+            (er, nxt) = IWorld(world).mp_DirectionSystem_getNextRoom(tokens, rId);
+        } else if (IWorld(world).mp_TokeniserSystem_getActionType(tok1) != ActionType.None ) {
             //console.log("---->VRB:");
             if (tokens.length >= 2) {
                 //console.log("-->tok.len %d", tokens.length);
-                if (IWorld(world).meat_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
+                if (IWorld(world).mp_TokeniserSystem_getActionType(tok1) == ActionType.Go) {
                     /* GO: form */
                     move = true;
-                    (er, nxt) = IWorld(world).meat_DirectionSystem_getNextRoom(tokens, rId);
+                    (er, nxt) = IWorld(world).mp_DirectionSystem_getNextRoom(tokens, rId);
                 } else {
                     /* VERB: form */
                     er = _handleVerb(tokens, playerId);
