@@ -126,21 +126,11 @@ export default mudConfig({
             },
             valueSchema: {
                 actionType: "ActionType",
-<<<<<<< HEAD
                 dBitTxt: "bytes32", // txt when the state is flipped
                 enabled: "bool", // can it be used? so we can chain disabled actions that are triggered
                 dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
                 affectsActionId: "uint32", // follow this action chain and flip bits
                 affectedByActionId: "uint32" // does this id match the calling action
-=======
-                txtDefId: "bytes32", // @DDT shoud we have a TRUE abd FALSe text here maybe?
-                // the next 2 are a pair really a door is a good example
-                // is it enabled: ie. can it be done
-                // if it CAN then HAS it been, like has it been unlocked
-                enabled: "bool", // can it be used?
-                dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
-                linkedActionId: "uint32" // does it trigger something else
->>>>>>> develop
             },
         },
         // attach to rooms/paths to set the exits
