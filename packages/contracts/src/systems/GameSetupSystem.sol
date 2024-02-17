@@ -143,7 +143,7 @@ contract GameSetupSystem is System, Constants {
                                 "door", barn_plain));
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
-                                "falls open\n", false, false, 0, 0);
+                                " falls open", false, false, 0, 0);
 
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"

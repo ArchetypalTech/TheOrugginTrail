@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, TxtDefStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
 import { ErrCodes, ResCodes, VerbData } from '../constants/defines.sol';
 
@@ -23,7 +23,10 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 */
 contract ActionSystem is System, Constants {
 
+    address private world;
+
     function act(VerbData memory cmd, uint32 rm, uint32 playerId) public returns (uint8 er, string memory response) {
+        world = _world();
         uint8 err;
         uint8 bitCnt;
         string memory responseStr;
@@ -60,13 +63,23 @@ contract ActionSystem is System, Constants {
     /// @param playerId, the player acting on the items/objects
     /// @return ResponseString, a composed response string built from the txtDef's on the linked actions
     ///
-    ///         The code previous to this runs through the actions tree and fishes out the default text
-    ///         definitions when it flips a bit.
+    /// The code previous to this runs through the actions tree and fishes out the default text
+    /// definitions when it flips a bit.
     function _getResponseStr(VerbData memory cmd, uint32 playerId) private returns(string memory){
         console.log("--------> getResponseStr");
-        string memory res;
-        //string memory vrb = IWorld(world).mp_TokeniserSystem_
+        string memory res = "you ";
+        res = string.concat(res, IWorld(world).mp_TokeniserSystem_revVrbType(cmd.verb), " the ",
+            IWorld(world).mp_TokeniserSystem_revObjType(cmd.directNoun));
+        res = string.concat(res, " at the ", IWorld(world).mp_TokeniserSystem_revDObjType(cmd.indirectDirNoun));
 
+        bytes32[] memory txtIds = ActionOutputs.getTxtIds(playerId);
+        uint256 ct = txtIds.length;
+        for (uint256 i = 0; i < ct; i++) {
+            if (txtIds[i] == 0){break;}
+            string memory t = TxtDefStore.getValue(txtIds[i]);
+            res = string.concat(res, "\n", t, "\n");
+        }
+        return res;
     }
 
     function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids) private returns(uint8 er)  {

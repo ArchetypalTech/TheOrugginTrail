@@ -35,7 +35,7 @@ contract MeatPuppetSystem is System, Constants {
     // because we dont seem to be able to dynamically 
     // link libs with forge i.e we need to `include` them
     // which increases the contract size.
-    address world;
+    address private world;
 
     /**
      * @param pId a player id and a room id
@@ -85,6 +85,8 @@ contract MeatPuppetSystem is System, Constants {
             e = IWorld(world).mp_InventorySystem_drop(world,tokens, curRm, playerId);
         }  else {
             (e, resultStr) = IWorld(world).mp_ActionSystem_act(cmdData, curRm, playerId);
+            // this is probably not the place for this
+            Output.set(playerId, resultStr);
         }
         return e;
     }
