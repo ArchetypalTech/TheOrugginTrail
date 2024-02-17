@@ -44,8 +44,8 @@ contract ActionSystem is System, Constants {
             }
         }
 
-        if (err == 0) {
-            // we flipped some bits
+        if (err == 0 && bc > 0) {
+            // we flipped some bits so generate responseStr
         }
         return (err, responseStr);
     }
