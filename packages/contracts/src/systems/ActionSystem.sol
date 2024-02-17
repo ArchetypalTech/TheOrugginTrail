@@ -94,6 +94,7 @@ contract ActionSystem is System, Constants {
                 // are we dealing with a specific action or a general action i.e de we
                 // have an indirectObject in the command. If we don't have an indirectObj
                 // then use the base case
+
                 if (cmd.indirectDirNoun != DirObjectType.None) {
                     for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
                         ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
