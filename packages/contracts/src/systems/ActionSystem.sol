@@ -11,7 +11,7 @@ import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
 import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
-import { ErrCodes, VerbData } from '../constants/defines.sol';
+import { ErrCodes, ResCodes, VerbData } from '../constants/defines.sol';
 
 import { Constants } from '../constants/Constants.sol';
 
@@ -25,6 +25,7 @@ contract ActionSystem is System, Constants {
 
     function act(VerbData memory cmd, uint32 rm) public returns (uint8 er, string memory response) {
         uint8 err;
+        uint8 bitCnt;
         string memory responseStr;
         uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
         uint32[MAX_OBJ] memory sizedDids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
@@ -37,10 +38,14 @@ contract ActionSystem is System, Constants {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);
             if (cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
-                _handleBaseAction();
+                (err, responseStr) = _handleBaseAction();
             } else {
-                _setActionBits(cmd, sizedDids, true);
+                (err, bitCnt) = _setActionBits(cmd, sizedDids, true);
             }
+        }
+
+        if (err == 0) {
+            // we flipped some bits
         }
         return (err, responseStr);
     }
@@ -63,9 +68,12 @@ contract ActionSystem is System, Constants {
     }
 
     /// @notice flip the action bit i.e make it a past participle, broken/smashed/opened
-    // the logic is that we check for an enabled bit and then change the state
-    // and then follow any linked actions which allows us to then build puzzle chains
-    function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8 er) {
+    /// @return er, error code. 0 for success or an error code
+    /// @return bitCount, records the number of bite flipped
+    ///
+    /// the logic is that we check for an enabled bit and then change the state
+    /// and then follow any linked actions which allows us to then build puzzle chains
+    function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8, uint8) {
         /**
             :TODO
             if (action.next.affectedByActionId == action.this.id) then { do stuff }
@@ -74,7 +82,10 @@ contract ActionSystem is System, Constants {
             the id of the lock action and setting that on the correct item (`rusty key`)
         */
         uint32 ct = SizedArray.count(objIDs);
+        uint8 bc = 0;
+
         console.log("->sz:%d", ct);
+
         for (uint32 i = 0; i < ct; i++) {
             // set the action bit on the object for the verb
             if (isD) {
@@ -87,6 +98,7 @@ contract ActionSystem is System, Constants {
                     for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
                         ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
                         if (actionData.enabled) {
+                            ++bc;
                             // flip the bit
                             actionData.dBit = !actionData.dBit;
                             ActionStore.set(objData.objectActionIds[j], actionData);
@@ -101,6 +113,7 @@ contract ActionSystem is System, Constants {
                                 _followLinkedActions(linkedActionId, linkedActions);
                                 console.log("------>followLinks");
                                 for (uint32 k = 0; k < SizedArray.count(linkedActions); k++) {
+                                    ++bc;
                                     ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
                                     // flip the bit, and the enable bit if needed
                                     lnkActionData.enabled = !lnkActionData.enabled;
@@ -123,8 +136,11 @@ contract ActionSystem is System, Constants {
                 // :TODO
             }
         }
-
-        return 0;
+        if (bc > 0) {
+            return (0, bc);
+        } else {
+            return (ResCodes.AH_BC_0, bc);
+        }
     }
 
     /**

@@ -38,10 +38,11 @@ struct VerbData {
 
 // some result codes (from game commands)
 library ResCodes {
-    uint8 public constant GO_NO_EXIT = 9; // Error DirectionRoutine DR
+    uint8 public constant GO_NO_EXIT = 8; // Error DirectionRoutine DR
     // We use a custom return type for LOOK's
     // because we cant return a 0 for no err unlike the rest of our commands
-    uint8 public constant LK_RT = 8; 
+    uint8 public constant LK_RT = 9;
+    uint8 public constant AH_BC_0 = 10;
 }
 
 library ErrCodes {
@@ -60,4 +61,5 @@ library ErrCodes {
 
     uint8 public constant ER_SIZED_AR_OUT_OF_SPACE = 133; // when we try and add an item to a size array using the add function, but its full
     uint8 public constant ER_SIZED_AR_NOT_ITEMS_TO_REMOVE = 134; // when we try and remove an item to a sized array using the remove function, but noone is home!
+    uint8 public constant ER_ACTION_HDL_NO = 135; // Error No Objects to handle
 }
