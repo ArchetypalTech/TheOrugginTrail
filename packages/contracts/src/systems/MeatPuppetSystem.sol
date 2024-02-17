@@ -146,7 +146,7 @@ contract MeatPuppetSystem is System, Constants {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
             errMsg = _insultMeat(err, "");
-            Output.set(errMsg);
+            Output.set(playerId, errMsg);
             return er;
         } else {
             // either a do something or move rooms command
