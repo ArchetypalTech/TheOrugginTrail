@@ -32,7 +32,7 @@ contract DirectionSystem is System, Constants {
         }
 
         /* Test DIRECTION */
-        DirectionType DIR = IWorld(world).meat_TokeniserSystem_getDirectionType(tok);
+        DirectionType DIR = IWorld(world).mp_TokeniserSystem_getDirectionType(tok);
 
         (bool mv, uint32 dObjId) = _directionCheck(currRm, DIR);
         if (mv) {
@@ -97,7 +97,7 @@ contract DirectionSystem is System, Constants {
 
     function _fishDirectionTok(string[] memory tokens) private returns (string memory tok, uint8 err)  {
 
-        if (IWorld(world).meat_TokeniserSystem_getDirectionType(tokens[0]) != DirectionType.None) {
+        if (IWorld(world).mp_TokeniserSystem_getDirectionType(tokens[0]) != DirectionType.None) {
             //console.log("--->DIR %s", tokens[0]);
             /* Direction form
             *
@@ -105,7 +105,7 @@ contract DirectionSystem is System, Constants {
             *
             */
             tok = tokens[0];
-        } else if (IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]) != ActionType.None ) {
+        } else if (IWorld(world).mp_TokeniserSystem_getActionType(tokens[0]) != ActionType.None ) {
             //console.log("--->GO %s", tok);
             /* GO form
             *
@@ -128,7 +128,7 @@ contract DirectionSystem is System, Constants {
                 // but anyway its here because I get carried away...
             }
 
-            if (IWorld(world).meat_TokeniserSystem_getDirectionType(tok) != DirectionType.None ) {
+            if (IWorld(world).mp_TokeniserSystem_getDirectionType(tok) != DirectionType.None ) {
                 return (tok, 0);
             } else {
                 return (tok, ErrCodes.ER_DR_ND);

@@ -33,8 +33,8 @@ contract GameSetupSystem is System, Constants {
     function _setupWorld() private {
         _setupRooms();
         _setupPlayers();
-        IWorld(_world()).meat_TokeniserSystem_initLUTS();
-        IWorld(_world()).meat_MeatPuppetSystem_spawnPlayer(1,1);
+        IWorld(_world()).mp_TokeniserSystem_initLUTS();
+        IWorld(_world()).mp_MeatPuppetSystem_spawnPlayer(1,1);
     }
 
     function _textGuid(string memory str) private returns (uint32) {

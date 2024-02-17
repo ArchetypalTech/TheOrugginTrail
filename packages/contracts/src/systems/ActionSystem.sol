@@ -23,7 +23,7 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 */
 contract ActionSystem is System, Constants {
 
-    function act(VerbData memory cmd, uint32 rm) public returns (uint8 er, string memory response) {
+    function act(VerbData memory cmd, uint32 rm, uint32 playerId) public returns (uint8 er, string memory response) {
         uint8 err;
         uint8 bitCnt;
         string memory responseStr;
@@ -38,24 +38,35 @@ contract ActionSystem is System, Constants {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);
             if (cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
-                (err, responseStr) = _handleBaseAction();
+                (err, responseStr) = _handleBaseAction(cmd);
             } else {
-                (err, bitCnt) = _setActionBits(cmd, sizedDids, true);
+                (err, bitCnt) = _setActionBits(cmd, sizedDids, playerId, true);
             }
         }
 
-        if (err == 0 && bc > 0) {
+        if (err == 0 && bitCnt > 0) {
             // we flipped some bits so generate responseStr
+            responseStr = _getResponseStr(cmd, playerId);
         }
         return (err, responseStr);
     }
 
-    function _handleBaseAction() private returns (uint8 er, string memory response) {
+    function _handleBaseAction(VerbData memory cmd) private returns (uint8 er, string memory response) {
        console.log("---->base action");
     }
 
-    function _getResponseStr() private {
+    /// @notice Generate a description string for the state changes on the objects tree
+    /// @param cmd, VerbData
+    /// @param playerId, the player acting on the items/objects
+    /// @return ResponseString, a composed response string built from the txtDef's on the linked actions
+    ///
+    ///         The code previous to this runs through the actions tree and fishes out the default text
+    ///         definitions when it flips a bit.
+    function _getResponseStr(VerbData memory cmd, uint32 playerId) private returns(string memory){
         console.log("--------> getResponseStr");
+        string memory res;
+        //string memory vrb = IWorld(world).mp_TokeniserSystem_
+
     }
 
     function _followLinkedActions(uint32 top, uint32[MAX_OBJ] memory ids) private returns(uint8 er)  {
@@ -73,7 +84,7 @@ contract ActionSystem is System, Constants {
     ///
     /// the logic is that we check for an enabled bit and then change the state
     /// and then follow any linked actions which allows us to then build puzzle chains
-    function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, bool isD) private returns(uint8, uint8) {
+    function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, uint32 playerId, bool isD) private returns(uint8, uint8) {
         /**
             :TODO
             if (action.next.affectedByActionId == action.this.id) then { do stuff }
@@ -104,7 +115,7 @@ contract ActionSystem is System, Constants {
                             actionData.dBit = !actionData.dBit;
                             ActionStore.set(objData.objectActionIds[j], actionData);
                             // get the state change text and store
-                            ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getDBitTxt(objData.objectActionIds[j]));
+                            ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(objData.objectActionIds[j]));
                             // follow any linked actions
                             uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
                             console.log("--->link:%s", linkedActionId);
@@ -122,7 +133,7 @@ contract ActionSystem is System, Constants {
                                     // store the new state
                                     ActionStore.set(linkedActions[k], lnkActionData);
                                     // get the state change text and store
-                                    ActionOutputs.pushTxtIds(objData.objectActionIds[j], ActionStore.getDBitTxt(linkedActions[k]));
+                                    ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(linkedActions[k]));
                                 }
                             }
                         }
@@ -163,7 +174,7 @@ contract ActionSystem is System, Constants {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
                 if (vrb == ActionType.None) { break; }
 //                console.log("------->want R-vrb:%d A-vrb:%d R:%d", uint8(vrb), uint8(t), rm);
-                ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(t);
+                ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(t);
                 if (responses.length > 0) {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
@@ -195,7 +206,7 @@ contract ActionSystem is System, Constants {
             for(uint256 j = 0; j < actionIds.length; j++) {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
                 if (vrb == ActionType.None) { break; }
-                ActionType[] memory responses = IWorld(_world()).meat_TokeniserSystem_getResponseForVerb(vrb);
+                ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(vrb);
                 if (responses.length > 0) {
                     for (uint256 k = 0; k < responses.length; k++) {
     //                    console.log("--->response:%d", uint8(responses[k]));

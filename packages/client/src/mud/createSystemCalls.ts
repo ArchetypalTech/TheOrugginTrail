@@ -29,7 +29,7 @@ export function createSystemCalls(
 ) {
   const initData = async () => {
     // this is used to call everything right now
-    const tx = await worldContract.write.meat_GameSetupSystem_init();
+    const tx = await worldContract.write.mp_GameSetupSystem_init();
     await waitForTransaction(tx);
   };
 
@@ -39,7 +39,7 @@ export function createSystemCalls(
   };
 
   const processCommand = async (command, playerId) => {
-    const tx = await worldContract.write.meat_MeatPuppetSystem_processCommandTokens([command, playerId]);
+    const tx = await worldContract.write.mp_MeatPuppetSystem_processCommandTokens([command, playerId]);
     await waitForTransaction(tx);
   };
 
