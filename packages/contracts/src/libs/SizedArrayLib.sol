@@ -55,6 +55,5 @@ library SizedArray {
             console.log("--------------->%d", array[i]);
         }
         console.log("----------------->count:%d", array[GameConstants.SIZED_AR_SIZE-1]);
-
     }
 }

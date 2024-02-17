@@ -195,6 +195,7 @@ contract TokeniserSystem is System {
 
     function setupObjects() private returns (uint32) {
         objLookup["FOOTBALL"]   = ObjectType.Football;
+        objLookup["BALL"]       = ObjectType.Football;
         objLookup["KEY"]        = ObjectType.Key;
         objLookup["KNIFE"]      = ObjectType.Knife;
         objLookup["BOTTLE"]     = ObjectType.Bottle;

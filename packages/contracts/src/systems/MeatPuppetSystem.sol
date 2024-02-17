@@ -32,7 +32,7 @@ contract MeatPuppetSystem is System, Constants {
 
     // a quick note on Linking Libs
     // we cant use the `using LookAt for *;` syntax
-    // because we dont seem to be able to dynamically
+    // because we dont seem to be able to dynamically 
     // link libs with forge i.e we need to `include` them
     // which increases the contract size.
     address world;
@@ -72,6 +72,7 @@ contract MeatPuppetSystem is System, Constants {
     function _handleVerb(string[] memory tokens,  uint32 playerId) private returns (uint8 err) {
 
         uint32 curRm = Player.getRoomId(playerId);
+        string memory resultStr;
         ActionType vrb = IWorld(world).meat_TokeniserSystem_getActionType(tokens[0]);
         uint8 e;
         console.log("---->HDL_VRB");
@@ -82,10 +83,8 @@ contract MeatPuppetSystem is System, Constants {
             e = IWorld(world).meat_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
             e = IWorld(world).meat_InventorySystem_drop(world,tokens, curRm, playerId);
-        } else if (vrb == ActionType.Kick) {
-            e = Kick.kick(world, tokens, curRm, playerId);
         }  else {
-            e = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
+            (e, resultStr) = IWorld(world).meat_ActionSystem_act(cmdData, curRm);
         }
         return e;
     }
@@ -147,9 +146,8 @@ contract MeatPuppetSystem is System, Constants {
             console.log("----->PCR_ERR: err:", err);
             string memory errMsg;
             errMsg = _insultMeat(err, "");
-            Output.set(playerId,errMsg);
+            Output.set(playerId, errMsg);
             return er;
-
         } else {
             // either a do something or move rooms command
             if (move) {
