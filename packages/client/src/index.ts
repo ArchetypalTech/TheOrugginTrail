@@ -11,18 +11,17 @@ const {
 var playerId = 0;
 
 $('body').terminal(async function(command)  {
-
     var term = $.terminal.active();
 
-    if(command == '1') {
+    if(command == 'be bob') {
         playerId = 1;
-        term.echo('Set to player 1');
-    } else if(command == '2') {
+        term.echo('Set to bob');
+    } else if(command == 'be steve') {
         playerId = 2;
-        term.echo('Set to player 2');
-    } else if(command == '3') {
+        term.echo('Set to steve');
+    } else if(command == 'be nigel') {
         playerId = 3;
-        term.echo('Set to player 3');
+        term.echo('Set to nigel');
     } else if(command == 'init') {
         await initData();
     } else {
