@@ -13,13 +13,9 @@ import { ActionType, RoomType, ObjectType, CommandError, DirectionType } from ".
 
 import { GameConstants, ErrCodes, ResCodes } from "../constants/defines.sol";
 
-import { IInventorySystem } from '../codegen/world/IInventorySystem.sol';
-
 import { IWorld } from "../codegen/world/IWorld.sol";
 
 import { VerbData } from "../constants/defines.sol";
-
-import { LookAt } from '../libs/LookLib.sol';
 
 import { Kick } from '../libs/KickLib.sol';
 
@@ -30,13 +26,7 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 contract MeatPuppetSystem is System, Constants {
 
-    // a quick note on Linking Libs
-    // we cant use the `using LookAt for *;` syntax
-    // because we dont seem to be able to dynamically 
-    // link libs with forge i.e we need to `include` them
-    // which increases the contract size.
     address private world;
-
     /**
      * @param pId a player id and a room id
      * @param rId a room id
@@ -50,7 +40,6 @@ contract MeatPuppetSystem is System, Constants {
     }
 
     function _handleAlias(string[] memory tokens, uint32 playerId) private returns (uint8 err) {
-        // we are not handling go aliases right now
         uint32 curRm = Player.getRoomId(playerId);
 
         ActionType vrb = IWorld(world).mp_TokeniserSystem_getActionType(tokens[0]);
@@ -59,7 +48,7 @@ contract MeatPuppetSystem is System, Constants {
         if( vrb == ActionType.Inventory) {
             e = IWorld(world).mp_InventorySystem_inventory(world, playerId);
         } else if (vrb == ActionType.Look) {
-            e = LookAt.stuff(world, tokens, curRm, playerId);
+            e = IWorld(world).mp_LookSystem_stuff(tokens, curRm, playerId);
         }
         return e;
     }
@@ -70,7 +59,6 @@ contract MeatPuppetSystem is System, Constants {
         remains is to handle `LOOK` commands, `INVENTORY` cmds and everything else.
     */
     function _handleVerb(string[] memory tokens,  uint32 playerId) private returns (uint8 err) {
-
         uint32 curRm = Player.getRoomId(playerId);
         string memory resultStr;
         ActionType vrb = IWorld(world).mp_TokeniserSystem_getActionType(tokens[0]);
@@ -78,7 +66,7 @@ contract MeatPuppetSystem is System, Constants {
         console.log("---->HDL_VRB");
         VerbData memory cmdData = IWorld(world).mp_TokeniserSystem_fishTokens(tokens);
         if (vrb == ActionType.Look || vrb == ActionType.Describe) {
-            e = LookAt.stuff(world, tokens, curRm, playerId);
+            e = IWorld(world).mp_LookSystem_stuff(tokens, curRm, playerId);
         } else if (vrb == ActionType.Take ) {
             e = IWorld(world).mp_InventorySystem_take(world,tokens, curRm, playerId);
         } else if (vrb == ActionType.Drop) {
@@ -94,7 +82,7 @@ contract MeatPuppetSystem is System, Constants {
     function _enterRoom(uint32 rId, uint32 playerId) private returns (uint8 err) {
         console.log("--------->ENTR_RM:", rId);
         Player.setRoomId(playerId, rId);
-        Output.set(playerId,LookAt.getRoomDesc(rId));
+        Output.set(playerId,IWorld(world).mp_LookSystem_getRoomDesc(rId));
         return 0;
     }
 
