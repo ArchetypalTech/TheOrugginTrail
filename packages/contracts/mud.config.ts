@@ -1,7 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-    namespace: "meat",
+    namespace: "mp",
     enums: {
         // all places on the 2d map grid are either Void or Place:
         // 0x00 | 0x01
@@ -120,6 +120,9 @@ export default mudConfig({
         // an object then that object must have the correct thing
         // say a `rusty key` if they do then the `affects` would
         // link to an `open` action and the thing would open.
+        //
+        // :TODO this needs another field, the new rest state description which we can use in looklib to
+        // reflect the changes to the room
         ActionStore: {
             keySchema: {
                 actionId: "uint32",
@@ -182,7 +185,7 @@ export default mudConfig({
         },
         ActionOutputs: {
             keySchema: {
-                actionId: "uint32",
+                playerId: "uint32", // this is set to the playerId for now
             },
             valueSchema: {
                 txtIds: "bytes32[]"

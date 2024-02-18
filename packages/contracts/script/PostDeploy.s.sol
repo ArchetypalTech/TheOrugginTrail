@@ -151,7 +151,7 @@ contract PostDeploy is Script {
         // Start broadcasting transactions from the deployer account
         vm.startBroadcast(deployerPrivateKey);
 
-        IWorld(worldAddress).meat_GameSetupSystem_init();
+        IWorld(worldAddress).mp_GameSetupSystem_init();
 
         vm.stopBroadcast();
     }

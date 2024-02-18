@@ -13,7 +13,7 @@ library Kick {
 
         uint8 tok_err;
         string memory tok = tokens[1];
-        ObjectType objType = IWorld(wrld).meat_TokeniserSystem_getObjectType(tok);
+        ObjectType objType = IWorld(wrld).mp_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             uint32[32] memory objIds = RoomStore.getObjectIds(curRmId);
             uint32 objIdCount = SizedArray.count(objIds);

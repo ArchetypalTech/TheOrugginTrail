@@ -33,8 +33,8 @@ contract GameSetupSystem is System, Constants {
     function _setupWorld() private {
         _setupRooms();
         _setupPlayers();
-        IWorld(_world()).meat_TokeniserSystem_initLUTS();
-        IWorld(_world()).meat_MeatPuppetSystem_spawnPlayer(1,1);
+        IWorld(_world()).mp_TokeniserSystem_initLUTS();
+        IWorld(_world()).mp_MeatPuppetSystem_spawnPlayer(1,1);
     }
 
     function _textGuid(string memory str) private returns (uint32) {
@@ -149,7 +149,7 @@ contract GameSetupSystem is System, Constants {
                                 "door", barn_plain));
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
-                                "falls open\n", false, false, 0, 0);
+                                " falls open", false, false, 0, 0);
 
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"

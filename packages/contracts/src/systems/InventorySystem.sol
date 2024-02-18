@@ -23,7 +23,7 @@ contract InventorySystem is System {
                 if(i > 0) {
                     itemTxt = string.concat(itemTxt, " and a ");
                 }
-                itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).meat_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
+                itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).mp_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
         }
         Output.set(playerId,itemTxt);
         return 0;
@@ -33,7 +33,7 @@ contract InventorySystem is System {
         uint8 tok_err;
         bool itemPickedUp = false;
         string memory tok = tokens[1];
-        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
+        ObjectType objType = IWorld(world).mp_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
 
             uint32[32] memory roomObjIds = RoomStore.getObjectIds(rId);
@@ -72,7 +72,7 @@ contract InventorySystem is System {
     function drop(address world, string[] memory tokens, uint32 rId, uint32 playerId) public returns (uint8 err) {
         uint8 tok_err;
         string memory tok = tokens[1];
-        ObjectType objType = IWorld(world).meat_TokeniserSystem_getObjectType(tok);
+        ObjectType objType = IWorld(world).mp_TokeniserSystem_getObjectType(tok);
         if (objType != ObjectType.None) {
             uint32[32] memory playerObjIds = Player.getObjectIds(playerId);
             for (uint8 i = 0; i < SizedArray.count(playerObjIds); i++) {
