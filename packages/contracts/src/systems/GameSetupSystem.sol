@@ -20,7 +20,7 @@ contract GameSetupSystem is System, Constants {
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
-    uint32 KForest = 3;
+    uint32 KForge = 3;
     uint32 KPlain = 2;
     uint32 KBarn = 1;
     uint32 KMountainPath = 0;
@@ -137,6 +137,10 @@ contract GameSetupSystem is System, Constants {
         createPlace(KPlain, dObjs, objs, tid_plain);
     }
 
+    function _setupForge() private {
+
+    }
+
     function _setupBarn() private {
         // KBARN -> S
         uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true, 0, 0);
@@ -160,7 +164,7 @@ contract GameSetupSystem is System, Constants {
         window_actions[0] = open_2_forest;
         window_actions[1] = smash_window;
 
-        SizedArray.add(dObjs, createDirObj(DirectionType.East, KForest,
+        SizedArray.add(dObjs, createDirObj(DirectionType.East, KForge,
                                 DirObjectType.Window, MaterialType.Wood,
                                 "window", window_actions));
 
