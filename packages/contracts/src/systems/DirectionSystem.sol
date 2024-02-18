@@ -41,7 +41,7 @@ contract DirectionSystem is System, Constants {
             //console.log("->DF --------->NXTRM:", nxtRm);
             return (0, nxtRm);
         }else { 
-            console.log("--->DF:0000"); 
+            console.log("--->DF:XXX");
             // check reason we didnt move this can currently only 
             // be cannot actually move that way because no exit
             //string memory errMsg;
@@ -83,9 +83,8 @@ contract DirectionSystem is System, Constants {
                 if (_canMove(exitIds[i]) == true){
                     return (true, exitIds[i]); 
                 } else {
-                    // the exit is there but we cant go that way
-                    // why? So bubble up the reason
-                    // TODO:
+                    // TODO: the exit is there but we cant go that way
+                    // TODO: why? So bubble up the reason
                 }
             }
         }

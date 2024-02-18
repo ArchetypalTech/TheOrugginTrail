@@ -145,9 +145,9 @@ contract MeatPuppetSystem is System, Constants {
 
         /* we have gone through the TOKENS, give err feedback if needed */
         if (er != 0) {
-            console.log("----->PCR_ERR: err:", err);
+            console.log("----->PCR_ERR: err:", er);
             string memory errMsg;
-            errMsg = _insultMeat(err, "");
+            errMsg = _insultMeat(er, "");
             Output.set(playerId, errMsg);
             return er;
         } else {
@@ -174,7 +174,7 @@ contract MeatPuppetSystem is System, Constants {
         } else if (ce == ErrCodes.ER_DR_NOP) {
             eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));
         } else if (ce == ResCodes.GO_NO_EXIT) {
-            eMsg = string(abi.encodePacked("Can't go that away", badCmd));
+            eMsg = string.concat("Can't go that away ", badCmd);
         }
         return eMsg;
     }
