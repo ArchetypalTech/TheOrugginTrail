@@ -98,13 +98,15 @@ contract ActionSystem is System, Constants {
     /// the logic is that we check for an enabled bit and then change the state
     /// and then follow any linked actions which allows us to then build puzzle chains
     function _setActionBits(VerbData memory cmd, uint32[MAX_OBJ] memory objIDs, uint32 playerId, bool isD) private returns(uint8, uint8) {
-        /**
-            :TODO
-            if (action.next.affectedByActionId == action.this.id) then { do stuff }
-            so a locked door that needs a `rusty key` would only get opened by a
-            `rusty key` that has an lock action set on it, the important part being
-            the id of the lock action and setting that on the correct item (`rusty key`)
-        */
+        /*
+         *   TODO:
+         *       * if (action.next.affectedByActionId == action.this.id) then { do stuff }
+         *         so a locked door that needs a `rusty key` would only get opened by a
+         *         `rusty key` that has an lock action set on it, the important part being
+         *         the id of the lock action and setting that on the correct item (`rusty key`)
+         *       * when we add a reversible flag to the ActionStore we will need to test for
+         *         this pre flipping any bits
+         */
         uint32 ct = SizedArray.count(objIDs);
         uint8 bc = 0;
 

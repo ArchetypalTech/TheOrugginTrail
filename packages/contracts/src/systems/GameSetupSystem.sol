@@ -138,10 +138,22 @@ contract GameSetupSystem is System, Constants {
     }
 
     function _setupForge() private {
+        //KFORGE W->BARN
+        uint32[MAX_OBJ] memory forge_barn;
+
+        uint32 open_2_barn = createAction(ActionType.Open, "the smashed window falls out of the frame\n", true, true, 0, 0);
+        SizedArray.add(forge_barn, open_2_barn);
+
+        uint32[MAX_OBJ] memory dObjs;
+
+        SizedArray.add(dObjs, createDirObj(DirectionType.West, KBarn,
+            DirObjectType.Window, MaterialType.Wood,
+            "broken window",forge_barn));
 
     }
 
     function _setupBarn() private {
+        // TODO add haybail and burn action
         // KBARN -> S
         uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true, 0, 0);
         uint32[MAX_OBJ] memory barn_plain;
@@ -149,8 +161,8 @@ contract GameSetupSystem is System, Constants {
         uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
         SizedArray.add(dObjs,createDirObj(DirectionType.South, KPlain,
-                                DirObjectType.Door, MaterialType.Wood,
-                                "door", barn_plain));
+            DirObjectType.Door, MaterialType.Wood,
+            "door", barn_plain));
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
                                 " falls open", false, false, 0, 0);

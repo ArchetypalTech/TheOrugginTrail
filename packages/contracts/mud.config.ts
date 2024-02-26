@@ -123,6 +123,7 @@ export default mudConfig({
         //
         // :TODO this needs another field, the new rest state description which we can use in looklib to
         // reflect the changes to the room
+        // TODO: this also needs a reversible flag, i.e break is NOT
         ActionStore: {
             keySchema: {
                 actionId: "uint32",
