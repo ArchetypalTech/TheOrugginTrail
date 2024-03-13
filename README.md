@@ -1,5 +1,5 @@
-# TheOrugginTrail ZorkMUD<>ZorkDojo
-A MUD (and eventually also Dojo) based Zork-like experiment in fully onchain text adventures, onchain games framework interoperability, and the engines that drive them.
+# TheOrugginTrail
+A MUD (and eventually also Dojo, World Engine, and who-knows) based Zork-like experiment in fully onchain text adventures, onchain games framework interoperability, and the engines that drive them.
 
 >        \/|
 >       /"" ;,_               _________
@@ -13,7 +13,7 @@ A MUD (and eventually also Dojo) based Zork-like experiment in fully onchain tex
 
 What lies ahead, is anyone's guess...
 
-This project is a test-case for taking a zork-like text adventure engine and porting it to onchain gaming engines and frameworks like MUD and Dojo, and from there seeing if interesting interoperability between the engines can be connected and experimented with.
+This project is a test-case for taking a zork-like text adventure engine and porting it to onchain gaming engines and frameworks like MUD, Dojo, and World Engine... and from there seeing if interesting interoperability between the engines can be connected and experimented with.
 
 We are porting / reinterpreting the MIT Zork design and architecture for text adventure engines onchain, this model eventually became the base for Infocom games and such favoured classics as Commodore64's The Hitchikers Guide To The Galaxy, one of the most ambitious and complex text adventures ever made. To get a primer and learn more about the engine and explore it's history and and the engineering principles under the hood please read these resources:
 
