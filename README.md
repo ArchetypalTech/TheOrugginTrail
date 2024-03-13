@@ -1,15 +1,7 @@
 # TheOrugginTrail
 A MUD (and eventually also Dojo, World Engine, and who-knows) based Zork-like experiment in fully onchain text adventures, onchain games framework interoperability, and the engines that drive them.
 
->        \/|
->       /"" ;,_               _________
->      oo _. //..___.._      |,--------
->      `-' `//=========================
->          `'\          |    ||
->            |//-----'\ (    || ,d88b,
->            //       |||    `|_888888_
->            \\_      |||       888888
->           '-\/     '/_(       `Y88P' fL
+![ad_2_final](https://github.com/ArchetypalTech/TheOrugginTrail/assets/983878/b90bcc55-2ba1-4564-94e1-d08184c1e49c)
 
 What lies ahead, is anyone's guess...
 
