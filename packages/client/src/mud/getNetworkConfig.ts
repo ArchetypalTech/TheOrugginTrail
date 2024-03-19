@@ -35,7 +35,11 @@ import worlds from "contracts/worlds.json";
  * for instructions on how to add networks.
  */
 
+// this function only allows a couple of types
+// we want more types than ara available and thus we want to define some
 import { supportedChains } from "./supportedChains";
+
+
 
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
