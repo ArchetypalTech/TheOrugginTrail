@@ -7,6 +7,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "wait-port localhost:8545 && vite",
+    "dev-fluent": "wait-port rpc.dev1.fluentlabs.xyz:8545 && vite",
     "preview": "vite preview",
     "test": "tsc --noEmit"
   },

@@ -37,6 +37,7 @@ import worlds from "contracts/worlds.json";
 
 // this function only allows a couple of types
 // we want more types than ara available and thus we want to define some
+// new ones there
 import { supportedChains } from "./supportedChains";
 
 
@@ -53,6 +54,7 @@ export async function getNetworkConfig() {
    * 4. The default, 31337 (anvil)
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
+  // const chainId = Number( 1337);
 
   /*
    * Find the chain (unless it isn't in the list of supported chains).
