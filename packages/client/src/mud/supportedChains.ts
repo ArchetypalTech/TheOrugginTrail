@@ -24,21 +24,21 @@ const fluentTestnet: MUDChain = {
   nativeCurrency: { decimals: 18, name: "EtherDollar", symbol: "WZT" },
   rpcUrls: {
     default: {
-      http: ["https://rpc.dev1.fluentlabs.xyz/"],
+      http: ["https://rpc.dev1.fluentlabs.xyz"],
       webSocket: [""],
     },
     public: {
-      http: ["https://rpc.dev1.fluentlabs.xyz/"],
+      http: ["https://rpc.dev1.fluentlabs.xyz"],
       webSocket: [""],
     },
   },
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://blockscout.dev1.fluentlabs.xyz/",
+      url: "https://blockscout.dev1.fluentlabs.xyz",
     },
   },
-  faucetUrl: "https://faucet.dev1.fluentlabs.xyz/",
+  faucetUrl: "https://faucet.dev1.fluentlabs.xyz",
 } as const;
 
 export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet, fluentTestnet];
