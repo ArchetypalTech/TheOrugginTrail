@@ -45,6 +45,8 @@ export async function setupNetwork() {
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
+  // we probably need to pass in some kind of key here to setup a wallet
+  // we can fund
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
@@ -91,6 +93,9 @@ export async function setupNetwork() {
     const address = burnerAccount.address;
     console.info("[Dev Faucet]: Player address -> ", address);
 
+    // adding in a proxy here to see if this fixes the cors stuff on faucet reqs
+    const cors_proxy = "https://cors-anywhere.herokuapp.com/";
+
     const faucet = createFaucetService(networkConfig.faucetServiceUrl);
 
     const requestDrip = async () => {
@@ -100,8 +105,8 @@ export async function setupNetwork() {
       if (lowBalance) {
         console.info("[Dev Faucet]: Balance is low, dripping funds to player");
         // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
+        // await faucet.dripDev({ address });
+        await faucet.drip({ address });
       }
     };
 
