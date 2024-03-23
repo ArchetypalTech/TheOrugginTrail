@@ -38,7 +38,7 @@ export function createSystemCalls(
       await waitForTransaction(tx);
   };
 
-  const processCommand = async (command, playerId) => {
+  const processCommand: (command:string, playerId:number) => Promise<void> = async (command, playerId) => {
     const tx = await worldContract.write.mp_MeatPuppetSystem_processCommandTokens([command, playerId]);
     await waitForTransaction(tx);
   };

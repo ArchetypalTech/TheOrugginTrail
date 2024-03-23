@@ -3,7 +3,17 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  parseEther,
+  ClientConfig,
+  Account
+} from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
@@ -45,8 +55,7 @@ export async function setupNetwork() {
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
-  // we probably need to pass in some kind of key here to setup a wallet
-  // we can fund
+
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
   const burnerWalletClient = createWalletClient({
     ...clientOptions,

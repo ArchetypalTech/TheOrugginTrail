@@ -40,8 +40,6 @@ import worlds from "contracts/worlds.json";
 // new ones there
 import { supportedChains } from "./supportedChains";
 
-
-
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
 
@@ -76,6 +74,8 @@ export async function getNetworkConfig() {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
+  // hack in a private key from the .env
+  const burner_key : string = import.meta.env.VITE_META_BURNER;
   /*
    * MUD clients use events to synchronize the database, meaning
    * they need to look as far back as when the World was started.
@@ -88,7 +88,8 @@ export async function getNetworkConfig() {
     : world?.blockNumber ?? 0n;
 
   return {
-    privateKey: getBurnerPrivateKey(),
+    // privateKey: getBurnerPrivateKey(),
+    privateKey: burner_key,
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
