@@ -12,7 +12,8 @@ import {
   Hex,
   parseEther,
   ClientConfig,
-  Account
+  Account,
+  custom
 } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
@@ -55,13 +56,28 @@ export async function setupNetwork() {
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
-
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
   });
 
+  // wallet client for meta mask address
+  const metaClient : Account =  createWalletClient({
+    chain: networkConfig.chain,
+    transport: custom(window.ethereum!)
+  });
+
+  try {
+    const accounts = await metaClient.getAddresses();
+    console.log(accounts);
+    // []
+    // Expected an array with the address I passed to walletClient, instead of an empty array
+  } catch(e) {
+    console.log(e);
+  }
+
+  // const [address] = await metaClient.getAddresses();
   /*
    * Create an observable for contract writes that we can
    * pass into MUD dev tools for transaction observability.
