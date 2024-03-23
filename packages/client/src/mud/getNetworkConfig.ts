@@ -35,6 +35,9 @@ import worlds from "contracts/worlds.json";
  * for instructions on how to add networks.
  */
 
+// this function only allows a couple of types
+// we want more types than ara available and thus we want to define some
+// new ones there
 import { supportedChains } from "./supportedChains";
 
 export async function getNetworkConfig() {
@@ -49,6 +52,7 @@ export async function getNetworkConfig() {
    * 4. The default, 31337 (anvil)
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
+  // const chainId = Number( 1337);
 
   /*
    * Find the chain (unless it isn't in the list of supported chains).
@@ -70,6 +74,8 @@ export async function getNetworkConfig() {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
+  // hack in a private key from the .env
+  const burner_key : string = import.meta.env.VITE_META_BURNER;
   /*
    * MUD clients use events to synchronize the database, meaning
    * they need to look as far back as when the World was started.
@@ -82,7 +88,8 @@ export async function getNetworkConfig() {
     : world?.blockNumber ?? 0n;
 
   return {
-    privateKey: getBurnerPrivateKey(),
+    // privateKey: getBurnerPrivateKey(),
+    privateKey: burner_key,
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

@@ -10,6 +10,8 @@ const {
 
 var playerId = 0;
 
+
+
 $('body').terminal(async function(command)  {
     var term = $.terminal.active();
 

@@ -1,5 +1,5 @@
 [profile.default]
-solc = "0.8.21"
+solc = "0.8.20"
 ffi = false
 fuzz_runs = 256
 optimizer = true
@@ -24,3 +24,6 @@ fs_permissions = [{ access = "read", path = "./"}]
 
 [profile.lattice-testnet]
 eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
+
+[profile.fluent-testnet]
+eth_rpc_url = "https://rpc.dev1.fluentlabs.xyz/"

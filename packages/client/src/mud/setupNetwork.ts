@@ -3,7 +3,18 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  parseEther,
+  ClientConfig,
+  Account,
+  custom
+} from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
@@ -35,7 +46,7 @@ export async function setupNetwork() {
    */
   const clientOptions = {
     chain: networkConfig.chain,
-    transport: transportObserver(fallback([webSocket(), http()])),
+    transport: http()/*transportObserver(fallback([webSocket(), http()])),*/ ,
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
 
@@ -51,6 +62,22 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
+  // wallet client for meta mask address
+  const metaClient : Account =  createWalletClient({
+    chain: networkConfig.chain,
+    transport: custom(window.ethereum!)
+  });
+
+  try {
+    const accounts = await metaClient.getAddresses();
+    console.log(accounts);
+    // []
+    // Expected an array with the address I passed to walletClient, instead of an empty array
+  } catch(e) {
+    console.log(e);
+  }
+
+  // const [address] = await metaClient.getAddresses();
   /*
    * Create an observable for contract writes that we can
    * pass into MUD dev tools for transaction observability.
@@ -91,6 +118,9 @@ export async function setupNetwork() {
     const address = burnerAccount.address;
     console.info("[Dev Faucet]: Player address -> ", address);
 
+    // adding in a proxy here to see if this fixes the cors stuff on faucet reqs
+    const cors_proxy = "https://cors-anywhere.herokuapp.com/";
+
     const faucet = createFaucetService(networkConfig.faucetServiceUrl);
 
     const requestDrip = async () => {
@@ -100,8 +130,8 @@ export async function setupNetwork() {
       if (lowBalance) {
         console.info("[Dev Faucet]: Balance is low, dripping funds to player");
         // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
+        // await faucet.dripDev({ address });
+        await faucet.drip({ address });
       }
     };
 
