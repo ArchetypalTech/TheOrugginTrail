@@ -6,6 +6,8 @@ import './styles/setupStyles';
 import './lit/wallet/lit-wallet'
 import { setupThree, updateScene } from "./three";
 
+import './my-element';
+
 const {
   components,
   systemCalls: { initData, processCommand },
