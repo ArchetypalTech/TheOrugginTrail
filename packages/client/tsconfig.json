@@ -3,6 +3,7 @@
     "types": ["vite/client"],
     "target": "ESNext",
     "useDefineForClassFields": true,
+    "experimentalDecorators": false,
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",
