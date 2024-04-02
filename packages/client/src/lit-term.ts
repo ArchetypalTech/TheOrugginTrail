@@ -13,7 +13,8 @@ class LitTerminal extends LitElement {
   constructor() {
     super();
     this.inputValue = '> '; // Initialize your property
-    this.history = ["Welcome to DEATH, well possibly...", "The O'Ruggin Trail, no:23", "An experiment in on-chain text adventures"];
+    // @ts-ignore
+    this.history = ["An experiment in on-chain text adventures", "Archetypal Tech welcomes you to DEATH, well possibly...", "The O'Ruggin Trail, no:23"];
   }
 
   static styles = css`
@@ -63,9 +64,15 @@ class LitTerminal extends LitElement {
     // You can dispatch an event here if you want to notify parent components of the input change
   }
 
+  private stripCommandString(s: string) {
+    let seq = "> ";
+    return s.replace(seq, "");
+  }
+
   private handleEnter(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      this.history = [...this.history, this.inputValue];
+      const commandStr = this.stripCommandString(this.inputValue);
+      this.history = [...this.history, commandStr];
       this.inputValue = '> ';
     }
   }
