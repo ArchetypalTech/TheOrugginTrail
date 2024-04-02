@@ -1,6 +1,5 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
-
 import './lit-term';
 
 const {
@@ -9,30 +8,7 @@ const {
   network,
 } = await setup();
 
-
 var playerId = 0;
-
-// $('body').terminal(async function(command)  {
-//     var term = $.terminal.active();
-//
-//     if(command == 'be bob') {
-//         playerId = 1;
-//         term.echo('Set to bob');
-//     } else if(command == 'be steve') {
-//         playerId = 2;
-//         term.echo('Set to steve');
-//     } else if(command == 'be nigel') {
-//         playerId = 3;
-//         term.echo('Set to nigel');
-//     } else if(command == 'init') {
-//         await initData();
-//     } else {
-//         const tk = components.tokenise(command);
-//         await processCommand(tk,playerId);
-//     }
-//     },
-//     { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
-// );
 
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
