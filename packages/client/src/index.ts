@@ -41,9 +41,12 @@ components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   if (nextValue.playerId == playerId) {
     console.log("Output updated", update, { nextValue, prevValue });
-        // var erm = $.terminal.active();
-        // term.echo(nextValue.text);
+    if (textInput) {
+      if (Array.isArray(textInput.history)) {
+        textInput.history = [...textInput.history, nextValue];
+      }
     }
+  }
 });
 
 // https://vitejs.dev/guide/env-and-mode.html
