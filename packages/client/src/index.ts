@@ -18,8 +18,20 @@ if (textInput) {
     console.log('Input value changed to:', (event as CustomEvent).detail.value);
     const command = (event as CustomEvent).detail.value;
     const tokens = components.tokenise(command);
-    console.log('tokens: ', tokens);
+    runCmd(tokens);
   });
+}
+
+/*
+ pass the tokens into the world, and we are done until we
+ get the event from the Output contract
+ this "return" is a text string built up on the contract side
+ this is temporary. The contract should in fact send back an array
+ of hashes that index into a locally held LUT that indexes the locations
+ of compressed strings that we then decompress and assemble client side
+*/
+function runCmd(cmd: string[]): void {
+  console.log('run cmd', cmd);
 }
 
 
