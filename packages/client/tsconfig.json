@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "types": ["vite/client"],
+    "types": ["vite/client", "viem/_types/index"],
+    "strictNullChecks": false,
     "target": "ESNext",
     "useDefineForClassFields": true,
     "experimentalDecorators": false,

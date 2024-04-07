@@ -62,6 +62,8 @@ class LitTerminal extends LitElement {
       this.inputValue = newVal;
     }
     // You can dispatch an event here if you want to notify parent components of the input change
+
+
   }
 
   private stripCommandString(s: string) {
@@ -72,6 +74,11 @@ class LitTerminal extends LitElement {
   private handleEnter(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       const commandStr = this.stripCommandString(this.inputValue);
+      this.dispatchEvent(new CustomEvent('command-update', {
+        detail: { value: commandStr },
+        bubbles: true, // Allows the event to bubble up through the DOM
+        composed: true // Allows the event to cross the shadow DOM boundary
+      }));
       this.history = [...this.history, commandStr];
       this.inputValue = '> ';
     }
