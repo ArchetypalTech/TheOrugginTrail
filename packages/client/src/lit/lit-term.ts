@@ -51,7 +51,8 @@ class LitTerminal extends LitElement {
           font-size: 16px;
           width: 100%;
           box-sizing: border-box;
-          margin: 8px;
+          margin-bottom: 8px;
+          margin-left: 4px;
       }
       .terminal {
           color: forestgreen;
