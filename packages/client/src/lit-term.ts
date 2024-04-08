@@ -77,6 +77,7 @@ class LitTerminal extends LitElement {
       </div>
     `;
   }
+
   private handleInput(e: Event) {
     const input = e.target as HTMLInputElement;
     const elem = e.target as EventTarget;
@@ -87,9 +88,6 @@ class LitTerminal extends LitElement {
     } else {
       this.inputValue = newVal;
     }
-    // You can dispatch an event here if you want to notify parent components of the input change
-
-
   }
 
   private stripCommandString(s: string) {
