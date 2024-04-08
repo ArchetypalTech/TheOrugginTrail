@@ -1,6 +1,7 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
-import './lit-term';
+import './lit/lit-term';
+import './styles/setupStyles';
 
 const {
   components,

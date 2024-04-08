@@ -19,7 +19,6 @@ class LitTerminal extends LitElement {
       , "well possibly..."
       , "\n"
       , "The O'Ruggin Trail, no:23"
-      , "\n"
       , "from the good folk at"
       , "Best Archetypal System Terminals And Retrograde Devices"
       , "\n"
@@ -52,6 +51,7 @@ class LitTerminal extends LitElement {
           font-size: 16px;
           width: 100%;
           box-sizing: border-box;
+          margin: 8px;
       }
       .terminal {
           color: forestgreen;
@@ -60,9 +60,10 @@ class LitTerminal extends LitElement {
           border-radius: 4px;
           font-family: 'Courier', sans-serif;
           font-size: 16px;
+          margin: 4px;
       }
       .output {
-          margin-bottom: 8px;
+          margin: 16px;
           white-space: pre-wrap;
       }
   `;
