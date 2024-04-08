@@ -43,7 +43,7 @@ components.Output.update$.subscribe((update) => {
     console.log("Output updated", update, { nextValue, prevValue });
     if (textInput) {
       if (Array.isArray(textInput.history)) {
-        textInput.history = [...textInput.history, nextValue];
+        textInput.history = [...textInput.history, nextValue.text];
       }
     }
   }

@@ -63,7 +63,7 @@ export async function setupNetwork() {
   });
 
   // wallet client for meta mask address
-  const metaClient : Account =  createWalletClient({
+  const metaClient  =  createWalletClient({
     chain: networkConfig.chain,
     transport: custom(window.ethereum!)
   });

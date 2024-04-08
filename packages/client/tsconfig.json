@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["vite/client", "viem/_types/index"],
+    "types": ["vite/client", "viem/_types/index", "@metamask/sdk/dist/browser/es/src/index", "lit/index"],
     "strictNullChecks": false,
     "target": "ESNext",
     "useDefineForClassFields": true,
