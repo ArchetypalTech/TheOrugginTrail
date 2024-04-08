@@ -55,6 +55,7 @@ class LitTerminal extends LitElement {
           margin-left: 4px;
       }
       .terminal {
+          width: 40%;
           color: forestgreen;
           background: black;
           border: 1px solid chartreuse;
@@ -64,7 +65,12 @@ class LitTerminal extends LitElement {
           margin: 4px;
       }
       .output {
-          margin: 16px;
+          width: 80%;
+          margin-left: auto;
+          margin-right: auto;
+          margin-top: 8px;
+          margin-bottom: 8px;
+          text-align: left;
           white-space: pre-wrap;
       }
   `;
