@@ -9,7 +9,7 @@ class LitTerminal extends LitElement {
       history: {type: Array}
     };
   }
-  // static properties = (inputValue: {type: String}, history: {type: Array});
+
   constructor() {
     super();
     this.inputValue = '> '; // Initialize your property
@@ -18,36 +18,49 @@ class LitTerminal extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: block;
-      min-height: 50px;
-    }
+      :host {
+          display: block;
+          min-height: 50px;
+      }
 
-    input {
-      color: forestgreen;
-      background: black;
-      outline: none;
-      border: black;
-      font-family: 'Courier', sans-serif;
-      font-size: 16px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .terminal {
-      color: forestgreen;
-      background: black;
-      border: 1px solid chartreuse;
-      border-radius: 4px;
-      font-family: 'Courier', sans-serif;
-      font-size: 16px;
-    }
+      textarea {
+          color: forestgreen;
+          background: black;
+          outline: none;
+          border: black;
+          font-family: 'Courier', sans-serif;
+          font-size: 16px;
+          width: 100%;
+          box-sizing: border-box;
+      }
+
+      input {
+          color: forestgreen;
+          background: black;
+          outline: none;
+          border: black;
+          font-family: 'Courier', sans-serif;
+          font-size: 16px;
+          width: 100%;
+          box-sizing: border-box;
+      }
+      .terminal {
+          color: forestgreen;
+          background: black;
+          border: 1px solid chartreuse;
+          border-radius: 4px;
+          font-family: 'Courier', sans-serif;
+          font-size: 16px;
+      }
   `;
 
   render() {
     return html`
       <div class="terminal">
-        ${this.history.map(line => html`<div>${line}</div>`)}
-        <input type="text" .value="${this.inputValue}" @keydown="${this.handleEnter}" @input=${this.handleInput}>
+        ${this.history.map(line => html`<div class="output">${line}</div>`)}
+        <input type="text" .value="${this.inputValue}"
+                  @keydown="${this.handleEnter}"
+                  @input=${this.handleInput}>
       </div>
     `;
   }
