@@ -14,13 +14,22 @@ class LitTerminal extends LitElement {
     super();
     this.inputValue = '> '; // Initialize your property
     // @ts-ignore
-    this.history = ["An experiment in on-chain text adventures", "Archetypal Tech welcomes you to DEATH, well possibly...", "The O'Ruggin Trail, no:23"];
+    this.history = [
+       "Archetypal Tech welcomes you to DEATH"
+      , "well possibly..."
+      , "\n"
+      , "The O'Ruggin Trail, no:23"
+      , "\n"
+      , "from the good folk at"
+      , "Best Archetypal System Terminals And Retrograde Devices"
+      , "\n"
+    ];
   }
 
   static styles = css`
       :host {
           display: block;
-          min-height: 50px;
+          margin: 0;
       }
 
       textarea {
@@ -51,6 +60,10 @@ class LitTerminal extends LitElement {
           border-radius: 4px;
           font-family: 'Courier', sans-serif;
           font-size: 16px;
+      }
+      .output {
+          margin-bottom: 8px;
+          white-space: pre-wrap;
       }
   `;
 
