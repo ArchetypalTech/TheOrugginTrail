@@ -62,13 +62,35 @@ class LitWallet extends LitElement {
     }
   }
 
-  private handleConnect() {
+  private propmtConnect() {
     console.log('connecting');
+    let provider = window.ethereum;
+    if (provider) {
+      if (provider.isMetaMask) {
+        this.history = [...this.history, "connect", "found metamask"];
+        this.inputValue = '?connect y/n > ';
+      }else {
+        this.inputValue = '> ';
+      }
+    }
   }
+
+  private startConnection() {
+    console.log('foobar');
+    this.inputValue = '> ';
+    this.history = [...this.history, 'connecting...'];
+  }
+
   private handleCommand(cmd: string) {
-    if (cmd === 'connect') {
-    } else {
-      this.history = [...this.history, cmd, `bad command: try "connect"`];
+    switch (cmd) {
+      case "connect":
+        this.propmtConnect();
+        break;
+      case "?connect y/n y":
+        this.startConnection();
+        break;
+      default:
+        this.history = [...this.history, cmd, `bad command: try "connect"`];
     }
   }
 
@@ -81,7 +103,6 @@ class LitWallet extends LitElement {
       //   bubbles: true, // Allows the event to bubble up through the DOM
       //   composed: true // Allows the event to cross the shadow DOM boundary
       // }));
-      this.inputValue = '> ';
     }
   }
   private handleInput(e: Event) {
