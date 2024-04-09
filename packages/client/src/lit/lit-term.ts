@@ -3,10 +3,12 @@ import { LitElement, html, css } from 'lit';
 export class LitTerminal extends LitElement {
   declare inputValue: string;
   declare history: Array<string>;
+  declare headerText: Array<string>;
   static get properties() {
     return {
       inputValue: { type: String },
-      history: {type: Array}
+      history: {type: Array},
+      headerText: {type: Array}
     };
   }
 
@@ -15,13 +17,14 @@ export class LitTerminal extends LitElement {
     this.inputValue = '> '; // Initialize your property
     // @ts-ignore
     this.history = [
-       "Archetypal Tech welcomes you to DEATH"
+      "\n"
+    ];
+    this.headerText = [
+      "Archetypal Tech welcomes you to DEATH"
       , "well possibly..."
       , "\n"
       , "The O'Ruggin Trail, no:23"
       , "from the good folk at"
-      , "Best Archetypal System Terminals And Retrograde Devices"
-      , "\n"
     ];
   }
 
@@ -44,6 +47,7 @@ export class LitTerminal extends LitElement {
 
       input {
           color: forestgreen;
+          width: 90%;
           background: black;
           outline: none;
           border: black;
@@ -52,7 +56,21 @@ export class LitTerminal extends LitElement {
           box-sizing: border-box;
           margin-bottom: 8px;
           margin-left: 4px;
+          margin-right: 4px;
       }
+
+      .bastard {
+          color: forestgreen;
+          font-family: 'Courier', sans-serif;
+          font-size: 12px;
+          width: 80%;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 4px;
+          text-align: left;
+          white-space: pre-wrap;
+      }
+
       .terminal {
           width: 40%;
           color: forestgreen;
@@ -63,6 +81,7 @@ export class LitTerminal extends LitElement {
           font-size: 16px;
           margin: 4px;
       }
+
       .output {
           width: 80%;
           margin-left: auto;
@@ -72,11 +91,21 @@ export class LitTerminal extends LitElement {
           text-align: left;
           white-space: pre-wrap;
       }
+
+      .headerOutput {
+          width: 80%;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: center;
+          white-space: pre-wrap;
+      }
   `;
 
   render() {
     return html`
       <div class="terminal">
+        ${this.headerText.map(line => html`<div class="headerOutput">${line}</div>`)}
+        <div class="bastard">Best Archetypal System Terminals And Retrograde Devices</div>
         ${this.history.map(line => html`<div class="output">${line}</div>`)}
         <input type="text" .value="${this.inputValue}"
                   @keydown="${this.handleEnter}"
