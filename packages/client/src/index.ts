@@ -3,6 +3,7 @@ import mudConfig from "contracts/mud.config";
 import { LitTerminal } from './lit/lit-term';
 import './lit/lit-term';
 import './styles/setupStyles';
+import './lit/lit-wallet'
 
 const {
   components,
@@ -35,7 +36,7 @@ if (textInput) {
 function runCmd(cmd: string[]): void {
   console.log('run cmd', cmd);
   // @ts-ignore
-  processCommand(cmd, playerId);
+  let _ = processCommand(cmd, playerId);
 }
 
 components.Output.update$.subscribe((update) => {

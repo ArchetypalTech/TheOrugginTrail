@@ -1,12 +1,22 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, PropertyValues } from "lit";
+import { createWalletClient } from 'viem'
+import { getNetworkConfig } from "../mud/getNetworkConfig";
 
 class LitWallet extends LitElement {
   declare inputValue: string;
+  declare networkConfig: any;
 
   static get properties() {
     return {
       inputValue: { type: String },
     };
+  }
+
+  protected async firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
+    console.log("first updated....")
+    this.networkConfig = await getNetworkConfig();
+    console.log("Fetched config");
   }
 
   constructor() {
@@ -34,9 +44,10 @@ class LitWallet extends LitElement {
 
       .wallet {
           width: 40%;
+          height: 100px;
           color: forestgreen;
           background: black;
-          border: 1px solid chartreuse;
+          border: 1px solid yellowgreen;
           border-radius: 4px;
           font-family: 'Courier', sans-serif;
           font-size: 16px;
