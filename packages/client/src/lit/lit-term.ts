@@ -49,7 +49,6 @@ class LitTerminal extends LitElement {
           border: black;
           font-family: 'Courier', sans-serif;
           font-size: 16px;
-          //width: 100%;
           box-sizing: border-box;
           margin-bottom: 8px;
           margin-left: 4px;
