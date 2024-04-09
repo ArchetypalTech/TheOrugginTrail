@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 
-class LitTerminal extends LitElement {
+export class LitTerminal extends LitElement {
   declare inputValue: string;
   declare history: Array<string>;
   static get properties() {

@@ -12,16 +12,6 @@ class LitWallet extends LitElement {
   constructor() {
     super();
     this.inputValue = '> '; // Initialize your property
-    // @ts-ignore
-    this.history = [
-      "Archetypal Tech welcomes you to DEATH"
-      , "well possibly..."
-      , "\n"
-      , "The O'Ruggin Trail, no:23"
-      , "from the good folk at"
-      , "Best Archetypal System Terminals And Retrograde Devices"
-      , "\n"
-    ];
   }
 
   static styles = css`
@@ -51,16 +41,6 @@ class LitWallet extends LitElement {
           font-family: 'Courier', sans-serif;
           font-size: 16px;
           margin: 4px;
-      }
-
-      .output {
-          width: 80%;
-          margin-left: auto;
-          margin-right: auto;
-          margin-top: 8px;
-          margin-bottom: 8px;
-          text-align: left;
-          white-space: pre-wrap;
       }
   `;
 
