@@ -23,7 +23,7 @@ class LitWallet extends LitElement {
 
   constructor() {
     super();
-    this.inputValue = '> Please enter an address...'; // Initialize your property
+    this.inputValue = '> type "connect" to add a wallet'; // Initialize
     // @ts-ignore
     this.history = [
       "Archetypal Tech Wallet Facility no:23"
@@ -63,14 +63,14 @@ class LitWallet extends LitElement {
           margin: 4px;
       }
       .output {
-           width: 80%;
-           margin-left: auto;
-           margin-right: auto;
-           margin-top: 8px;
-           margin-bottom: 8px;
-           text-align: left;
-           white-space: pre-wrap;
-       }
+          width: 80%;
+          margin-left: auto;
+          margin-right: auto;
+          margin-top: 8px;
+          margin-bottom: 8px;
+          text-align: left;
+          white-space: pre-wrap;
+      }
   `;
 
   render() {
@@ -101,15 +101,25 @@ class LitWallet extends LitElement {
     }
   }
 
+  private handleConnect() {
+    console.log('connecting');
+  }
+  private handleCommand(cmd: string) {
+    if (cmd === 'connect') {
+    } else {
+      this.history = [...this.history, cmd, `bad command: try "connect"`];
+    }
+  }
+
   private handleEnter(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       const commandStr = this.stripCommandString(this.inputValue);
+      this.handleCommand(commandStr);
       // this.dispatchEvent(new CustomEvent('command-update', {
       //   detail: { value: commandStr },
       //   bubbles: true, // Allows the event to bubble up through the DOM
       //   composed: true // Allows the event to cross the shadow DOM boundary
       // }));
-      this.history = [...this.history, commandStr];
       this.inputValue = '> ';
     }
   }
