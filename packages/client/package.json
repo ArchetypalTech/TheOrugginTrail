@@ -28,7 +28,7 @@
     "viem": "1.14.0"
   },
   "devDependencies": {
-    "vite": "^4.5.2",
+    "vite": ">=4.5.3",
     "wait-port": "^1.0.4"
   }
 }
