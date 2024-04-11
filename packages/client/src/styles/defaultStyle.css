@@ -4,3 +4,6 @@ body {
     background-color: black;
     color: white;
 }
+::-webkit-scrollbar {
+    width: 8px; /* Includes the "border" */
+}

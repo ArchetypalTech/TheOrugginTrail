@@ -52,7 +52,7 @@ components.Output.update$.subscribe((update) => {
 });
 
 // https://vitejs.dev/guide/env-and-mode.html
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && import.meta.env.VITE_MUD_DEV_DISPLAY) {
   const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
   mountDevTools({
     config: mudConfig,

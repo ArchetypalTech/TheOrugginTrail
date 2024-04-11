@@ -28,6 +28,18 @@ input {
     font-size: 16px;
     margin: 4px;
 }
+::-webkit-scrollbar {
+    width: 11px; /* Includes the "border" */
+}
+::-webkit-scrollbar-track {
+  background: black; /* Dark grey track */
+  border-left: 2px solid yellow; /* Simulates left border */
+  border-right: 1px solid yellow; /* Simulates right border */
+}
+::-webkit-scrollbar-thumb {
+  background: yellow; /* Yellow thumb */
+  border-radius: 2px; /* Makes the thumb rectangular but slightly rounded */
+}
 .output {
     width: 80%;
     margin-left: auto;
