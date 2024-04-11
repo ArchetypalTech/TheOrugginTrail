@@ -1,7 +1,7 @@
 import { LitElement, html, css, PropertyValues } from "lit";
 import { createWalletClient } from 'viem'
-import { getNetworkConfig } from "../mud/getNetworkConfig";
-import walletStyle from "../styles/walletStyle";
+import { getNetworkConfig } from "../../mud/getNetworkConfig";
+import walletStyle from "../../styles/wallet/walletStyle";
 
 class LitWallet extends LitElement {
   declare inputValue: string;

@@ -3,7 +3,7 @@ import mudConfig from "contracts/mud.config";
 import { LitTerminal } from './lit/lit-term';
 import './lit/lit-term';
 import './styles/setupStyles';
-import './lit/lit-wallet'
+import './lit/wallet/lit-wallet'
 
 const {
   components,
