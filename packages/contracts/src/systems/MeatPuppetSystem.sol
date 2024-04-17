@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.21;
 
 // get some debug OUT going
 import { console } from "forge-std/console.sol";
@@ -26,6 +26,7 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 contract MeatPuppetSystem is System, Constants {
 
+    // dont do this its a bad idea
     address private world;
     /**
      * @param pId a player id and a room id
