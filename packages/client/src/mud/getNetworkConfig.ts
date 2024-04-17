@@ -57,9 +57,6 @@ export async function getNetworkConfig() {
 
   if (import.meta.env.VITE_USE_ANVIL) {
     console.log("LOCAL....");
-    // if (localStorage.getItem("mud:burnerWallet") != null) {
-    //   localStorage.removeItem("mud:burnerWallet");
-    // }
     burner = getBurnerPrivateKey();
   } else {
     burner = import.meta.env.VITE_META_BURNER;
