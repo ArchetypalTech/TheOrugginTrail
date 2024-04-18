@@ -174,6 +174,7 @@ contract TokeniserSystem is System {
         cmdLookup["LOOT"]       = ActionType.Loot;
         cmdLookup["DESCRIBE"]   = ActionType.Describe;
         cmdLookup["TAKE"]       = ActionType.Take;
+        cmdLookup["GET"]       = ActionType.Take;
         cmdLookup["KICK"]       = ActionType.Kick;
         cmdLookup["LOCK"]       = ActionType.Lock;
         cmdLookup["UNLOCK"]     = ActionType.Unlock;
@@ -186,7 +187,7 @@ contract TokeniserSystem is System {
         cmdLookup["INVENTORY"]  = ActionType.Inventory;
         cmdLookup["BURN"]       = ActionType.Burn;
         cmdLookup["LIGHT"]      = ActionType.Light;
-        cmdLookup["AQUIRE"]      = ActionType.Aquire;
+        cmdLookup["AQUIRE"]      = ActionType.Take;
     }
 
     // this could autogen because we just take set of "str"
