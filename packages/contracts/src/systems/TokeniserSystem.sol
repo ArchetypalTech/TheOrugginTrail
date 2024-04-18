@@ -162,7 +162,7 @@ contract TokeniserSystem is System {
         reverseVrbLookup[ActionType.Drop]       = "drop";
         reverseVrbLookup[ActionType.Inventory]  = "inventory";
         reverseVrbLookup[ActionType.Burn]       = "burn";
-        reverseVrbLookup[ActionType.Light]      = "light";
+        reverseVrbLookup[ActionType.Aquire]      = "aquire";
     }
 
     // we need to somewhere somehow read in the possible verbs if we
@@ -186,6 +186,7 @@ contract TokeniserSystem is System {
         cmdLookup["INVENTORY"]  = ActionType.Inventory;
         cmdLookup["BURN"]       = ActionType.Burn;
         cmdLookup["LIGHT"]      = ActionType.Light;
+        cmdLookup["AQUIRE"]      = ActionType.Aquire;
     }
 
     // this could autogen because we just take set of "str"

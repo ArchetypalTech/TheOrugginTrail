@@ -70,7 +70,8 @@ export default mudConfig({
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
             "Look", "Close", "Break", "Throw", "Drop",
-            "Inventory", "Burn", "Light", "Damage", "Hit"
+            "Inventory", "Burn", "Light", "Damage", "Hit",
+            "Aquire"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
