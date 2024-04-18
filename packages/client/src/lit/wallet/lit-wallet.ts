@@ -1,7 +1,7 @@
 import { LitElement, html, css, PropertyValues } from "lit";
 import { createWalletClient } from 'viem'
 import { getNetworkConfig } from "../../mud/getNetworkConfig";
-import walletStyle from "../../styles/wallet/walletStyle";
+import { cssString } from "../../styles/wallet/walletStyle";
 
 class LitWallet extends LitElement {
   declare inputValue: string;
@@ -32,7 +32,7 @@ class LitWallet extends LitElement {
   }
 
   // @ts-ignore
-  static styles = css([walletStyle]);
+  static styles = css([cssString]);
 
   render() {
     return html`
