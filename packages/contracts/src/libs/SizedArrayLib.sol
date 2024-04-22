@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.21;
 
 import { ErrCodes ,GameConstants } from "../constants/defines.sol";
 import {console} from "forge-std/console.sol";
