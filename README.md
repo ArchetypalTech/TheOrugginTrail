@@ -32,3 +32,13 @@ of this repo because we aren't checking in the node_modules folder.
 cruft....
 
 **Really**. Run `pnpm install` at the project root. Or be dead. Pfft.
+
+## Dev Setup
+### Windows
+- Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) to access a Linux terminal.
+- Make sure you have [Node.js](https://nodejs.org/en/download/) v18.20.2 installed or are using [nvm](https://github.com/nvm-sh/nvm) via `nvm use` with an `.nvmrc` file at the top directory pointing to that version.
+- Install [Forge](https://book.getfoundry.sh/getting-started/installation) to run the local blockchain.
+- Make sure you have [pnpm](https://pnpm.io/installation) installed, as it is the package manager used in this project.
+- Install [mprocs](https://github.com/pvolok/mprocs) to run multiple terminal windows simultaneously.
+- Run `pnpm install` or `pnpm i` to install the dependencies.
+- Run `pnpm dev` to start the local blockchain and deploy the contracts.
