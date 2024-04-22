@@ -153,12 +153,12 @@ contract GameSetupSystem is System, Constants {
                                 "door", barn_plain));
 
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
-                                " falls open", false, false, 0, 0);
+                                " falls open", false, false, false, 0, 0);
 
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"
                                 "satisfyingly spreading broken joy on the floor"
-                                , true, false, open_2_forest, 0);
+                                , true, false, false, open_2_forest, 0);
 
         uint32[MAX_OBJ] memory window_actions;
         window_actions[0] = open_2_forest;
@@ -235,11 +235,11 @@ contract GameSetupSystem is System, Constants {
         return objId++;
     }
 
-    function createAction(ActionType actionType, string memory desc, bool enabled, bool dBit, uint32 affectsId, uint32 affectedById) private returns (uint32) {
+    function createAction(ActionType actionType, string memory desc, bool enabled, bool, revert, bool dBit, uint32 affectsId, uint32 affectedById) private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         uint32 aId = _textGuid(desc);
         TxtDefStore.set(txtId, aId, TxtDefType.Action, desc);
-        ActionStoreData memory actionData = ActionStoreData(actionType, txtId, enabled, dBit, affectsId, affectedById);
+        ActionStoreData memory actionData = ActionStoreData(actionType, txtId, enabled, revert, dBit, affectsId, affectedById);
         ActionStore.set(aId, actionData);
         return aId;
     }

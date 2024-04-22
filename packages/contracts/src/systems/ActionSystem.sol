@@ -115,20 +115,25 @@ contract ActionSystem is System, Constants {
             if (isD) {
                 // get the object data
                 DirObjectStoreData memory objData = DirObjectStore.get(objIDs[i]);
-                // are we dealing with a specific action or a general action i.e de we
+                // are we dealing with a specific action or a general action i.e do we
                 // have an indirectObject in the command. If we don't have an indirectObj
                 // then use the base case
-
                 if (cmd.indirectDirNoun != DirObjectType.None) {
                     for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
                         ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
                         if (actionData.enabled) {
                             ++bc;
-                            // flip the bit
-                            actionData.dBit = !actionData.dBit;
-                            ActionStore.set(objData.objectActionIds[j], actionData);
-                            // get the state change text and store
-                            ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(objData.objectActionIds[j]));
+                            // flip the bit if the dBit has not been set or
+                            // flip if it is revertible and unset
+                            if (actionData.revert && actionData.dBit) {
+                                // reset the bit
+                                actionData.dBit = !actionData.dBit;
+                            } else if (!actionData.dBit) {
+                                // set the bit on, i.e. the action has now been done
+                                actionData.dBit = !actionData.dBit;
+                                ActionStore.set(objData.objectActionIds[j], actionData);
+                                ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(objData.objectActionIds[j]));
+                            }
                             // follow any linked actions
                             uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
                             console.log("--->link:%s", linkedActionId);

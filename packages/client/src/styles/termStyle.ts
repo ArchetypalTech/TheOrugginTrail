@@ -36,7 +36,7 @@ const cssString: string = `:host {
           margin-left: auto;
           margin-right: auto;
           margin-bottom: 4px;
-          text-align: left;
+          text-align: center;
           white-space: pre-wrap;
       }
 

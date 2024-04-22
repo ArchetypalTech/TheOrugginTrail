@@ -1,0 +1,11 @@
+---
+
+o: 'None'
+p: 'Path'
+x: 'Room'
+d: 'Portal'
+
+title: 'a career at the bar'
+location:
+  - [o, o, o, x]
+  - [o, p, o, x]

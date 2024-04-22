@@ -132,6 +132,7 @@ export default mudConfig({
                 actionType: "ActionType",
                 dBitTxt: "bytes32", // txt when the state is flipped
                 enabled: "bool", // can it be used? so we can chain disabled actions that are triggered
+                revert: "bool",
                 dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
                 affectsActionId: "uint32", // follow this action chain and flip bits
                 affectedByActionId: "uint32" // does this id match the calling action
