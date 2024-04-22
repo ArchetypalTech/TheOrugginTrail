@@ -1,7 +1,0 @@
-[package]
-name = "pray_engine"  # Replace with your project's name
-version = "0.1.0"           # The current version of your project
-
-[dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9"
