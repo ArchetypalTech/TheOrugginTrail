@@ -90,7 +90,7 @@ contract GameSetupSystem is System, Constants {
         // KPLAIN -> N, E
         uint32 open_2_barn = createAction(ActionType.Open, "the door opens with a farty noise\n"
                                 "you can actually smell fart",
-                                true, true, 0, 0);
+                                true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory plain_barn;
         uint32[MAX_OBJ] memory dObjs;
@@ -104,7 +104,7 @@ contract GameSetupSystem is System, Constants {
 
         uint32 open_2_path = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
                                 "your nose is really itchy",
-                                true, true, 0, 0);
+                                true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory plain_path;
         plain_barn[0] = open_2_path;
@@ -115,7 +115,7 @@ contract GameSetupSystem is System, Constants {
         uint32 kick = createAction(ActionType.Kick, "the ball (such as it is)"
                                 "bounces feebly\n then rolls into some fresh dog eggs\n"
                                 "none the less you briefly feel a little better",
-                                true, false, 0, 0);
+                                true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory ball_actions;
         ball_actions[0] = kick;
@@ -143,7 +143,7 @@ contract GameSetupSystem is System, Constants {
 
     function _setupBarn() private {
         // KBARN -> S
-        uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true, 0, 0);
+        uint32 open_2_south = createAction(ActionType.Open, "the door opens\n", true, true, true, 0, 0);
         uint32[MAX_OBJ] memory barn_plain;
         barn_plain[0] = open_2_south;
         uint32[MAX_OBJ] memory dObjs;
@@ -152,6 +152,7 @@ contract GameSetupSystem is System, Constants {
                                 DirObjectType.Door, MaterialType.Wood,
                                 "door", barn_plain));
 
+        // this is NOT enabled NOR OPEN
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
                                 " falls open", false, false, false, 0, 0);
 
@@ -182,7 +183,7 @@ contract GameSetupSystem is System, Constants {
 
     function _createMountainPath() private {
         // KPATH -> W
-        uint32 open_2_west = createAction(ActionType.Open, "the path is passable", true, true, 0, 0);
+        uint32 open_2_west = createAction(ActionType.Open, "the path is passable", true, true, false, 0, 0);
         uint32[MAX_OBJ] memory path_actions;
         path_actions[0] = open_2_west;
 
@@ -235,7 +236,7 @@ contract GameSetupSystem is System, Constants {
         return objId++;
     }
 
-    function createAction(ActionType actionType, string memory desc, bool enabled, bool, revert, bool dBit, uint32 affectsId, uint32 affectedById) private returns (uint32) {
+    function createAction(ActionType actionType, string memory desc, bool enabled, bool dBit, bool revert, uint32 affectsId, uint32 affectedById) private returns (uint32) {
         bytes32 txtId = keccak256(abi.encodePacked(desc));
         uint32 aId = _textGuid(desc);
         TxtDefStore.set(txtId, aId, TxtDefType.Action, desc);
