@@ -1,5 +1,6 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
+import { setupThree, updateScene } from "./three";
 
 const {
   components,
@@ -10,7 +11,7 @@ const {
 
 var playerId = 0;
 
-$('body').terminal(async function(command)  {
+$("#terminal").terminal(async function(command)  {
     var term = $.terminal.active();
 
     if(command == 'be bob') {
@@ -32,12 +33,15 @@ $('body').terminal(async function(command)  {
     { prompt: '>', name: 'TheOrugginTrail',  greetings: '# TheOrugginTrail\nAn experiment in fully onchain text adventures\n' }
 );
 
+setupThree();
+
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   if (nextValue.playerId == playerId) {
     console.log("Output updated", update, { nextValue, prevValue });
         var term = $.terminal.active();
         term.echo(nextValue.text);
+		updateScene(nextValue.text);
     }
 });
 
