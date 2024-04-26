@@ -109,30 +109,20 @@ export class RevealCommitment implements Receptor<WitnessRelation<Commitment, Jo
     }
 }
 
-export class HiddenState {
-    private call: NetworkCall;
-    private vault: typeof Vault;
-    private rs: typeof EVMRootSystem;
-
-    constructor(call: NetworkCall, vault: typeof Vault, rs: typeof EVMRootSystem) {
-        this.call = call;
-        this.vault = vault;
-        this.rs = rs;
-    }
-
+export const createModuleCalls = (call: NetworkCall, vault: typeof Vault, rs: typeof EVMRootSystem) => {
     /**
      * Creates a commitment to randomness on-chain
      */
-    async claim(commitmentKey: number) {
+    const claim = async (commitmentKey: number) => {
         const randomness = await new CreateRandomness().bond(undefined);
         const signal = await new RandomnessReceptor().signal(randomness);
-        const txs = await this.rs.createTxs([signal]);
+        const txs = await rs.createTxs([signal]);
         const entry = {
             slot: commitmentKey,
             value: randomness
         }
-        await Promise.all(txs.map(async (tx: any) => await this.call(tx)));
-        Vault.setEntry(this.rs.walletAddress, MODULE_ID.toString(), entry);
+        await Promise.all(txs.map(async (tx: any) => await call(tx)));
+        Vault.setEntry(rs.walletAddress, MODULE_ID.toString(), entry);
     }
 
     /**
@@ -140,8 +130,8 @@ export class HiddenState {
      * @param chainRandom the random number generated on-chain and used to create joint randomness
      * @param commitmentKey the key that is used to determine the item slot both client-side and onchain
      */
-    async reveal(chainRandom: number, commitmentKey: number) {
-        const entry = this.vault.getDataAtSlot(this.rs.walletAddress, MODULE_ID.toString(), commitmentKey);
+    const reveal = async (chainRandom: number, commitmentKey: number) => {
+        const entry = vault.getDataAtSlot(rs.walletAddress, MODULE_ID.toString(), commitmentKey);
         const relation = entry?.value as WitnessRelation<Commitment, StoredCommitment>;
         const jointRandomness = {
             chainRandom, 
@@ -153,8 +143,13 @@ export class HiddenState {
             witness: jointRandomness
         }
         const signal = await new RevealCommitment().signal(revealRelation);
-        const txs = await this.rs.createTxs([signal]);
-        await Promise.all(txs.map(async (tx: any) => await this.call(tx)));
-        Vault.removeEntry(this.rs.walletAddress, MODULE_ID.toString(), entry!);
+        const txs = await rs.createTxs([signal]);
+        await Promise.all(txs.map(async (tx: any) => await call(tx)));
+        Vault.removeEntry(rs.walletAddress, MODULE_ID.toString(), entry!);
+    }
+
+    return {
+        claim,
+        reveal
     }
 }
