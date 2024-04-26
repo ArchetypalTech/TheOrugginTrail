@@ -1,6 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
+
     namespace: "mp",
     enums: {
         // all places on the 2d map grid are either Void or Place:
@@ -94,6 +95,13 @@ export default mudConfig({
                 dir: "DirectionType",
                 tok: "string",
             },
+        },
+        GribiConfig: {
+            keySchema: {},
+            valueSchema: {
+                contractAddress: "address",
+            },
+            dataStruct: false
         },
         Vrbs: {
             keySchema: {

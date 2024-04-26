@@ -46,6 +46,21 @@ export function createSystemCalls(
     await waitForTransaction(tx);
   };
 
+  /**
+   * GRIBI Stuff
+   */
+  const mudCall: NetworkCall = async (transaction: Transaction) => {
+    let tx;
+    if (transaction.proof) {
+      // tx = await worldContract.write.execute([transaction.id, transaction.data, transaction.proof.data]);
+      // proofs are turned off until KernelCircuit is done
+      tx = await worldContract.write.execute([transaction.id as bigint, transaction.data]);
+    } else {
+      tx = await worldContract.write.execute([transaction.id as bigint, transaction.data]);
+    }
+    await waitForTransaction(tx);
+  };
+
   return {
     processCommand,
     initData,

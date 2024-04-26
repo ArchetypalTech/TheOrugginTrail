@@ -1,0 +1,49 @@
+{
+  "name": "example-gribi-module",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./dist/hidden-assignment.umd.js",
+  "module": "./dist/hidden-assignment.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/hidden-assignment.es.js",
+      "require": "./dist/hidden-assignment.umd.js",
+      "types": "./dist/hidden-assignment.index.d.ts"
+    }
+  },
+  "types": "./dist/hidden-assignment.index.d.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && npm run generate:types",
+    "clean": "rm -rf ./dist && rm -rf ./live-demo && rm -rf ./coverage",
+    "generate:types": "tsc -p tsconfig-build.json --declaration --emitDeclarationOnly true --outdir ./dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run  --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@gribi/evm-rootsystem": "../../../../gribi/packages/evm-rootsystem/packages/client",
+    "@gribi/types": "../../../../gribi/packages/types",
+    "@gribi/vault": "../../../../gribi/packages/vault",
+    "@gribi/mud": "../../../../gribi/packages/mud-integration",
+    "@noir-lang/types": "^0.26.0",
+    "viem": "^2.9.6"
+  },
+  "peerDependencies": {
+    "@noir-lang/backend_barretenberg": "^0.26.0",
+    "@noir-lang/noir_js": "^0.26.0",
+    "@noir-lang/noirc_abi": "^0.26.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "jsdom": "^24.0.0",
+    "typescript": "^5.4.3",
+    "vite": "^5.2.7",
+    "vite-plugin-dts": "^3.8.1",
+    "vitest": "^1.4.0"
+  }
+}

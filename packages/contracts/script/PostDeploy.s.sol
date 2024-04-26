@@ -21,6 +21,7 @@ import { MaterialType } from "../src/codegen/common.sol";
 import { RoomStore } from "../src/codegen/index.sol";
 import { ObjectStore } from "../src/codegen/index.sol";
 import { ActionStore } from "../src/codegen/index.sol";
+import { GribiConfig } from "../src/codegen/index.sol";
 
 import { GameConstants } from "../src/constants/defines.sol";
 
@@ -150,9 +151,10 @@ contract PostDeploy is Script {
 
         // Start broadcasting transactions from the deployer account
         vm.startBroadcast(deployerPrivateKey);
-
+        GribiConfig.set(address(0xA6BeeDc67D840fC8ccAC93Aac2952d52C7CFC4fe ));
+        IWorld(worldAddress).mp_GribiSystem_registerModules();
         IWorld(worldAddress).mp_GameSetupSystem_init();
-
         vm.stopBroadcast();
+
     }
 }

@@ -12,6 +12,11 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "hidden-assignment": "../../hidden-assignment/client",
+    "@gribi/evm-rootsystem": "../../gribi/packages/evm-rootsystem/packages/client",
+    "@gribi/mud": "../../gribi/packages/mud-integration/packages/client",
+    "@gribi/types": "../../gribi/packages/types",
+    "@gribi/vault": "../../gribi/packages/vault",
     "@latticexyz/common": "2.0.0-next.14",
     "@latticexyz/dev-tools": "2.0.0-next.14",
     "@latticexyz/recs": "2.0.0-next.14",
