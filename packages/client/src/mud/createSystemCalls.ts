@@ -6,6 +6,11 @@
 // import { getComponentValue } from "@latticexyz/recs";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
+import { NetworkCall, combineGribiModuleCalls } from "@gribi/mud";
+
+import { createModuleCalls } from "hidden-assignment";
+import { Vault } from "@gribi/vault";
+import { EVMRootSystem } from "@gribi/evm-rootsystem";
 // import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
@@ -65,5 +70,6 @@ export function createSystemCalls(
     processCommand,
     initData,
     describe,
+    ...combineGribiModuleCalls([createModuleCalls(mudCall, Vault, EVMRootSystem)])
   };
 }
