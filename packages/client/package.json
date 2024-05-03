@@ -25,10 +25,12 @@
     "dotenv": "^16.4.5",
     "lit": "^3.1.2",
     "rxjs": "7.5.5",
-    "viem": "1.14.0"
+    "viem": "1.14.0",
+    "three": "^0.163.0"
   },
   "devDependencies": {
     "vite": ">=4.5.3",
-    "wait-port": "^1.0.4"
+    "wait-port": "^1.0.4",
+    "@types/three": "^0.163.0"
   }
 }
