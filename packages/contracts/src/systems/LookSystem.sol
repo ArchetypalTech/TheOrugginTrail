@@ -44,6 +44,7 @@ contract LookSystem is System {
         }
         return err;
     }
+
     function getRoomDesc(uint32 id) public view returns (string memory d) {
         // return the room description but dont bother with the exits or the objects
         string memory desc = "You are ";
@@ -92,6 +93,8 @@ contract LookSystem is System {
                 objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
             }
             return objsDesc;
+        } else {
+            return '';
         }
     }
 
@@ -130,6 +133,8 @@ contract LookSystem is System {
                 }
             }
             return exitsDesc;
+        } else {
+            return '';
         }
     }
 
