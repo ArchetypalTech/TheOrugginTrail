@@ -63,8 +63,10 @@ export function setupThree() {
 	animate();
 
 	// Append the scene canvas to the viewport.
-	// TODO this will need to be changed when moving away from JQuery.
-	$("#viewport").append(effect.domElement);
+	const viewport = document.getElementById('viewport');
+	if (viewport) {
+		viewport.append(effect.domElement);
+	}
 
 	// Preload all scenes.
 	//TODO If there are a bunch of scenes, this should probably be

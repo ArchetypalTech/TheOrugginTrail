@@ -41,7 +41,7 @@ function runCmd(cmd: string[]): void {
 }
 
 // 
-+setupThree();
+setupThree();
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   if (nextValue.playerId == playerId) {

@@ -62,20 +62,24 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
+  /*
+   *   chopped out below as it errors if we don't connect via a browser that has metamask wallet
+   *   extension running in it, so we need to handle for this
+   */
   // wallet client for meta mask address
-  const metaClient  =  createWalletClient({
-    chain: networkConfig.chain,
-    transport: custom(window.ethereum!)
-  });
-
-  try {
-    const accounts = await metaClient.getAddresses();
-    console.log(accounts);
-    // []
-    // Expected an array with the address I passed to walletClient, instead of an empty array
-  } catch(e) {
-    console.log(e);
-  }
+  // const metaClient  =  createWalletClient({
+  //   chain: networkConfig.chain,
+  //   transport: custom(window.ethereum!)
+  // });
+  //
+  // try {
+  //   const accounts = await metaClient.getAddresses();
+  //   console.log(accounts);
+  //   // []
+  //   // Expected an array with the address I passed to walletClient, instead of an empty array
+  // } catch(e) {
+  //   console.log(e);
+  // }
 
   // const [address] = await metaClient.getAddresses();
   /*
