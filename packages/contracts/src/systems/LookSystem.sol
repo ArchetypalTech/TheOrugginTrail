@@ -44,6 +44,7 @@ contract LookSystem is System {
         }
         return err;
     }
+
     function getRoomDesc(uint32 id) public view returns (string memory d) {
         // return the room description but dont bother with the exits or the objects
         string memory desc = "You are ";
@@ -84,7 +85,7 @@ contract LookSystem is System {
 
         uint32 count = SizedArray.count(objs);
         if (count != 0) {// if the first item is 0 then there are no objects
-            string memory objsDesc = "\nYou can alse see a ";
+            string memory objsDesc = "\nYou can also see a ";
             for (uint8 i = 0; i < count; i++) {
                 objsDesc = string(abi.encodePacked(objsDesc, ObjectStore.getDescription(objs[i]), "\n"));
                 bytes32 tId = ObjectStore.getTxtDefId(objs[i]);
@@ -92,6 +93,8 @@ contract LookSystem is System {
                 objsDesc = string(abi.encodePacked(objsDesc, TxtDefStore.getValue(tId), "\n"));
             }
             return objsDesc;
+        } else {
+            return '';
         }
     }
 
@@ -130,6 +133,8 @@ contract LookSystem is System {
                 }
             }
             return exitsDesc;
+        } else {
+            return '';
         }
     }
 

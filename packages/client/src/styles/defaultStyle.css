@@ -1,0 +1,14 @@
+body {
+    margin: 4;
+    padding: 4;
+    background-color: black;
+    color: white;
+}
+#gameview {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+::-webkit-scrollbar {
+    width: 8px; /* Includes the "border" */
+}

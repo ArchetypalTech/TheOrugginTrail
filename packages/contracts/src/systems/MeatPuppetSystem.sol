@@ -26,6 +26,7 @@ import { SizedArray } from '../libs/SizedArrayLib.sol';
 
 contract MeatPuppetSystem is System, Constants {
 
+    // dont do this its a bad idea
     address private world;
     /**
      * @param pId a player id and a room id

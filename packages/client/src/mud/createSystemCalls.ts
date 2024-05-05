@@ -3,10 +3,10 @@
  * for changes in the World state (using the System contracts).
  */
 
-import { getComponentValue } from "@latticexyz/recs";
+// import { getComponentValue } from "@latticexyz/recs";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
+// import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -29,16 +29,19 @@ export function createSystemCalls(
 ) {
   const initData = async () => {
     // this is used to call everything right now
+    // @ts-ignore
     const tx = await worldContract.write.mp_GameSetupSystem_init();
     await waitForTransaction(tx);
   };
 
   const describe = async () => {
-      const tx = await worldContract.write.describe();
+      // @ts-ignore
+    const tx = await worldContract.write.describe();
       await waitForTransaction(tx);
   };
 
   const processCommand: (command:string, playerId:number) => Promise<void> = async (command, playerId) => {
+    // @ts-ignore
     const tx = await worldContract.write.mp_MeatPuppetSystem_processCommandTokens([command, playerId]);
     await waitForTransaction(tx);
   };

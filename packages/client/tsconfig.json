@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "types": ["vite/client"],
+    "types": ["vite/client", "viem/_types/index", "@metamask/sdk/dist/browser/es/src/index", "lit/index"],
+    "strictNullChecks": false,
     "target": "ESNext",
     "useDefineForClassFields": true,
+    "experimentalDecorators": false,
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",

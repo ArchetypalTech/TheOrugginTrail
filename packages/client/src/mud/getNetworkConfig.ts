@@ -52,7 +52,18 @@ export async function getNetworkConfig() {
    * 4. The default, 31337 (anvil)
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
-  // const chainId = Number( 1337);
+
+  let burner : string;
+
+  if (import.meta.env.VITE_USE_ANVIL) {
+    console.log("LOCAL....");
+    // if (localStorage.getItem("mud:burnerWallet") != null) {
+    //   localStorage.removeItem("mud:burnerWallet");
+    // }
+    burner = getBurnerPrivateKey();
+  } else {
+    burner = import.meta.env.VITE_META_BURNER;
+  }
 
   /*
    * Find the chain (unless it isn't in the list of supported chains).
@@ -75,7 +86,8 @@ export async function getNetworkConfig() {
   }
 
   // hack in a private key from the .env
-  const burner_key : string = import.meta.env.VITE_META_BURNER;
+  //const burner_key : string = import.meta.env.VITE_META_BURNER;
+
   /*
    * MUD clients use events to synchronize the database, meaning
    * they need to look as far back as when the World was started.
@@ -89,7 +101,7 @@ export async function getNetworkConfig() {
 
   return {
     // privateKey: getBurnerPrivateKey(),
-    privateKey: burner_key,
+    privateKey: burner,
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

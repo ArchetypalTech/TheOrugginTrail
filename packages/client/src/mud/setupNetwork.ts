@@ -13,7 +13,7 @@ import {
   parseEther,
   ClientConfig,
   Account,
-  custom
+  custom, PublicClient, WalletClient
 } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
@@ -51,33 +51,39 @@ export async function setupNetwork() {
   } as const satisfies ClientConfig;
 
   const publicClient = createPublicClient(clientOptions);
-
+  let walletClient: WalletClient;
   /*
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-  const burnerWalletClient = createWalletClient({
+  let burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
   });
 
-  // wallet client for meta mask address
-  const metaClient : Account =  createWalletClient({
-    chain: networkConfig.chain,
-    transport: custom(window.ethereum!)
-  });
-
+  let metaClient: WalletClient | null = null;
   try {
-    const accounts = await metaClient.getAddresses();
-    console.log(accounts);
-    // []
-    // Expected an array with the address I passed to walletClient, instead of an empty array
-  } catch(e) {
-    console.log(e);
+    metaClient  =  createWalletClient({
+      chain: networkConfig.chain,
+      transport: custom(window.ethereum!)
+    });
+  }catch (e) {
+    console.error("Failed to create meta wallet is the extention installed?");
   }
 
-  // const [address] = await metaClient.getAddresses();
+  if (metaClient) {
+    try {
+      const accounts = await metaClient.getAddresses();
+      console.log(accounts);
+      walletClient = metaClient;
+    } catch (e) {
+      console.log(e);
+    }
+  } else {
+    walletClient = burnerWalletClient;
+  }
+
   /*
    * Create an observable for contract writes that we can
    * pass into MUD dev tools for transaction observability.
@@ -91,7 +97,7 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
     publicClient,
-    walletClient: burnerWalletClient,
+    walletClient: walletClient,
     onWrite: (write) => write$.next(write),
   });
 

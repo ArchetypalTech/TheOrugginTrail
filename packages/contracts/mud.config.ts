@@ -70,7 +70,8 @@ export default mudConfig({
             "None", "Go", "Move", "Loot", "Describe",
             "Take", "Kick", "Lock", "Unlock", "Open",
             "Look", "Close", "Break", "Throw", "Drop",
-            "Inventory", "Burn", "Light", "Damage", "Hit"
+            "Inventory", "Burn", "Light", "Damage", "Hit",
+            "Aquire"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
@@ -131,6 +132,7 @@ export default mudConfig({
                 actionType: "ActionType",
                 dBitTxt: "bytes32", // txt when the state is flipped
                 enabled: "bool", // can it be used? so we can chain disabled actions that are triggered
+                revert: "bool",
                 dBit: "bool", // is it done, LOCK->lockED, CLOSE -> closeED etc
                 affectsActionId: "uint32", // follow this action chain and flip bits
                 affectedByActionId: "uint32" // does this id match the calling action

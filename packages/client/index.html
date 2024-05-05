@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Oruggin Trail</title>
-    <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery.terminal/css/jquery.terminal.min.css"/>
+    <script type="module" src="/src/index.ts"></script>
   </head>
   <body>
-    <script type="module" src="/src/index.ts"></script>
-    <script type="module" src="/src/wallet.ts"></script>
+      <div id="gameview">
+          <l-wallet></l-wallet>
+          <l-terminal></l-terminal>
+          <div id="viewport"></div>
+      </div>
   </body>
 </html>
