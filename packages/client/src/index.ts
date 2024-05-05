@@ -4,6 +4,7 @@ import { LitTerminal } from './lit/lit-term';
 import './lit/lit-term';
 import './styles/setupStyles';
 import './lit/wallet/lit-wallet'
+import { setupThree, updateScene } from "./three";
 
 const {
   components,
@@ -39,6 +40,8 @@ function runCmd(cmd: string[]): void {
   let _ = processCommand(cmd, playerId);
 }
 
+// 
++setupThree();
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   if (nextValue.playerId == playerId) {
@@ -48,6 +51,7 @@ components.Output.update$.subscribe((update) => {
         (textInput as LitTerminal).history = [...(textInput as LitTerminal).history, nextValue.text];
       }
     }
+    updateScene(nextValue.text);
   }
 });
 
