@@ -41,14 +41,16 @@ const cssString: string = `:host {
       }
 
       .terminal {
-          width: 40%;
           color: forestgreen;
           background: black;
           border: 1px solid chartreuse;
           border-radius: 4px;
           font-family: 'Courier', sans-serif;
           font-size: 16px;
-          margin: 4px;
+          margin-top: 4px;
+          margin-bottom: 4px;
+          height: calc(100% - 8px);
+          height: 100%;
       }
 
       .output {

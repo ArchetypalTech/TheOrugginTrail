@@ -17,7 +17,7 @@ input {
     margin-right: 4px;
 }
 .wallet {
-    width: 40%;
+    width: 100%;
     height: 100px;
     overflow-y: auto;
     color: greenyellow;
@@ -26,7 +26,6 @@ input {
     border-radius: 4px;
     font-family: 'Courier', sans-serif;
     font-size: 16px;
-    margin: 4px;
 }
 ::-webkit-scrollbar {
     width: 11px; /* Includes the "border" */
