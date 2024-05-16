@@ -1,14 +1,32 @@
 body {
-    margin: 4;
-    padding: 4;
-    background-color: black;
-    color: white;
+  background-color: black;
+  color: white;
+  margin: 0;
+  padding: 0;
 }
 #gameview {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
 }
 ::-webkit-scrollbar {
-    width: 8px; /* Includes the "border" */
+  width: 8px; /* Includes the "border" */
+}
+
+#ui_content {
+  position: absolute;
+  width: 33%;
+  height: 66%;
+  min-width: 350px;
+  left: 50%;
+  bottom: 50%;
+  transform: translateX(-50%) translateY(50%);
+  display: flex;
+  flex-direction: column;
+}
+
+#terminal {
+  height: 100%;
 }
