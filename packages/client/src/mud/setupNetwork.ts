@@ -72,6 +72,11 @@ export async function setupNetwork() {
     console.error("Failed to create meta wallet is the extention installed?");
   }
 
+  // this is the bug I think because the metaClient is created but is in fact null in many of its
+  // params ergo we dont end up using the burnerWallet which is what we want to happen and as such the
+  // calls to the chain dont happen right I guess becuase we dont have a "correct" wallet address that actually
+  // responds to stuff
+  // so change this to check for something in the wallet
   if (metaClient) {
     try {
       const accounts = await metaClient.getAddresses();
@@ -81,6 +86,11 @@ export async function setupNetwork() {
       console.log(e);
     }
   } else {
+    walletClient = burnerWalletClient;
+  }
+
+  // use a burnerwallet for anvil tests etc
+  if (import.meta.env.VITE_USE_BURNER === 'true') {
     walletClient = burnerWalletClient;
   }
 
