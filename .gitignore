@@ -25,3 +25,5 @@ tags*
 **/contracts/deploys
 **/contracts/out
 .DS*
+gribi
+packages/client/dist
