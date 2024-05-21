@@ -51,6 +51,8 @@ const cssString: string = `:host {
           margin-bottom: 4px;
           height: calc(100% - 8px);
           height: 100%;
+          overflow-y: auto;
+          scroll-behavior: smooth;
       }
 
       .output {

@@ -1,10 +1,10 @@
-import { setup } from "./mud/setup";
-import mudConfig from "contracts/mud.config";
+import { setup } from './mud/setup';
+import mudConfig from 'contracts/mud.config';
 import { LitTerminal } from './lit/lit-term';
 import './lit/lit-term';
 import './styles/setupStyles';
-import './lit/wallet/lit-wallet'
-import { setupThree, updateScene } from "./three";
+import './lit/wallet/lit-wallet';
+import { setupThree, updateScene } from './three';
 
 const {
   components,
@@ -40,24 +40,27 @@ function runCmd(cmd: string[]): void {
   let _ = processCommand(cmd, playerId);
 }
 
-// 
+//
 setupThree();
 components.Output.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   if (nextValue.playerId == playerId) {
-    console.log("Output updated", update, { nextValue, prevValue });
+    console.log('Output updated', update, { nextValue, prevValue });
     if (textInput) {
       if (Array.isArray((textInput as LitTerminal).history)) {
         (textInput as LitTerminal).history = [...(textInput as LitTerminal).history, nextValue.text];
       }
     }
     updateScene(nextValue.text);
+    setTimeout(() => {
+      (textInput as LitTerminal).scrollToBottom();
+    }, 1);
   }
 });
 
 // https://vitejs.dev/guide/env-and-mode.html
 if (import.meta.env.DEV && import.meta.env.VITE_MUD_DEV_DISPLAY) {
-  const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+  const { mount: mountDevTools } = await import('@latticexyz/dev-tools');
   mountDevTools({
     config: mudConfig,
     publicClient: network.publicClient,

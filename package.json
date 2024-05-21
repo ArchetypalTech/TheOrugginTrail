@@ -22,8 +22,7 @@
     "typescript": "5.1.6"
   },
   "engines": {
-    "node": "18.x",
-    "pnpm": "8.x"
+    "node": "18.x"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
