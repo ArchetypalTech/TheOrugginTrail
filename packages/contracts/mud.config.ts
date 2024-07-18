@@ -44,7 +44,7 @@ export default mudConfig({
         RoomType: [
             "None", "WoodCabin", "Store",
             "Cavern", "StoneCabin", "Fort", "Room",
-            "Plain"
+            "Plain", "Forge"
         ],
         /** @dev use these to set direction bits on a DirectionObject
          * such as a door
@@ -75,7 +75,7 @@ export default mudConfig({
         ],
         // add these to rooms for stuff to do
         ObjectType: [
-            "None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol"
+            "None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol", "Matches"
         ],
         GrammarType: ["None", "DefiniteArticle", "Preposition", "Adverb", "DemPronoun"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh",

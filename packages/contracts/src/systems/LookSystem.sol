@@ -83,7 +83,15 @@ contract LookSystem is System {
 
     function _genObjDesc(uint32[32] memory objs) private view returns (string memory) {
 
-        uint32 count = SizedArray.count(objs);
+        uint32 count = 0;
+
+        // Count non-zero elements in the objs array
+        for (uint8 i = 0; i < objs.length; i++) {
+            if (objs[i] != 0) {
+                count++;
+            }
+        }
+
         if (count != 0) {// if the first item is 0 then there are no objects
             string memory objsDesc = "\nYou can also see a ";
             for (uint8 i = 0; i < count; i++) {
@@ -112,7 +120,14 @@ contract LookSystem is System {
     // there is a PATH made os mud to the DIR | there is a wood door to the
     function _genExitDesc(uint32[32] memory objs, address wrld) private view returns (string memory) {
 
-        uint32 count = SizedArray.count(objs);
+         uint32 count = 0;
+
+        // Count non-zero elements in the objs array
+        for (uint8 i = 0; i < objs.length; i++) {
+            if (objs[i] != 0) {
+                count++;
+            }
+        }
 
         if (count != 0) {// if the first item is 0 then there are no objects
             string memory exitsDesc = "\nThere is a ";

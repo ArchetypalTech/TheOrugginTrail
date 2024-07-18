@@ -244,11 +244,15 @@ contract TokeniserSystem is System {
         objLookup["KEY"]        = ObjectType.Key;
         objLookup["KNIFE"]      = ObjectType.Knife;
         objLookup["BOTTLE"]     = ObjectType.Bottle;
+         objLookup["PETROL"]     = ObjectType.Petrol;
+          objLookup["MATCHES"]     = ObjectType.Matches;
 
         reverseObjLookup[ObjectType.Football]   = "Football";
         reverseObjLookup[ObjectType.Key]        = "Key";
         reverseObjLookup[ObjectType.Knife]      = "Knife";
         reverseObjLookup[ObjectType.Bottle]     = "Bottle";
+        reverseObjLookup[ObjectType.Petrol]     = "Petrol";
+        reverseObjLookup[ObjectType.Matches]     = "Matches";
 
         revMat[MaterialType.Mud]    = "mud";
         revMat[MaterialType.Dirt]   = "dirt";

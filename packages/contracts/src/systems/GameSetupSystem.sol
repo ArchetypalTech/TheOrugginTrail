@@ -98,19 +98,22 @@ contract GameSetupSystem is System, Constants {
 
         plain_barn[0] = open_2_barn;
 
-        SizedArray.add(dObjs,createDirObj(DirectionType.North, KBarn,
+        uint32 dirObj1 = createDirObj(DirectionType.North, KBarn,
                               DirObjectType.Path, MaterialType.Dirt,
-                              "path", plain_barn));
+                              "path", plain_barn);
+        dObjs[0] = dirObj1;
 
         uint32 open_2_path = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
                                 "your nose is really itchy",
                                 true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory plain_path;
-        plain_barn[0] = open_2_path;
-        SizedArray.add(dObjs,createDirObj(DirectionType.East, KMountainPath,
+        plain_path[0] = open_2_path;
+        
+        uint32 dirObj2 = createDirObj(DirectionType.East, KMountainPath,
                               DirObjectType.Path, MaterialType.Mud,
-                              "path", plain_path));
+                              "path", plain_path);
+        dObjs[1] = dirObj2;
 
         uint32 kick = createAction(ActionType.Kick, "the ball (such as it is)"
                                 "bounces feebly\n then rolls into some fresh dog eggs\n"
@@ -120,10 +123,11 @@ contract GameSetupSystem is System, Constants {
         uint32[MAX_OBJ] memory ball_actions;
         ball_actions[0] = kick;
 
-        SizedArray.add(objs,createObject(ObjectType.Football, MaterialType.Flesh,
+         uint32 obj1 = createObject(ObjectType.Football, MaterialType.Flesh,
                                 "A slightly deflated knock off uefa football,\n"
                                 "not quite spherical, it's "
-                                "kickable though", "football", ball_actions));
+                                "kickable though", "football", ball_actions);
+        objs[0] = obj1;
 
         RoomStore.setDescription(KPlain,  'a windswept plain');
         RoomStore.setRoomType(KPlain,  RoomType.Plain);
@@ -138,7 +142,63 @@ contract GameSetupSystem is System, Constants {
     }
 
     function _setupForge() private {
+        // KForge -> W
+        uint32 open_2_barn = createAction(ActionType.Open, "The broken window is still there\n"
+		" just don't cut yourself\n", true, true, true, 0, 0);
 
+        uint32[MAX_OBJ] memory forge_barn;        
+        uint32[MAX_OBJ] memory dObjs;
+        uint32[MAX_OBJ] memory objs;
+
+        forge_barn[0] = open_2_barn;
+
+        uint32 dirObj1 = createDirObj(DirectionType.West, KBarn,
+                                DirObjectType.Window, MaterialType.Wood,
+                                "window", forge_barn);
+        dObjs[0] = dirObj1;
+
+         // Petrol Object
+        uint32 burn = createAction(ActionType.Burn, "the petrol (with its unique funny smell)"
+		                    "burns fiercely with a scent that makes you feel dizzy", 
+                            true, false, true, 0, 0);
+
+        uint32[MAX_OBJ] memory petrol_actions;
+        petrol_actions[0] = burn;
+
+        uint32 obj1 = createObject(ObjectType.Petrol, MaterialType.IKEA,
+                                "a strange liquid that seems to be petrol,\n"
+                                "probably there are about 3 litres of it, "
+                                "its highly flammable", "petrol", petrol_actions);
+        objs[0] = obj1;
+
+
+        // Matches Object
+        uint32 light = createAction(ActionType.Light, "the matches (despite their small size)"
+		                    " lights enough to see a small distance\n"
+                            "you have to use them quickly"
+                            " or your fingers will get burnt", 
+                            true, false, true, 0, 0);
+
+        
+        uint32[MAX_OBJ] memory matches_actions;
+        matches_actions[0] = light;
+
+        uint32 obj2 = createObject(ObjectType.Matches, MaterialType.Wood,
+                                "a box of matches that have survived the passing of the ages,\n"
+                                "you can probably light them up, as they seem to be in a good condition\n",
+                                "matches", matches_actions);
+        objs[1] = obj2;
+
+
+        RoomStore.setDescription(KForge, 'a dusty forge');
+        RoomStore.setRoomType(KForge,  RoomType.Forge);
+
+        bytes32 tid_plain = keccak256(abi.encodePacked('a dusty forge'));
+        TxtDefStore.set(tid_plain, KForge, TxtDefType.Place, "you can see that it has not been used in ages.\n"
+                                                                "There are many blood spots accross the forge and even the anvil is broken.\n"
+                                                                "You don't know what happened here.\n");
+
+        createPlace(KForge, dObjs, objs, tid_plain);
     }
 
     function _setupBarn() private {
@@ -148,9 +208,11 @@ contract GameSetupSystem is System, Constants {
         barn_plain[0] = open_2_south;
         uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
-        SizedArray.add(dObjs,createDirObj(DirectionType.South, KPlain,
+
+        uint32 dirObj1 = createDirObj(DirectionType.South, KPlain,
                                 DirObjectType.Door, MaterialType.Wood,
-                                "door", barn_plain));
+                                "door", barn_plain);
+        dObjs[0] = dirObj1;
 
         // this is NOT enabled NOR OPEN
         uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
@@ -165,9 +227,10 @@ contract GameSetupSystem is System, Constants {
         window_actions[0] = open_2_forest;
         window_actions[1] = smash_window;
 
-        SizedArray.add(dObjs, createDirObj(DirectionType.East, KForge,
+        uint32 dirObj2 = createDirObj(DirectionType.East, KForge,
                                 DirObjectType.Window, MaterialType.Wood,
-                                "window", window_actions));
+                                "window", window_actions);
+        dObjs[1] = dirObj2;
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
@@ -187,15 +250,15 @@ contract GameSetupSystem is System, Constants {
         uint32[MAX_OBJ] memory path_actions;
         path_actions[0] = open_2_west;
 
-        uint32[MAX_OBJ] memory dirObjs;
+        uint32[MAX_OBJ] memory dObjs;
         uint32[MAX_OBJ] memory objs;
         // this is a path we might want to say BLOCK it which would mean adding a BLOCK
         // and an OPEN which we would set to false but as can be seen above right
         // now its just open and there is no state change to describe it
-        SizedArray.add(dirObjs,createDirObj(DirectionType.West, KPlain,
+         uint32 dirObj1 = createDirObj(DirectionType.West, KPlain,
                                DirObjectType.Path, MaterialType.Stone,
-                               "path", path_actions));
-
+                               "path", path_actions);
+        dObjs[0] = dirObj1;
 
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
@@ -208,7 +271,7 @@ contract GameSetupSystem is System, Constants {
 
         RoomStore.setDescription(KMountainPath,  "a high mountain pass");
         RoomStore.setRoomType(KMountainPath,  RoomType.Plain);
-        createPlace(KMountainPath, dirObjs, objs, tid_mpath);
+        createPlace(KMountainPath, dObjs, objs, tid_mpath);
 
     }
 
@@ -216,6 +279,7 @@ contract GameSetupSystem is System, Constants {
         _setupPlain();
         _setupBarn();
         _createMountainPath();
+        _setupForge();
     }
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
