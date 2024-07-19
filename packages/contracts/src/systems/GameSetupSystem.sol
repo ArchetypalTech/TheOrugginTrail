@@ -20,6 +20,7 @@ contract GameSetupSystem is System, Constants {
     uint32 dirObjId = 1;
     uint32 objId = 1;
     uint32 actionId = 1;
+    uint32 KCellar = 4;
     uint32 KForge = 3;
     uint32 KPlain = 2;
     uint32 KBarn = 1;
@@ -214,23 +215,40 @@ contract GameSetupSystem is System, Constants {
                                 "door", barn_plain);
         dObjs[0] = dirObj1;
 
+        // KBARN -> E
         // this is NOT enabled NOR OPEN
-        uint32 open_2_forest = createAction(ActionType.Open, "the window, glass and frame smashed"
+        uint32 open_2_forge = createAction(ActionType.Open, "the window, glass and frame smashed"
                                 " falls open", false, false, false, 0, 0);
 
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"
                                 "satisfyingly spreading broken joy on the floor"
-                                , true, false, false, open_2_forest, 0);
+                                , true, false, false, open_2_forge, 0);
 
         uint32[MAX_OBJ] memory window_actions;
-        window_actions[0] = open_2_forest;
+        window_actions[0] = open_2_forge;
         window_actions[1] = smash_window;
 
         uint32 dirObj2 = createDirObj(DirectionType.East, KForge,
                                 DirObjectType.Window, MaterialType.Wood,
                                 "window", window_actions);
         dObjs[1] = dirObj2;
+
+
+        // KBARN -> DOWN
+        uint32 open_2_cellar = createAction(ActionType.Open, "The hay having burnt fast reveals a set of stairs.", false, false, false, 0, 0);
+        uint32 burn_hay = createAction(ActionType.Burn, "You hear the cracking noise of the hay burning quickly as it is consumed by the dark fires\n"
+                                "sadly, this enjoyable moment is short lived."
+                                , true, false, false, open_2_cellar, 0);
+        
+        uint32[MAX_OBJ] memory hay_actions;
+        hay_actions[0] = open_2_cellar;
+        hay_actions[1] = burn_hay;
+
+        uint32 dirObj3 = createDirObj(DirectionType.Down, KCellar,
+                                DirObjectType.Stairs, MaterialType.Stone,
+                                "stairs filled by a stack of hay", hay_actions);
+        dObjs[2] = dirObj3;
 
         bytes32 tid_barn = keccak256(abi.encodePacked("a barn"));
         TxtDefStore.set(tid_barn, KBarn, TxtDefType.Place,
@@ -242,6 +260,66 @@ contract GameSetupSystem is System, Constants {
         RoomStore.setDescription(KBarn, 'a barn');
         RoomStore.setRoomType(KBarn, RoomType.Room);
         createPlace(KBarn, dObjs, objs, tid_barn);
+    }
+
+      function _setupCellar() private {
+        // KCELLAR -> UP
+        uint32 open_2_barn = createAction(ActionType.Open, "the way is opened\n"
+                                "just don't fall when going up",
+                                true, true, true, 0, 0);
+
+        uint32[MAX_OBJ] memory cellar_barn;
+        uint32[MAX_OBJ] memory dObjs;
+        uint32[MAX_OBJ] memory objs;
+
+        cellar_barn[0] = open_2_barn;
+
+        uint32 dirObj1 = createDirObj(DirectionType.Up, KBarn,
+                              DirObjectType.Stairs, MaterialType.Stone,
+                              "stairs", cellar_barn);
+        dObjs[0] = dirObj1;
+
+        // Dynamite Object
+        uint32 lightDynamite = createAction(ActionType.Light, "Seeing the fuse sparkling makes you remember the fireworks you loved as a child.\n"
+                                "Suddenly, you return back and see that there is almost no time.\n"
+                                "You have to do something or you will be turned to meat puree",
+                                true, false, true, 0, 0);
+
+         uint32 throwDynamite = createAction(ActionType.Throw, "You throw quickly the dynamite\n"
+                                "and start running for the hills as your life depends on it",
+                                true, false, true, 0, 0);
+
+        uint32[MAX_OBJ] memory dynamite_actions;
+        dynamite_actions[0] = lightDynamite;
+        dynamite_actions[1] = throwDynamite;
+
+        uint32 obj1 = createObject(ObjectType.Dynamite, MaterialType.IKEA,
+                                "a high quality (if old) dynamite with a quick fuse.\n"
+                                "It needs to be lit first", "dynamite", dynamite_actions);
+        objs[0] = obj1;
+
+        // Glue Object
+        uint32 sniffGlue = createAction(ActionType.Sniff, "The smell of it is really relaxing,\n"
+                                "but for now thats all",
+                                true, false, true, 0, 0);
+
+        uint32[MAX_OBJ] memory glue_actions;
+        dynamite_actions[0] = sniffGlue; 
+
+        uint32 obj2 = createObject(ObjectType.Glue, MaterialType.Shit,
+                                "some oddly named glue.\n"
+                                "Not knowing if its your imagination it seems to be calling you", "glue", glue_actions);
+        objs[1] = obj2;
+
+        RoomStore.setDescription(KCellar,  'a small cellar');
+        RoomStore.setRoomType(KCellar,  RoomType.Cellar);
+
+        bytes32 tid_plain = keccak256(abi.encodePacked('a small cellar'));
+        TxtDefStore.set(tid_plain, KPlain, TxtDefType.Place, "big enough to hide probably fifty people.\n"
+                                                                "It seems that it was constructed with great care as you can't find any cracks or holes in the walls.\n"
+                                                                "This place might be important.");
+
+        createPlace(KCellar, dObjs, objs, tid_plain);
     }
 
     function _createMountainPath() private {
@@ -260,6 +338,23 @@ contract GameSetupSystem is System, Constants {
                                "path", path_actions);
         dObjs[0] = dirObj1;
 
+        // KPATH -> E
+        uint32 open_2_actII = createAction(ActionType.Open, "The boulder, blasted to pieces reveals a path to a new adventure.\n"
+                                                            "This is the end of ACT I, if you go East you will return to the plain.", false, false, false, 0, 0);
+
+        uint32 destroy_boulder = createAction(ActionType.Throw, "The dynamite lands at the boulder while you keep running\n"
+                                "and in just a second KBOOOM!", 
+                                true, false, false, open_2_actII, 0);
+        
+        uint32[MAX_OBJ] memory boulder_actions;
+        boulder_actions[0] = open_2_actII;
+        boulder_actions[1] = destroy_boulder;
+
+        uint32 dirObj2 = createDirObj(DirectionType.East, KPlain,
+                                DirObjectType.Boulder, MaterialType.Stone,
+                                "boulder", boulder_actions);
+
+        dObjs[1] = dirObj2;
 
         bytes32 tid_mpath = keccak256(abi.encodePacked("a high mountain pass"));
         TxtDefStore.set(tid_mpath, KMountainPath, TxtDefType.Place,
@@ -280,6 +375,7 @@ contract GameSetupSystem is System, Constants {
         _setupBarn();
         _createMountainPath();
         _setupForge();
+        _setupCellar();
     }
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,

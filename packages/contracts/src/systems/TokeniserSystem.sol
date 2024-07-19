@@ -143,6 +143,7 @@ contract TokeniserSystem is System {
         responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Open] = [ActionType.Open];
         responseLookup[ActionType.Break] = [ActionType.Break];
+        responseLookup[ActionType.Throw] = [ActionType.Throw];
     }
 
     function setupRevVrb() private {
@@ -221,6 +222,7 @@ contract TokeniserSystem is System {
         dirObjLookup["LADDER"]      = DirObjectType.Ladder;
         dirObjLookup["PATH"]        = DirObjectType.Path;
         dirObjLookup["TRAIL"]       = DirObjectType.Trail;
+        dirObjLookup["BOULDER"]       = DirObjectType.Boulder;
 
         reverseDObjLookup[DirObjectType.Door]        = "door";
         reverseDObjLookup[DirObjectType.Window]      = "window";
@@ -228,6 +230,7 @@ contract TokeniserSystem is System {
         reverseDObjLookup[DirObjectType.Ladder]      = "ladder";
         reverseDObjLookup[DirObjectType.Path]        = "path";
         reverseDObjLookup[DirObjectType.Trail]       = "trail";
+        reverseDObjLookup[DirObjectType.Boulder]        = "boulder";
     }
 
     // TODO: we probably no longer need this
@@ -244,8 +247,10 @@ contract TokeniserSystem is System {
         objLookup["KEY"]        = ObjectType.Key;
         objLookup["KNIFE"]      = ObjectType.Knife;
         objLookup["BOTTLE"]     = ObjectType.Bottle;
-         objLookup["PETROL"]     = ObjectType.Petrol;
-          objLookup["MATCHES"]     = ObjectType.Matches;
+        objLookup["PETROL"]     = ObjectType.Petrol;
+        objLookup["MATCHES"]     = ObjectType.Matches;
+        objLookup["DYNAMITE"]     = ObjectType.Dynamite;
+        objLookup["GLUE"]     = ObjectType.Glue;
 
         reverseObjLookup[ObjectType.Football]   = "Football";
         reverseObjLookup[ObjectType.Key]        = "Key";
@@ -253,6 +258,8 @@ contract TokeniserSystem is System {
         reverseObjLookup[ObjectType.Bottle]     = "Bottle";
         reverseObjLookup[ObjectType.Petrol]     = "Petrol";
         reverseObjLookup[ObjectType.Matches]     = "Matches";
+        reverseObjLookup[ObjectType.Dynamite]     = "Dynamite";
+        reverseObjLookup[ObjectType.Glue]     = "Glue";
 
         revMat[MaterialType.Mud]    = "mud";
         revMat[MaterialType.Dirt]   = "dirt";

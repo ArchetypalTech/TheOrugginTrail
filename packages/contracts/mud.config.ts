@@ -44,7 +44,7 @@ export default mudConfig({
         RoomType: [
             "None", "WoodCabin", "Store",
             "Cavern", "StoneCabin", "Fort", "Room",
-            "Plain", "Forge"
+            "Plain", "Forge", "Cellar"
         ],
         /** @dev use these to set direction bits on a DirectionObject
          * such as a door
@@ -59,7 +59,7 @@ export default mudConfig({
          */
         DirObjectType: [
             "None", "Door", "Window", "Stairs", "Ladder",
-            "Path", "Trail"
+            "Path", "Trail", "Boulder"
         ],
         /**
          * @dev use these in the parser, they are VERBS
@@ -71,11 +71,11 @@ export default mudConfig({
             "Take", "Kick", "Lock", "Unlock", "Open",
             "Look", "Close", "Break", "Throw", "Drop",
             "Inventory", "Burn", "Light", "Damage", "Hit",
-            "Aquire"
+            "Aquire", "Sniff"
         ],
         // add these to rooms for stuff to do
         ObjectType: [
-            "None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol", "Matches"
+            "None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol", "Matches", "Dynamite", "Glue"
         ],
         GrammarType: ["None", "DefiniteArticle", "Preposition", "Adverb", "DemPronoun"],
         MaterialType: ["None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh",
