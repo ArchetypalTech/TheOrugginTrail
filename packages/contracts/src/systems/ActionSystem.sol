@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, TxtDefStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, ObjectStoreData, DirObjectStore, Output, ActionStore, ActionOutputs, TxtDefStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
 import { ErrCodes, ResCodes, VerbData } from '../constants/defines.sol';
 
@@ -33,18 +33,22 @@ contract ActionSystem is System, Constants {
         uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
         uint32[MAX_OBJ] memory sizedDids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
 
-        if (ids.length > 0 && ids[0] != 0) {
+        if (_arrayHasValidEntries(ids)) {
             console.log("---> Got objects:%d", uint8(ids.length));
+            if (cmd.directNoun != ObjectType.None && cmd.indirectDirNoun == DirObjectType.None) {
+                (err, responseStr) = _handleBaseAction(cmd, ids);
+            }
+        } else {
+            err = 135;
+            responseStr = "";
         }
 
-        if (sizedDids.length > 0 && sizedDids[0] != 0) {
+        if (_arrayHasValidEntries(sizedDids)) {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
-            console.log("----> Got d_obj[0]:%d", sizedDids[0]);
-            if (cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
-                (err, responseStr) = _handleBaseAction(cmd);
-            } else {
+            console.log("----> Got d_obj[0]:%d", sizedDids[0]);          
+            if (cmd.indirectDirNoun != DirObjectType.None && _arrayHasValidEntries(ids) ) {
                 (err, bitCnt) = _setActionBits(cmd, sizedDids, playerId, true);
-            }
+            }         
         }
 
         if (err == 0 && bitCnt > 0) {
@@ -54,8 +58,41 @@ contract ActionSystem is System, Constants {
         return (err, responseStr);
     }
 
-    function _handleBaseAction(VerbData memory cmd) private returns (uint8 er, string memory response) {
-       console.log("---->base action");
+    function _arrayHasValidEntries(uint32[MAX_OBJ] memory arr) private pure returns (bool) {
+    for (uint32 i = 0; i < arr.length; i++) {
+        if (arr[i] != 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+    function _handleBaseAction(VerbData memory cmd,  uint32[MAX_OBJ] memory objIDs) private returns (uint8 er, string memory response) {
+        console.log("---->base action");      
+        uint32 objsID = countNonZero(objIDs);
+        if (cmd.directNoun != ObjectType.None && cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
+            for (uint32 i = 0; i < objsID; i++) {
+                // get the object data
+                ObjectStoreData memory objData = ObjectStore.get(objIDs[i]);
+                // check if the object type is the same as the cmd direct object
+                if (objData.objectType == cmd.directNoun) {
+                    for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
+                        ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
+                        if (actionData.actionType == cmd.verb) {
+                            er = 0;
+                            //responseID = ActionStore.getDBitTxt(objData.objectActionIds[j]);
+                            response = TxtDefStore.getValue(ActionStore.getDBitTxt(objData.objectActionIds[j])); //"YOU ARE DOING THE BASE ACTION"; 
+                            return (er, response);
+                        }                        
+                    }
+                } 
+            }
+        } else {
+            er = 135;
+            response = "";
+        }
+        console.log(er, response);
+        return (er, response);
     }
 
     /// @notice Generate a description string for the state changes on the objects tree
@@ -105,7 +142,8 @@ contract ActionSystem is System, Constants {
             `rusty key` that has an lock action set on it, the important part being
             the id of the lock action and setting that on the correct item (`rusty key`)
         */
-        uint32 ct = SizedArray.count(objIDs);
+        //uint32 ct = SizedArray.count(objIDs);
+        uint32 ct = countNonZero(objIDs);
         uint8 bc = 0;
 
         console.log("->sz:%d", ct);
@@ -197,7 +235,9 @@ contract ActionSystem is System, Constants {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
 //                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
-                            SizedArray.add(matchedObIDs, objs[i]);
+                            //SizedArray.add(matchedObIDs, objs[i]);
+                            addToMatchedObjects(matchedObIDs, objs[i]);
+                            break;
                         }
                     }
                 }
@@ -213,29 +253,60 @@ contract ActionSystem is System, Constants {
         If DAMAGE is ENABLED then its DAMAGE state can be flipped
         i.e DAMAGE -> DAMAGED
     */
-    function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
+ function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
         console.log("-->FETCH_OBJS");
         uint32[MAX_OBJ] memory matchedObjects;
-        uint32[MAX_OBJ] memory objs =  RoomStore.getObjectIds(rm);
-        for(uint256 i = 0; i < objs.length; i++) {
-//            console.log("------>rm:%d objects[%d]:%d",uint8(rm), uint8(i), uint8(objs[i]));
-            uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objs[i]);
-            if (actionIds[0] == 0) {break;}
-            for(uint256 j = 0; j < actionIds.length; j++) {
-                ActionType vrb = ActionStore.getActionType(actionIds[j]);
-                if (vrb == ActionType.None) { break; }
-                ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(vrb);
-                if (responses.length > 0) {
-                    for (uint256 k = 0; k < responses.length; k++) {
-    //                    console.log("--->response:%d", uint8(responses[k]));
-                        if (responses[k] == t) {
-    //                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
-                            SizedArray.add(matchedObjects, objs[i]);
+        uint32[MAX_OBJ] memory objs = RoomStore.getObjectIds(rm);
+
+        if (_arrayHasValidEntries(objs)) {
+            for (uint256 i = 0; i < objs.length; i++) {
+                if (objs[i] == 0) { break; }
+
+                uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objs[i]);
+                if (actionIds[0] == 0) {
+                    break;
+                }
+
+                for (uint256 j = 0; j < actionIds.length; j++) {
+                    if (actionIds[j] == 0) { break; }
+
+                    ActionType vrb = ActionStore.getActionType(actionIds[j]);
+                    if (vrb == ActionType.None) {
+                        break;
+                    }
+
+                    ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(vrb);
+                    if (responses.length > 0) {
+                        for (uint256 k = 0; k < responses.length; k++) {
+                            if (responses[k] == t) {
+                                addToMatchedObjects(matchedObjects, objs[i]);
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
+        } 
         return matchedObjects;
     }
+    
+    function countNonZero(uint32[MAX_OBJ] memory arr) private pure returns (uint32) {
+        uint32 count = 0;
+        for (uint8 i = 0; i < arr.length; i++) {
+            if (arr[i] != 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function addToMatchedObjects(uint32[MAX_OBJ] memory matchedObjects, uint32 obj) private pure {
+        for (uint8 i = 0; i < matchedObjects.length; i++) {
+            if (matchedObjects[i] == 0) {
+                matchedObjects[i] = obj;
+                break;
+            }
+        }
+    }
+    
 }

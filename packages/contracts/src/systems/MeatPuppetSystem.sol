@@ -164,6 +164,8 @@ contract MeatPuppetSystem is System, Constants {
             eMsg = string(abi.encodePacked("Go ", badCmd, " is nowhere I know of bellend"));
         } else if (ce == ResCodes.GO_NO_EXIT) {
             eMsg = string.concat("Can't go that away ", badCmd);
+        } else if (ce == ErrCodes.ER_ACTION_HDL_NO) {
+            eMsg = "Something is missing here";
         }
         return eMsg;
     }

@@ -138,12 +138,13 @@ contract TokeniserSystem is System {
     }
 
     function setupVrbAct() private {
-        responseLookup[ActionType.Kick] = [ActionType.Break, ActionType.Hit, ActionType.Damage];
+        responseLookup[ActionType.Kick] = [ActionType.Break, ActionType.Hit, ActionType.Damage, ActionType.Kick];
         responseLookup[ActionType.Burn] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Light] = [ActionType.Burn, ActionType.Light, ActionType.Damage];
         responseLookup[ActionType.Open] = [ActionType.Open];
         responseLookup[ActionType.Break] = [ActionType.Break];
         responseLookup[ActionType.Throw] = [ActionType.Throw];
+         responseLookup[ActionType.Sniff] = [ActionType.Sniff];
     }
 
     function setupRevVrb() private {
@@ -253,6 +254,7 @@ contract TokeniserSystem is System {
         objLookup["GLUE"]     = ObjectType.Glue;
 
         reverseObjLookup[ObjectType.Football]   = "Football";
+        reverseObjLookup[ObjectType.Football]   = "Ball";
         reverseObjLookup[ObjectType.Key]        = "Key";
         reverseObjLookup[ObjectType.Knife]      = "Knife";
         reverseObjLookup[ObjectType.Bottle]     = "Bottle";
