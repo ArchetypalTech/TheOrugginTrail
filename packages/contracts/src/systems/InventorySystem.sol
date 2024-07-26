@@ -14,22 +14,34 @@ contract InventorySystem is System {
 
     function inventory(address world, uint32 playerId) public returns (uint8 err) {
         uint32[32] memory objIds = Player.getObjectIds(playerId);
-        uint32 objCount = countNonZero(objIds);
+        uint256 objCount = objIds.length;
 
         if (objCount == 0) {
-            Output.set(playerId,"Your carrier bag is empty");
+            Output.set(playerId, "Your carrier bag is empty");
             return 0;
         }
 
         string memory itemTxt = "You have a ";
+        bool firstItem = true;
+
         for (uint8 i = 0; i < objCount; i++) {
             uint32 objectId = objIds[i];
-                if(i > 0) {
-                    itemTxt = string.concat(itemTxt, " and a ");
-                }
-                itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).mp_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
+            if (objectId == 0) {
+                continue;
+            }
+            if (!firstItem) {
+                itemTxt = string.concat(itemTxt, " and a ");
+            }
+            itemTxt = string(abi.encodePacked(itemTxt, IWorld(world).mp_TokeniserSystem_getObjectNameOfObjectType(ObjectStore.getObjectType(objectId))));
+            firstItem = false;
         }
-        Output.set(playerId,itemTxt);
+
+        if (firstItem) {
+            // If firstItem is still true, it means all items were 0
+            Output.set(playerId, "Your carrier bag is empty");
+        } else {
+            Output.set(playerId, itemTxt);
+        }
         return 0;
     }
 
@@ -42,7 +54,7 @@ contract InventorySystem is System {
 
             uint32[MAX_OBJ] memory roomObjIds = RoomStore.getObjectIds(rId);
 
-            uint32 roomObjCount = countNonZero(roomObjIds);
+            uint256 roomObjCount = roomObjIds.length;
             console.log("----->TAKE room object item count:%d", roomObjCount);
 
             for (uint8 i = 0; i < roomObjCount; i++) {
@@ -106,16 +118,7 @@ contract InventorySystem is System {
         return 0;
     }
 
-       function countNonZero(uint32[MAX_OBJ] memory arr) private pure returns (uint32) {
-        uint32 count = 0;
-        for (uint8 i = 0; i < arr.length; i++) {
-            if (arr[i] != 0) {
-                count++;
-            }
-        }
-        return count;
-    }
-
+   
     function addElement(uint32[MAX_OBJ] memory arr, uint32 element) private pure returns (bool) {
         for (uint8 i = 0; i < arr.length; i++) {
             if (arr[i] == 0) {

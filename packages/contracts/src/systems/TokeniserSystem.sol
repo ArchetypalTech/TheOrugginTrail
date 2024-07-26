@@ -144,7 +144,7 @@ contract TokeniserSystem is System {
         responseLookup[ActionType.Open] = [ActionType.Open];
         responseLookup[ActionType.Break] = [ActionType.Break];
         responseLookup[ActionType.Throw] = [ActionType.Throw];
-         responseLookup[ActionType.Sniff] = [ActionType.Sniff];
+        responseLookup[ActionType.Sniff] = [ActionType.Sniff];
     }
 
     function setupRevVrb() private {
@@ -165,6 +165,7 @@ contract TokeniserSystem is System {
         reverseVrbLookup[ActionType.Inventory]  = "inventory";
         reverseVrbLookup[ActionType.Burn]       = "burn";
         reverseVrbLookup[ActionType.Aquire]      = "aquire";
+        reverseVrbLookup[ActionType.Sniff]      = "sniff";
     }
 
     // we need to somewhere somehow read in the possible verbs if we
@@ -190,6 +191,7 @@ contract TokeniserSystem is System {
         cmdLookup["BURN"]       = ActionType.Burn;
         cmdLookup["LIGHT"]      = ActionType.Light;
         cmdLookup["AQUIRE"]      = ActionType.Take;
+        cmdLookup["SNIFF"]      = ActionType.Sniff;
     }
 
     // this could autogen because we just take set of "str"
