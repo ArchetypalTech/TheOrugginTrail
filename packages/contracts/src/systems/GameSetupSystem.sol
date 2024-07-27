@@ -276,7 +276,7 @@ contract GameSetupSystem is System, Constants {
                                 "Suddenly, you return back and see that there is almost no time.\n"
                                 "You have to do something or you will be turned to meat puree", true, false, true, 0, 0);
 
-         uint32 throwDynamite = createAction(ActionType.Throw, "You throw quickly the dynamite\n"
+         uint32 throwDynamite = createAction(ActionType.Throw, "You throw the dynamite\n"
                                 "and start running for the hills as your life depends on it", true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory dynamite_actions;
