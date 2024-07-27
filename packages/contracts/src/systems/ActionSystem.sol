@@ -9,7 +9,7 @@ import { IWorld } from '../codegen/world/IWorld.sol';
 
 import { ObjectType, ActionType, DirObjectType } from '../codegen/common.sol';
 
-import { Player, RoomStore, ObjectStore, DirObjectStore, Output, ActionStore, ActionOutputs, TxtDefStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
+import { Player, RoomStore, ObjectStore, ObjectStoreData, DirObjectStore, Output, ActionStore, ActionOutputs, TxtDefStore, ActionStoreData, DirObjectStoreData } from '../codegen/index.sol';
 
 import { ErrCodes, ResCodes, VerbData } from '../constants/defines.sol';
 
@@ -30,21 +30,25 @@ contract ActionSystem is System, Constants {
         uint8 err;
         uint8 bitCnt;
         string memory responseStr;
-        uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm);
+        uint32[MAX_OBJ] memory ids = _fetchObjsForType(cmd.directNoun, cmd.verb, rm, playerId);
         uint32[MAX_OBJ] memory sizedDids = _fetchDObjsForType(cmd.indirectDirNoun, cmd.verb, rm);
 
         if (ids.length > 0 && ids[0] != 0) {
             console.log("---> Got objects:%d", uint8(ids.length));
+            if (cmd.directNoun != ObjectType.None && cmd.indirectDirNoun == DirObjectType.None) {
+                (err, responseStr) = _handleBaseAction(cmd, ids);
+            }
+        } else {
+            err = 135;
+            responseStr = "";
         }
 
         if (sizedDids.length > 0 && sizedDids[0] != 0) {
             console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
-            console.log("----> Got d_obj[0]:%d", sizedDids[0]);
-            if (cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
-                (err, responseStr) = _handleBaseAction(cmd);
-            } else {
+            console.log("----> Got d_obj[0]:%d", sizedDids[0]);          
+            if (cmd.indirectDirNoun != DirObjectType.None && ids.length > 0  && ids[0] != 0 ) {
                 (err, bitCnt) = _setActionBits(cmd, sizedDids, playerId, true);
-            }
+            }         
         }
 
         if (err == 0 && bitCnt > 0) {
@@ -54,8 +58,32 @@ contract ActionSystem is System, Constants {
         return (err, responseStr);
     }
 
-    function _handleBaseAction(VerbData memory cmd) private returns (uint8 er, string memory response) {
-       console.log("---->base action");
+
+    function _handleBaseAction(VerbData memory cmd,  uint32[MAX_OBJ] memory objIDs) private returns (uint8 er, string memory response) {
+        console.log("---->base action");      
+        uint256 objsID = objIDs.length;
+        if (cmd.directNoun != ObjectType.None && cmd.indirectDirNoun == DirObjectType.None && cmd.indirectObjNoun == ObjectType.None) {
+            for (uint32 i = 0; i < objsID; i++) {
+                // get the object data
+                ObjectStoreData memory objData = ObjectStore.get(objIDs[i]);
+                // check if the object type is the same as the cmd direct object
+                if (objData.objectType == cmd.directNoun) {
+                    for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
+                        ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
+                        if (actionData.actionType == cmd.verb) {
+                            er = 0;
+                            response = TxtDefStore.getValue(ActionStore.getDBitTxt(objData.objectActionIds[j]));
+                            return (er, response);
+                        }                        
+                    }
+                } 
+            }
+        } else {
+            er = 135;
+            response = "";
+        }
+        console.log(er, response);
+        return (er, response);
     }
 
     /// @notice Generate a description string for the state changes on the objects tree
@@ -79,6 +107,9 @@ contract ActionSystem is System, Constants {
             string memory t = TxtDefStore.getValue(txtIds[i]);
             res = string.concat(res, "\n", t, "\n");
         }
+        // clear the ActionOuputs, otherwise the output will use the stored texts
+        ActionOutputs.deleteRecord(playerId);
+
         return res;
     }
 
@@ -86,7 +117,7 @@ contract ActionSystem is System, Constants {
         uint32 id = ActionStore.getAffectsActionId(top);
         if (id == 0) {return 0;} else {
             console.log("-->following links");
-            SizedArray.add(ids, ActionStore.getAffectsActionId(top));
+            _addElement(ids, ActionStore.getAffectsActionId(top));            
             _followLinkedActions(id, ids);
         }
     }
@@ -105,9 +136,9 @@ contract ActionSystem is System, Constants {
             `rusty key` that has an lock action set on it, the important part being
             the id of the lock action and setting that on the correct item (`rusty key`)
         */
-        uint32 ct = SizedArray.count(objIDs);
-        uint8 bc = 0;
-
+        //uint32 ct = SizedArray.count(objIDs);
+        uint256 ct = objIDs.length;
+        uint8 bc = 0;        
         console.log("->sz:%d", ct);
 
         for (uint32 i = 0; i < ct; i++) {
@@ -120,41 +151,45 @@ contract ActionSystem is System, Constants {
                 // then use the base case
                 if (cmd.indirectDirNoun != DirObjectType.None) {
                     for (uint256 j = 0; j < objData.objectActionIds.length; j++) {
-                        ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
-                        if (actionData.enabled) {
-                            ++bc;
-                            // flip the bit if the dBit has not been set or
-                            // flip if it is revertible and unset
-                            if (actionData.revert && actionData.dBit) {
-                                // reset the bit
-                                actionData.dBit = !actionData.dBit;
-                            } else if (!actionData.dBit) {
-                                // set the bit on, i.e. the action has now been done
-                                actionData.dBit = !actionData.dBit;
-                                ActionStore.set(objData.objectActionIds[j], actionData);
-                                ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(objData.objectActionIds[j]));
-                            }
-                            // follow any linked actions
-                            uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
-                            console.log("--->link:%s", linkedActionId);
-                            if (linkedActionId != 0) {
-                                uint32[MAX_OBJ] memory linkedActions;
-                                SizedArray.add(linkedActions, linkedActionId);
-                                _followLinkedActions(linkedActionId, linkedActions);
-                                console.log("------>followLinks");
-                                for (uint32 k = 0; k < SizedArray.count(linkedActions); k++) {
-                                    ++bc;
-                                    ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
-                                    // flip the bit, and the enable bit if needed
-                                    lnkActionData.enabled = !lnkActionData.enabled;
-                                    lnkActionData.dBit = !lnkActionData.dBit;
-                                    // store the new state
-                                    ActionStore.set(linkedActions[k], lnkActionData);
-                                    // get the state change text and store
-                                    ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(linkedActions[k]));
+                        if (objData.objectActionIds[j] != 0) {
+                            ActionStoreData memory actionData = ActionStore.get(objData.objectActionIds[j]);
+                            if (actionData.enabled) {
+                                ++bc;
+                                // flip the bit if the dBit has not been set or
+                                // flip if it is revertible and unset
+                                if (actionData.revert && actionData.dBit) {
+                                    // reset the bit
+                                    actionData.dBit = !actionData.dBit;
+                                } else if (!actionData.dBit) {
+                                    // set the bit on, i.e. the action has now been done
+                                    actionData.enabled = false;
+                                    actionData.dBit = !actionData.dBit;
+                                    ActionStore.set(objData.objectActionIds[j], actionData);                                    
+                                    ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(objData.objectActionIds[j]));
+                                }
+                                // follow any linked actions
+                                uint32 linkedActionId = ActionStore.getAffectsActionId(objData.objectActionIds[j]);
+                                console.log("--->link:%s", linkedActionId);
+                                if (linkedActionId != 0) {
+                                    uint32[MAX_OBJ] memory linkedActions;                                    
+                                    _addElement(linkedActions, linkedActionId);
+                                    _followLinkedActions(linkedActionId, linkedActions);
+                                    console.log("------>followLinks");
+                                    for (uint32 k = 0; k < linkedActions.length; k++) {
+                                        ++bc;
+                                        ActionStoreData memory lnkActionData = ActionStore.get(linkedActions[k]);
+                                        // flip the bit, and the enable bit if needed
+                                        lnkActionData.enabled = !lnkActionData.enabled;
+                                        lnkActionData.dBit = !lnkActionData.dBit;
+                                        // store the new state
+                                        ActionStore.set(linkedActions[k], lnkActionData);
+                                        // get the state change text and store                                        
+                                        ActionOutputs.pushTxtIds(playerId, ActionStore.getDBitTxt(linkedActions[k]));
+                                    }
                                 }
                             }
                         }
+                     
                     }
                 } else {
                     // handle base case for verb by looping though objects and flipping the state bits
@@ -166,6 +201,7 @@ contract ActionSystem is System, Constants {
                 // :TODO
             }
         }
+       
         if (bc > 0) {
             return (0, bc);
         } else {
@@ -187,17 +223,18 @@ contract ActionSystem is System, Constants {
         for (uint256 i = 0; i < objs.length; i++ ) {
             uint32[MAX_OBJ] memory actionIds =  DirObjectStore.getObjectActionIds(objs[i]);
             if (actionIds[0] == 0) {break;}
-//            console.log("-------------->AID:%d", actionIds[i]);
+            // console.log("-------------->AID:%d", actionIds[i]);
             for (uint256 j = 0; j < actionIds.length; j++) {
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
                 if (vrb == ActionType.None) { break; }
-//                console.log("------->want R-vrb:%d A-vrb:%d R:%d", uint8(vrb), uint8(t), rm);
+                // console.log("------->want R-vrb:%d A-vrb:%d R:%d", uint8(vrb), uint8(t), rm);
                 ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(t);
                 if (responses.length > 0) {
                     for (uint256 k = 0; k < responses.length; k++) {
                         if (responses[k] == vrb) {
-//                            console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);
-                            SizedArray.add(matchedObIDs, objs[i]);
+                            // console.log("----> matched on:%d obj:%d", uint8(t), objs[i]);                    
+                            addToMatchedObjects(matchedObIDs, objs[i]);
+                            break;
                         }
                     }
                 }
@@ -213,29 +250,95 @@ contract ActionSystem is System, Constants {
         If DAMAGE is ENABLED then its DAMAGE state can be flipped
         i.e DAMAGE -> DAMAGED
     */
-    function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm) private returns (uint32[MAX_OBJ] memory ids) {
+    function _fetchObjsForType(ObjectType objType, ActionType t, uint32 rm, uint32 playerId) private returns (uint32[MAX_OBJ] memory ids) {
         console.log("-->FETCH_OBJS");
         uint32[MAX_OBJ] memory matchedObjects;
-        uint32[MAX_OBJ] memory objs =  RoomStore.getObjectIds(rm);
-        for(uint256 i = 0; i < objs.length; i++) {
-//            console.log("------>rm:%d objects[%d]:%d",uint8(rm), uint8(i), uint8(objs[i]));
-            uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objs[i]);
-            if (actionIds[0] == 0) {break;}
-            for(uint256 j = 0; j < actionIds.length; j++) {
+        uint32[MAX_OBJ] memory objsRoom = RoomStore.getObjectIds(rm);
+        uint32[MAX_OBJ] memory objsPlayer = Player.getObjectIds(playerId);
+        bool foundInInventory = false;
+        
+        //look first for the object in the player's inventory
+        for (uint256 i = 0; i < objsPlayer.length; i++) {
+            if (objsPlayer[i] == 0) { break; }
+
+            uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objsPlayer[i]);
+            if (actionIds[0] == 0) {
+                break;
+            }
+
+            for (uint256 j = 0; j < actionIds.length; j++) {
+                if (actionIds[j] == 0) { break; }
+
                 ActionType vrb = ActionStore.getActionType(actionIds[j]);
-                if (vrb == ActionType.None) { break; }
+                if (vrb == ActionType.None) {
+                    break;
+                }
+
                 ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(vrb);
                 if (responses.length > 0) {
                     for (uint256 k = 0; k < responses.length; k++) {
-    //                    console.log("--->response:%d", uint8(responses[k]));
                         if (responses[k] == t) {
-    //                        console.log("---> Got match on:%d with t:%d", uint8(responses[k]), uint8(t));
-                            SizedArray.add(matchedObjects, objs[i]);
+                            addToMatchedObjects(matchedObjects, objsPlayer[i]);
+                            foundInInventory = true;
+                            break;
                         }
                     }
                 }
             }
         }
+        
+        // if the object is not in the player's inventory, look if it is in the room
+        if (!foundInInventory) {
+            for (uint256 i = 0; i < objsRoom.length; i++) {
+                if (objsRoom[i] == 0) { break; }
+
+                uint32[MAX_OBJ] memory actionIds = ObjectStore.getObjectActionIds(objsRoom[i]);
+                if (actionIds[0] == 0) {
+                    break;
+                }
+
+                for (uint256 j = 0; j < actionIds.length; j++) {
+                    if (actionIds[j] == 0) { break; }
+
+                    ActionType vrb = ActionStore.getActionType(actionIds[j]);
+                    if (vrb == ActionType.None) {
+                        break;
+                    }
+
+                    ActionType[] memory responses = IWorld(_world()).mp_TokeniserSystem_getResponseForVerb(vrb);
+                    if (responses.length > 0) {
+                        for (uint256 k = 0; k < responses.length; k++) {
+                            if (responses[k] == t) {
+                                addToMatchedObjects(matchedObjects, objsRoom[i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }    
+        
         return matchedObjects;
     }
+    
+
+    function addToMatchedObjects(uint32[MAX_OBJ] memory matchedObjects, uint32 obj) private pure {
+        for (uint8 i = 0; i < matchedObjects.length; i++) {
+            if (matchedObjects[i] == 0) {
+                matchedObjects[i] = obj;
+                break;
+            }
+        }
+    }
+
+    function _addElement(uint32[MAX_OBJ] memory arr, uint32 element) private pure returns (bool) {
+        for (uint8 i = 0; i < arr.length; i++) {
+            if (arr[i] == 0) {
+                arr[i] = element;
+                return true;
+            }
+        }
+        return false; // Array is full
+    }
+    
 }

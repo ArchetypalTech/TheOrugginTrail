@@ -90,8 +90,7 @@ contract GameSetupSystem is System, Constants {
     function _setupPlain() private {
         // KPLAIN -> N, E
         uint32 open_2_barn = createAction(ActionType.Open, "the door opens with a farty noise\n"
-                                "you can actually smell fart",
-                                true, true, true, 0, 0);
+                                "you can actually smell fart", true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory plain_barn;
         uint32[MAX_OBJ] memory dObjs;
@@ -105,8 +104,7 @@ contract GameSetupSystem is System, Constants {
         dObjs[0] = dirObj1;
 
         uint32 open_2_path = createAction(ActionType.Open, "the door opens and a small hinge demon curses you\n"
-                                "your nose is really itchy",
-                                true, true, true, 0, 0);
+                                "your nose is really itchy", true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory plain_path;
         plain_path[0] = open_2_path;
@@ -118,8 +116,7 @@ contract GameSetupSystem is System, Constants {
 
         uint32 kick = createAction(ActionType.Kick, "the ball (such as it is)"
                                 "bounces feebly\n then rolls into some fresh dog eggs\n"
-                                "none the less you briefly feel a little better",
-                                true, false, true, 0, 0);
+                                "none the less you briefly feel a little better", true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory ball_actions;
         ball_actions[0] = kick;
@@ -160,8 +157,7 @@ contract GameSetupSystem is System, Constants {
 
          // Petrol Object
         uint32 burn = createAction(ActionType.Burn, "the petrol (with its unique funny smell)"
-		                    "burns fiercely with a scent that makes you feel dizzy", 
-                            true, false, true, 0, 0);
+		                    "burns fiercely with a scent that makes you feel dizzy", true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory petrol_actions;
         petrol_actions[0] = burn;
@@ -177,8 +173,7 @@ contract GameSetupSystem is System, Constants {
         uint32 light = createAction(ActionType.Light, "the matches (despite their small size)"
 		                    " lights enough to see a small distance\n"
                             "you have to use them quickly"
-                            " or your fingers will get burnt", 
-                            true, false, true, 0, 0);
+                            " or your fingers will get burnt", true, false, true, 0, 0);
 
         
         uint32[MAX_OBJ] memory matches_actions;
@@ -222,12 +217,11 @@ contract GameSetupSystem is System, Constants {
 
         uint32 smash_window = createAction(ActionType.Break, "I love the sound of breaking glass\n"
                                 "especially when I'm lonely, the panes and the frame shatter\n"
-                                "satisfyingly spreading broken joy on the floor"
-                                , true, false, false, open_2_forge, 0);
+                                "satisfyingly spreading broken joy on the floor", true, false, false, open_2_forge, 0);
 
         uint32[MAX_OBJ] memory window_actions;
-        window_actions[0] = open_2_forge;
-        window_actions[1] = smash_window;
+        window_actions[0] = smash_window;
+        window_actions[1] = open_2_forge;
 
         uint32 dirObj2 = createDirObj(DirectionType.East, KForge,
                                 DirObjectType.Window, MaterialType.Wood,
@@ -238,12 +232,11 @@ contract GameSetupSystem is System, Constants {
         // KBARN -> DOWN
         uint32 open_2_cellar = createAction(ActionType.Open, "The hay having burnt fast reveals a set of stairs.", false, false, false, 0, 0);
         uint32 burn_hay = createAction(ActionType.Burn, "You hear the cracking noise of the hay burning quickly as it is consumed by the dark fires\n"
-                                "sadly, this enjoyable moment is short lived."
-                                , true, false, false, open_2_cellar, 0);
+                                "sadly, this enjoyable moment is short lived.", true, false, false, open_2_cellar, 0);
         
         uint32[MAX_OBJ] memory hay_actions;
-        hay_actions[0] = open_2_cellar;
-        hay_actions[1] = burn_hay;
+        hay_actions[0] = burn_hay;
+        hay_actions[1] = open_2_cellar;
 
         uint32 dirObj3 = createDirObj(DirectionType.Down, KCellar,
                                 DirObjectType.Stairs, MaterialType.Stone,
@@ -262,11 +255,10 @@ contract GameSetupSystem is System, Constants {
         createPlace(KBarn, dObjs, objs, tid_barn);
     }
 
-      function _setupCellar() private {
+    function _setupCellar() private {
         // KCELLAR -> UP
         uint32 open_2_barn = createAction(ActionType.Open, "the way is opened\n"
-                                "just don't fall when going up",
-                                true, true, true, 0, 0);
+                                "just don't fall when going up", true, true, true, 0, 0);
 
         uint32[MAX_OBJ] memory cellar_barn;
         uint32[MAX_OBJ] memory dObjs;
@@ -282,12 +274,10 @@ contract GameSetupSystem is System, Constants {
         // Dynamite Object
         uint32 lightDynamite = createAction(ActionType.Light, "Seeing the fuse sparkling makes you remember the fireworks you loved as a child.\n"
                                 "Suddenly, you return back and see that there is almost no time.\n"
-                                "You have to do something or you will be turned to meat puree",
-                                true, false, true, 0, 0);
+                                "You have to do something or you will be turned to meat puree", true, false, true, 0, 0);
 
-         uint32 throwDynamite = createAction(ActionType.Throw, "You throw quickly the dynamite\n"
-                                "and start running for the hills as your life depends on it",
-                                true, false, true, 0, 0);
+         uint32 throwDynamite = createAction(ActionType.Throw, "You throw the dynamite\n"
+                                "and start running for the hills as your life depends on it", true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory dynamite_actions;
         dynamite_actions[0] = lightDynamite;
@@ -300,11 +290,10 @@ contract GameSetupSystem is System, Constants {
 
         // Glue Object
         uint32 sniffGlue = createAction(ActionType.Sniff, "The smell of it is really relaxing,\n"
-                                "but for now thats all",
-                                true, false, true, 0, 0);
+                                "but for now thats all", true, false, true, 0, 0);
 
         uint32[MAX_OBJ] memory glue_actions;
-        dynamite_actions[0] = sniffGlue; 
+        glue_actions[0] = sniffGlue; 
 
         uint32 obj2 = createObject(ObjectType.Glue, MaterialType.Shit,
                                 "some oddly named glue.\n"
@@ -343,8 +332,7 @@ contract GameSetupSystem is System, Constants {
                                                             "This is the end of ACT I, if you go East you will return to the plain.", false, false, false, 0, 0);
 
         uint32 destroy_boulder = createAction(ActionType.Throw, "The dynamite lands at the boulder while you keep running\n"
-                                "and in just a second KBOOOM!", 
-                                true, false, false, open_2_actII, 0);
+                                "and in just a second KBOOOM!", true, false, false, open_2_actII, 0);
         
         uint32[MAX_OBJ] memory boulder_actions;
         boulder_actions[0] = open_2_actII;
