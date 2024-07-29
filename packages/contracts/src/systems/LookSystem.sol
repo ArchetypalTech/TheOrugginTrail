@@ -5,14 +5,13 @@ import { console } from "forge-std/console.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
-import {SizedArray} from '../libs/SizedArrayLib.sol';
-
 import {ActionType, MaterialType, GrammarType, DirectionType, ObjectType, DirObjectType, TxtDefType, RoomType} from '../codegen/common.sol';
 import {Player, PlayerTableId, RoomStore, ObjectStore, DirObjectStore, DirObjectStoreData, Description, Output, TxtDefStore} from '../codegen/index.sol';
+import { Constants } from '../constants/Constants.sol';
 
-contract LookSystem is System {
+contract LookSystem is System, Constants {
 
-    address private wrld;
+    address private wrld;   
 
     function stuff(string[] memory tokens, uint32 curRmId, uint32 playerId) public returns (uint8 e) {
         // Composes the descriptions for stuff Players can see
@@ -120,7 +119,7 @@ contract LookSystem is System {
     // there is a PATH made os mud to the DIR | there is a wood door to the
     function _genExitDesc(uint32[32] memory objs, address wrld) private view returns (string memory) {
 
-         uint32 count = 0;
+        uint32 count = 0;
 
         // Count non-zero elements in the objs array
         for (uint8 i = 0; i < objs.length; i++) {
@@ -162,12 +161,17 @@ contract LookSystem is System {
             if (playerId != i) {
                 uint32 otherPlayerRoomId = Player.getRoomId(i);
                 if (otherPlayerRoomId == roomId) {
-                    SizedArray.add(playerIdsInRoom, i);
+                    _addElement(playerIdsInRoom, i);
                 }
             }
         }
 
-        uint32 count = SizedArray.count(playerIdsInRoom);
+        uint32 count = 0;
+        for (uint32 i = 0; i < playerIdsInRoom.length; i++) {
+            if (playerIdsInRoom[i] != 0) {
+                count++;
+            }
+        }
 
         if (count == 1) {
             return string(abi.encodePacked("\nIn this room is ", Player.getName(playerIdsInRoom[0])));
@@ -191,4 +195,17 @@ contract LookSystem is System {
         Output.set(playerId, _genDescText(playerId, rId));
         return 0;
     }
+
+    function _addElement(uint32[MAX_OBJ] memory arr, uint32 element) private pure returns (bool) {
+        for (uint8 i = 0; i < arr.length; i++) {
+            if (arr[i] == 0) {
+                arr[i] = element;
+                return true;
+            }
+        }
+        return false; // Array is full
+    }
 }
+
+
+    

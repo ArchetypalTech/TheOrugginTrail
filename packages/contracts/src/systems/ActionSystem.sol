@@ -15,8 +15,6 @@ import { ErrCodes, ResCodes, VerbData } from '../constants/defines.sol';
 
 import { Constants } from '../constants/Constants.sol';
 
-import { SizedArray } from '../libs/SizedArrayLib.sol';
-
 /**
 *   @dev handle actions other than LOOK and MOVE. These are generic
     we need to check that tha VRB can find a matching response ACTION
@@ -44,7 +42,7 @@ contract ActionSystem is System, Constants {
         }
 
         if (sizedDids.length > 0 && sizedDids[0] != 0) {
-            console.log("---> Got d_obj:%d", SizedArray.count(sizedDids));
+            console.log("---> Got d_obj:%d", uint32(sizedDids.length));
             console.log("----> Got d_obj[0]:%d", sizedDids[0]);          
             if (cmd.indirectDirNoun != DirObjectType.None && ids.length > 0  && ids[0] != 0 ) {
                 (err, bitCnt) = _setActionBits(cmd, sizedDids, playerId, true);
@@ -136,7 +134,6 @@ contract ActionSystem is System, Constants {
             `rusty key` that has an lock action set on it, the important part being
             the id of the lock action and setting that on the correct item (`rusty key`)
         */
-        //uint32 ct = SizedArray.count(objIDs);
         uint256 ct = objIDs.length;
         uint8 bc = 0;        
         console.log("->sz:%d", ct);

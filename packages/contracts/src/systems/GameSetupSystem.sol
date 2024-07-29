@@ -7,7 +7,6 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { IWorld } from "../codegen/world/IWorld.sol";
 import { ErrCodes } from '../constants/defines.sol';
 import { Constants } from '../constants/Constants.sol';
-import {SizedArray} from '../libs/SizedArrayLib.sol';
 import { Description, ObjectStore, ObjectStoreData , DirObjectStore, DirObjectStoreData, Player, Output, RoomStore, RoomStoreData, ActionStore, ActionStoreData,TxtDefStore } from "../codegen/index.sol";
 import { ActionType, RoomType, ObjectType, CommandError, DirectionType, DirObjectType, TxtDefType, MaterialType } from "../codegen/common.sol";
 
