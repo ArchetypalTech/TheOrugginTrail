@@ -5,13 +5,12 @@ import {console} from "forge-std/console.sol";
 import {System} from "@latticexyz/world/src/System.sol";
 import {IWorld} from '../codegen/world/IWorld.sol';
 import {ITokeniserSystem} from '../codegen/world/ITokeniserSystem.sol';
-import {SizedArray} from '../libs/SizedArrayLib.sol';
 import {ObjectType} from '../codegen/common.sol';
 import {Player, RoomStore, ObjectStore, Output} from '../codegen/index.sol';
+import { Constants } from '../constants/Constants.sol';
 
-contract InventorySystem is System {
-    uint constant MAX_OBJ = 32;
-
+contract InventorySystem is System, Constants {
+    
     function inventory(address world, uint32 playerId) public returns (uint8 err) {
         uint32[32] memory objIds = Player.getObjectIds(playerId);
         uint256 objCount = objIds.length;

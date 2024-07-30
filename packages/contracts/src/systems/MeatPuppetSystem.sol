@@ -21,8 +21,6 @@ import { Kick } from '../libs/KickLib.sol';
 
 import { Constants } from '../constants/Constants.sol';
 
-import { SizedArray } from '../libs/SizedArrayLib.sol';
-
 
 contract MeatPuppetSystem is System, Constants {
 
