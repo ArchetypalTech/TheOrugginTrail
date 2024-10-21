@@ -1,0 +1,141 @@
+levels:
+  - levelName: test
+    rooms:
+      - roomID: 11107137240536497418
+        roomName: Eli's Barn
+        roomDescription: |-
+          the barn is old and smells of old hay and oddly dissolution
+          the floor is dirt and trampled dried horse shit scattered with straw and broken bottles
+          the smell is not unpleasent and reminds you faintly of petrol and old socks
+        roomType: barn
+        objects:
+          - objID: 10414226638441273874
+            type: door
+            material: wood
+            objDescription: an old wooden barn door, leads south
+            direction: S
+            destination: bensons-plain.md
+            actions:
+              - actionID: 4328927602301159032
+                type: open
+                enabled: true
+                revertable: false
+                dBitText: the door, closes with a creak
+                dBit: true
+                affectsAction: null
+          - objID: 4916953867006087388
+            type: window
+            material: glass
+            objDescription: a dusty window, at chest height
+            direction: W
+            destination: elis-forge.md
+            actions:
+              - actionID: 14604306511083742153
+                type: open
+                enabled: true
+                revertable: false
+                dBitText: the window, now broken, falls open
+                dBit: true
+                affectsAction: null
+              - actionID: 3629301349604561982
+                type: break
+                enabled: true
+                revertable: false
+                dBitText: the window, smashes, glass flies everywhere, very very satisfying
+                dBit: true
+                affectsAction: null
+        objectIds: []
+        dirObjIds:
+          - 10414226638441273874
+          - 4916953867006087388
+      - roomID: 8892581999139148090
+        roomName: Walking Eagle Pass
+        roomDescription: |-
+          it winds through the mountains, the path is treacherous
+          toilet papered trees cover the steep
+          valley sides below you.
+          On closer inspection the TP might
+          be the remains of a cricket team
+          or perhaps a lost and very dead KKK picnic group.
+          It's brass monkeys.
+        roomType: mountains
+        objects:
+          - objID: 745772409139972109
+            type: path
+            material: dirt
+            objDescription: path
+            direction: W
+            destination: bensons-plain.md
+            actions:
+              - actionID: 14833044636746871315
+                type: open
+                enabled: true
+                revertable: false
+                dBitText: the path winds west, it is open
+                dBit: true
+                affectsAction: null
+        objectIds: []
+        dirObjIds:
+          - 745772409139972109
+      - roomID: 15740072870286221930
+        roomName: Bensons plain
+        roomDescription: |-
+          the plain reaches seemingly endlessly to the sky in all directions
+          and the sky itself feels greasy and cold.
+          pyramidal rough shapes dot the horizin and land which
+          upon closer examination are made from bufalo skulls.
+          The air tastes of grease and bensons.
+          happy happy happy
+        roomType: plain
+        objects:
+          - objID: 4142895348942435842
+            type: path
+            material: dirt
+            objDescription: a path east leads upwards toward the mountains
+            direction: E
+            destination: walking-eagle-pass.md
+            actions:
+              - actionID: 16668157595971844890
+                type: open
+                enabled: true
+                revertable: false
+                dBitText: the path winds east, it is open
+                dBit: true
+                affectsAction: null
+          - objID: 2294365566944327029
+            type: path
+            material: dirt
+            objDescription: a path north leads toward a large wooden barn
+            direction: "N"
+            destination: elis-barn.md
+            actions:
+              - actionID: 13058015828559547750
+                type: open
+                enabled: true
+                revertable: false
+                dBitText: the path heads north, it leads to a barn
+                dBit: true
+                affectsAction: null
+          - objID: 17189994194645879202
+            type: ball
+            material: leather
+            objDescription: |-
+              a knock off UEFA football
+              its a bit battered and bruised
+              not exactly a sphere
+              but you can kick it
+            direction: null
+            destination: null
+            actions:
+              - actionID: 15552978697807030543
+                type: kick
+                enabled: true
+                revertable: false
+                dBitText: the ball bounces feebly and rolls into some dog shit. fun.
+                dBit: true
+                affectsAction: null
+        objectIds:
+          - 17189994194645879202
+        dirObjIds:
+          - 4142895348942435842
+          - 2294365566944327029
