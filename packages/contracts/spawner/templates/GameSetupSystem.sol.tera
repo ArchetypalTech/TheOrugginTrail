@@ -1,3 +1,59 @@
+{%- macro direction(dir) -%}
+  {%- if dir -%}
+    {%- if dir == "E" -%}
+    DirectionType.East
+    {%- elif dir == "S" -%}
+    DirectionType.South
+    {%- elif dir == "W" -%}
+    DirectionType.West
+    {%- elif dir == "N" -%}
+    DirectionType.North
+    {%- else -%}UNKNOWN DIRECTION
+    {%- endif -%}
+  {%- else -%}
+  DirectionType.None
+  {%- endif -%}
+{%- endmacro direction -%}
+{%- macro objectType(t) -%}
+  {%- if t == "path" -%}
+  DirObjectType.Path
+  {%- elif t == "window" -%}
+  DirObjectType.Window
+  {%- elif t == "ball" -%}
+  ObjectType.Football
+  {%- elif t == "door" -%}
+  DirObjectType.Door
+  {%- else -%}UNKNOWN OBJECT TYPE{%- endif -%}
+{%- endmacro objectType -%}
+{%- macro actionType(t) -%}
+  {%- if t == "open" -%}
+  ActionType.Open
+  {%- elif t == "kick" -%}
+  ActionType.Kick
+  {%- elif t == "break" -%}
+  ActionType.Break
+  {%- else -%}UNKNOWN ACTION TYPE{%- endif -%}
+{%- endmacro actionType -%}
+{%- macro materialType(m) -%}
+  {%- if m == "dirt" -%}
+  MaterialType.Dirt
+  {%- elif m == "glass" -%}
+  MaterialType.Glass
+  {%- elif m == "leather" -%}
+  MaterialType.Leather
+  {%- elif m == "wood" -%}
+  MaterialType.Wood
+  {%- else -%}UNKNOWN MATERIAL TYPE{%- endif -%}
+{%- endmacro materialType -%}
+{%- macro roomType(r) -%}
+  {%- if r == "plain" -%}
+  RoomType.Plain
+  {%- elif r == "mountains" -%}
+  RoomType.Mountains
+  {%- elif r == "barn" -%}
+  RoomType.Barn
+  {%- else -%}UNKNOWN ROOM TYPE{%- endif -%}
+{%- endmacro roomType -%}
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
@@ -213,10 +269,95 @@ contract GameSetupSystem is System, Constants {
     }
 
     function _setupRooms() private {
-        _setupPlain();
-        _setupBarn();
-        _createMountainPath();
+    {%- for room in levels[0].rooms %}
+        // {{room.roomName}}
+        gen_room_{{room.roomID}}();
+    {%- endfor %}
     }
+
+    {% for room in levels[0].rooms %}
+    // {{loop.index}}. {{room.roomName}}: {{room.roomDescription | linebreaks(to="\n") }}
+    function gen_room_{{room.roomID}}() private {
+
+        {%- if room.objects -%}
+        {%- for object in room.objects -%}
+        // object {{object.objID}}
+
+        uint32[MAX_OBJ] memory actions; // TODO reset  + do not use all memory
+        uint32[MAX_OBJ] memory dObjs; // TODO reset  + do not use all memory
+        uint32[MAX_OBJ] memory objs; // TODO reset  + do not use all memory
+
+        
+        {%- if object.actions -%}
+        {%- for action in object.actions -%}
+
+        // action {{action.actionID}}
+        uint32 action_{{object.objID}}_{{action.actionID}} = createAction(
+            {{ self::actionType(t=action.type) | trim }},
+            "{{action.dBitText}}",
+            {{action.enabled}},
+            {{action.dBit}},
+            {{action.revertable}},
+            0,
+            0
+        );
+
+        actions[{{loop.index}}] = action_{{object.objID}}_{{action.actionID}};
+        {% endfor -%}
+        
+        {% endif -%}
+        
+
+        
+
+        {%if object.destination -%}
+        SizedArray.add(dObjs,createDirObj(
+            {{ self::direction(dir=object.direction) | trim }},
+            "{{object.destination}}", // TODO use room_id in yaml tool
+            {{ self::objectType(t=object.type) | trim }},
+            {{ self::materialType(m=object.material) | trim }},
+            "{{ object.objDescription | linebreaks }}",
+            actions
+        ));
+        {%- else -%}
+        SizedArray.add(objs,createObject(
+            {{ self::objectType(t=object.type) | trim }},
+            {{ self::materialType(m=object.material) | trim }},
+             "{{ object.objDescription | linebreaks }}",
+            "noname", // TODO
+            actions
+        ));
+        {%- endif %}
+
+       
+        {% endfor -%}
+
+        {%- for object in room.objects -%}
+        {%- if object.actions -%}
+        {%- for action in object.actions -%}
+        {%- if action.affectsAction -%}
+        //action_{{object.objID}}_{{action.actionID}}.affectsActionId = action_id_{{object.objID}}_{{ action.affectsAction.actionID }};
+        //action_{{object.objID}}_{{ action.affectsAction.actionID }}.affectedByActionId = action_id_{{object.objID}}_{{ action.actionID }};
+        {%- endif -%}
+        {% endfor -%}
+        {%- endif -%}
+        //store_actions(w, array![{%- for action in object.actions -%}action_{{object.objID}}_{{action.actionID}},{%- endfor -%} ]);
+        {% endfor %}
+
+        {%- for object in room.objects -%}//store_objects(w, array![object_{{object.objID}}]);{%- endfor -%}
+        // store_objects(w, array![{%- for object in room.objects -%}object_{{object.objID}},{%- endfor -%}]);
+        {%- endif %}
+        
+        RoomStore.setDescription({{room.roomID}},  "{{ room.roomName | linebreaks }}");
+        RoomStore.setRoomType({{room.roomID}},  {{ self::roomType(r=room.roomType) | trim }});
+
+        bytes32 tid_room = keccak256(abi.encodePacked("{{ room.roomName | linebreaks }}"));
+        TxtDefStore.set(tid_room, {{room.roomID}}, TxtDefType.Place, "{{ room.roomDescription | linebreaks }}");
+
+        createPlace({{room.roomID}}, dObjs, objs, tid_room);
+
+    }
+    {%- endfor %}
 
     function createDirObj(DirectionType dirType, uint32 dstId, DirObjectType dOType,
                                                     MaterialType mType,string memory desc, uint32[MAX_OBJ] memory actionObjects)
